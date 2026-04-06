@@ -6,7 +6,10 @@ import {
     PrimaryKey,
     BelongsTo,
     ForeignKey,
-    AllowNull
+    AllowNull,
+    CreatedAt,
+    DeletedAt,
+    UpdatedAt
 } from "sequelize-typescript";
 
 import {FilterMenu} from "./filterMenu.js";
@@ -23,23 +26,47 @@ export class Menu extends Model {
         allowNull: false,
     }) declare id: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
     declare name: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
     declare description: string;
 
-    @Column({type: DataType.INTEGER})
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
     declare price: number;
 
-     // foreign key column
-    @ForeignKey(() => FilterMenu)
     @Column({
-        type: DataType.UUID,
-        allowNull: false
+        type: DataType.BOOLEAN,
+        defaultValue: true,
+        allowNull: true,
     })
-    declare filterMenuId: string;
+    declare isNew: boolean;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+    })
+    declare isAvailable: boolean;
+
+    @CreatedAt
+    declare createdAt: Date;
+
+    @UpdatedAt
+    declare updatedAt: Date;
+    
+    @DeletedAt
+    declare deletedAt: Date;
+    
     // relation
     @BelongsTo(() => FilterMenu)
     declare filterMenu: FilterMenu;

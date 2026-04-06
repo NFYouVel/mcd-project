@@ -3,14 +3,18 @@ import {
     Column,
     Model,
     DataType,
-    PrimaryKey
+    PrimaryKey,
+    CreatedAt,
+    UpdatedAt,
+    DeletedAt
 } from "sequelize-typescript";
 
 @Table({
     tableName: "users",
     timestamps: true,
+    paranoid: true,
 })
-export class User extends Model {
+export class Users extends Model {
 
     @PrimaryKey
     @Column({
@@ -20,24 +24,55 @@ export class User extends Model {
     }) 
     declare id: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
     declare name: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true,
+    })
     declare email: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
     declare password: string;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
     declare address: string;
 
-    @Column({type : DataType.DATE})
+    @Column({
+        type: DataType.DATE,
+        allowNull: true,
+    })
     declare birthOfDate: Date;
 
-    @Column({type: DataType.INTEGER})
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
     declare salary: number;
 
-    @Column({type: DataType.ENUM("staff", "manager")})
+    @Column({
+        type: DataType.ENUM("staff", "manager"),
+        allowNull: true,
+    })
     declare role: string;
+
+    @CreatedAt
+    declare createdAt: Date;
+
+    @UpdatedAt
+    declare updatedAt: Date;
+
+    @DeletedAt
+    declare deletedAt: Date;
 }
