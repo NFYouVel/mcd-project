@@ -13,28 +13,30 @@ import {
     DeletedAt
 } from "sequelize-typescript";
 import { Menu } from "./menu.js";
-import { MenuSection } from "./menuSection.js";
+import { Orders } from "./orders.js";
 
 @Table({
-    tableName: "filter_menu",
+    tableName: "order_item",
     timestamps: true,
-    paranoid: true,
+    paranoid: true, 
 })
 
-export class FilterMenu extends Model {
+export class OrderItem extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) declare id: string;
-
-    @Column({type: DataType.STRING})
-    declare name: string;
-
-    @Column({type: DataType.STRING})
-    declare description: string;
-
+    }) 
+    declare id: string;
+    
+    @Column({
+        type: DataType.ENUM("pending", "preparing", "served", "cancelled"),
+        defaultValue: "pending",
+        allowNull: false,
+    })
+    declare status: string;
+    
     @CreatedAt
     declare createdAt: Date;
     
@@ -44,9 +46,9 @@ export class FilterMenu extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
-    @BelongsTo(() => MenuSection, "section_menu_id")
-    declare sectionMenu: MenuSection;
+    @BelongsTo(() => Menu, "menu_id")
+    declare menu: Menu;
 
-    @HasMany(() => Menu, "menu_id")
-    declare menus: Menu[];
+    @BelongsTo(() => Orders, "order_id")
+    declare order: Orders;
 }

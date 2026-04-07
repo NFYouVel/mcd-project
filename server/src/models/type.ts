@@ -1,3 +1,4 @@
+import { timeStamp } from "node:console";
 import {
     Table,
     Column,
@@ -12,27 +13,32 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { MenuSection } from "./menuSection.js";
 
+import { MenuSection } from "./menuSection.js";
 @Table({
-    tableName: "filter_menu",
+    tableName: "type",
     timestamps: true,
     paranoid: true,
 })
 
-export class FilterMenu extends Model {
+export class Type extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) declare id: string;
+    }) 
+    declare id: string;
 
-    @Column({type: DataType.STRING})
-    declare name: string;
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    declare food_type_id: number;
 
-    @Column({type: DataType.STRING})
+    @Column({
+        type: DataType.ENUM("Promotion","Heavy","Light")
+    })
     declare description: string;
 
     @CreatedAt
@@ -44,9 +50,6 @@ export class FilterMenu extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
-    @BelongsTo(() => MenuSection, "section_menu_id")
-    declare sectionMenu: MenuSection;
-
-    @HasMany(() => Menu, "menu_id")
-    declare menus: Menu[];
+    @HasMany(() => MenuSection)
+    declare menuSections: MenuSection[];
 }

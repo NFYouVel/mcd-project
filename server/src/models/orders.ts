@@ -10,30 +10,33 @@ import {
     HasMany,
     CreatedAt,
     UpdatedAt,
-    DeletedAt
+    DeletedAt,
+    HasOne
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { MenuSection } from "./menuSection.js";
+
+import { Payment } from "./payment.js";
 
 @Table({
-    tableName: "filter_menu",
+    tableName: "orders",
     timestamps: true,
     paranoid: true,
 })
 
-export class FilterMenu extends Model {
+export class Orders extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) declare id: string;
+    }) 
+    declare id: string;
 
-    @Column({type: DataType.STRING})
-    declare name: string;
-
-    @Column({type: DataType.STRING})
-    declare description: string;
+    @Column({
+        type: DataType.ENUM("pending", "checkedout", "closed", "cancelled"),
+        defaultValue: "pending",
+        allowNull: false,
+    })
+    declare status: string;
 
     @CreatedAt
     declare createdAt: Date;
@@ -44,9 +47,7 @@ export class FilterMenu extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
-    @BelongsTo(() => MenuSection, "section_menu_id")
-    declare sectionMenu: MenuSection;
+    @HasOne(() => Payment)
+    declare payment: Payment;
 
-    @HasMany(() => Menu, "menu_id")
-    declare menus: Menu[];
 }

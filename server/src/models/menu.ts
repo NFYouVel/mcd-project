@@ -9,14 +9,17 @@ import {
     AllowNull,
     CreatedAt,
     DeletedAt,
-    UpdatedAt
+    UpdatedAt,
+    HasMany
 } from "sequelize-typescript";
 
 import {FilterMenu} from "./filterMenu.js";
+import { OrderItem } from "./orderItem.js";
 
 @Table({
     tableName: "menu",
     timestamps: true,
+    paranoid: true,
 })
 export class Menu extends Model {
     @PrimaryKey
@@ -70,4 +73,7 @@ export class Menu extends Model {
     // relation
     @BelongsTo(() => FilterMenu)
     declare filterMenu: FilterMenu;
+
+    @HasMany(() => OrderItem)
+    declare orderItems: OrderItem[];
 }
