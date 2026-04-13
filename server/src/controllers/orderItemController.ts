@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { OrderItem } from "../models/orderItem.js";
-import { Orders } from "../models/orders.js";
-import { Menu } from "../models/menu.js";
-import { Payment } from "../models/payment.js";
+import { OrderItem } from "../models/OrderItems.js";
+import { Orders } from "../models/Orders.js";
+import { Menu } from "../models/Menu.js";
+import { Payment } from "../models/Payment.js";
 
 // 🔥 helper: calculate total
 const calculateTotal = async (order_id: string) => {

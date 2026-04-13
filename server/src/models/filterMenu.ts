@@ -12,8 +12,8 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { MenuSection } from "./menuSection.js";
+import { Menu } from "./Menu.js";
+import { MenuSection } from "./MenuSection.js";
 
 @Table({
     tableName: "filter_menu",
@@ -49,11 +49,10 @@ export class FilterMenu extends Model {
         type: DataType.UUID,
         allowNull: false
     })
-    declare section_menu_id: string;
-
-    @BelongsTo(() => MenuSection, "section_menu_id")
+    declare sectionMenuId: string;
+    @BelongsTo(() => MenuSection, "sectionMenuId")
     declare menuSection: MenuSection;
 
-    @HasMany(() => Menu, "menu_id")
+    @HasMany(() => Menu, "filterMenuId")
     declare menus: Menu[];
 }

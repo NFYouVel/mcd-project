@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Menu } from "../models/menu.js";
-import { MenuSection } from "../models/menuSection.js";
-import { FilterMenu } from "../models/filterMenu.js";
+import { Menu } from "../models/Menu.js";
+import { MenuSection } from "../models/MenuSection.js";
+import { FilterMenu } from "../models/FilterMenu.js";
 
 // ✅ CREATE MENU
 export const createMenu = async (req: Request, res: Response) => {

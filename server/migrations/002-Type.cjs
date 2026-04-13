@@ -7,7 +7,7 @@ module.exports = {
                 primaryKey: true,
                 allowNull: false
             },
-            food_type_id: {
+            foodTypeId: {
                 type: Sequelize.INTEGER,
                 allowNull: false
             },

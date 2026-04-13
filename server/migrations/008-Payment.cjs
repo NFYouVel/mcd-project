@@ -36,7 +36,7 @@ module.exports = {
                 defaultValue: Sequelize.NOW
             }
         });
-        await queryInterface.addColumn('Payment', 'payment_id', {
+        await queryInterface.addColumn('Payment', 'paymentId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {

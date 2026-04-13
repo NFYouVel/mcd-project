@@ -12,8 +12,14 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { FilterMenu } from "./filterMenu.js";
-import { Type } from "./type.js";
+import { FilterMenu } from "./FilterMenu.js";
+import { Type } from "./Type.js";
+
+@Table({
+    tableName: "Menu_Section",
+    timestamps: true,
+    paranoid: true,
+})
 
 export class MenuSection extends Model {
     @PrimaryKey
@@ -23,31 +29,31 @@ export class MenuSection extends Model {
         allowNull: false,
     }) declare id: string;
 
-    @Column({type: DataType.STRING})
+    @Column({ type: DataType.STRING })
     declare name: string;
 
-    @Column({type: DataType.STRING})
+    @Column({ type: DataType.STRING })
     declare description: string;
 
     @CreatedAt
-        declare createdAt: Date;
-    
+    declare createdAt: Date;
+
     @UpdatedAt
     declare updatedAt: Date;
-    
+
     @DeletedAt
     declare deletedAt: Date;
 
+    
     @ForeignKey(() => Type)
     @Column({
         type: DataType.UUID,
         allowNull: false
     })
-    declare food_type_id: string;
-
-    @BelongsTo(() => Type, "food_type_id")
+    declare foodTypeId: string;
+    @BelongsTo(() => Type, "foodTypeId")
     declare type: Type;
 
-    @HasMany(() => FilterMenu)
-    declare filterMenu: FilterMenu[];
+    @HasMany(() => FilterMenu, "sectionMenuId")
+    declare filterMenus: FilterMenu[];
 }

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Orders } from "../models/orders.js";
-import { Users } from "../models/user.js";
-import { OrderItem } from "../models/orderItem.js";
-import { Menu } from "../models/menu.js";
+import { Orders } from "../models/Orders.js";
+import { Users } from "../models/Users.js";
+import { OrderItem } from "../models/OrderItems.js";
+import { Menu } from "../models/Menu.js";
 
 // ✅ CREATE ORDER
 export const createOrder = async (req: Request, res: Response) => {

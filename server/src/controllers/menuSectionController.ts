@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import {MenuSection} from "../models/menuSection.js";
-import {Type} from "../models/type.js";
+import {MenuSection} from "../models/MenuSection.js";
+import {Type} from "../models/Type.js";
 
 //CREATE Menu Section
 export const createMenuSection = async (req: Request, res: Response) => {

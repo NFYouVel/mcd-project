@@ -33,7 +33,7 @@ module.exports = {
             }
         });
 
-        await queryInterface.addColumn('Order_Items', 'menu_id', {
+        await queryInterface.addColumn('Order_Items', 'menuId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {
@@ -43,7 +43,7 @@ module.exports = {
             onUpdate: 'CASCADE',
             onDelete: 'CASCADE'
         });
-        await queryInterface.addColumn('Order_Items', 'order_id', {
+        await queryInterface.addColumn('Order_Items', 'orderId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {

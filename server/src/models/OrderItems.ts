@@ -12,37 +12,43 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { Orders } from "./orders.js";
+import { Menu } from "./Menu.js";
+import { Orders } from "./Orders.js";
 
 @Table({
-    tableName: "order_item",
+    tableName: "Order_Items",
     timestamps: true,
-    paranoid: true, 
+    paranoid: true,
 })
 
-export class OrderItem extends Model {
+export class OrderItems extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) 
+    })
     declare id: string;
-    
+
     @Column({
         type: DataType.ENUM("pending", "preparing", "served", "cancelled"),
         defaultValue: "pending",
         allowNull: false,
     })
     declare status: string;
-    
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    declare quantity: number;
+
     @CreatedAt
     declare createdAt: Date;
-    
+
     @UpdatedAt
     declare updatedAt: Date;
-    
+
     @DeletedAt
     declare deletedAt: Date;
 
@@ -51,18 +57,18 @@ export class OrderItem extends Model {
         type: DataType.UUID,
         allowNull: false
     })
-    declare menu_id: string;
-
-    @BelongsTo(() => Menu, "menu_id")
+    declare menuId: string;
+    @BelongsTo(() => Menu, "menuId")
     declare menu: Menu;
 
+    
     @ForeignKey(() => Orders)
     @Column({
         type: DataType.UUID,
         allowNull: false
     })
-    declare order_id: string;
-
-    @BelongsTo(() => Orders, "order_id")
+    declare orderId: string;
+    @BelongsTo(() => Orders, "orderId")
     declare order: Orders;
+
 }

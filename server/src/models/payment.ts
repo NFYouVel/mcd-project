@@ -14,7 +14,7 @@ import {
     HasOne
 } from "sequelize-typescript";
 
-import { Orders } from "./orders.js";
+import { Orders } from "./Orders.js";
 
 @Table({
     tableName: "payment",
@@ -37,7 +37,7 @@ export class Payment extends Model {
     }) declare status: string;
 
     @Column({
-        type: DataType.ENUM("card","ewallet","cash"),
+        type: DataType.ENUM("card", "ewallet", "cash"),
         defaultValue: "cash",
         allowNull: false,
     }) declare payment_method: string;
@@ -45,17 +45,24 @@ export class Payment extends Model {
     @Column({
         type: DataType.INTEGER,
         allowNull: false,
-    }) declare total_price : number;
+    }) declare total_price: number;
 
     @CreatedAt
     declare createdAt: Date;
-    
+
     @UpdatedAt
     declare updatedAt: Date;
-    
+
     @DeletedAt
     declare deletedAt: Date;
 
-    @HasOne(() => Orders, "order_id")
+    @BelongsTo(() => Orders, "orderId")
     declare order: Orders;
+
+    @ForeignKey(() => Orders)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare orderId: string;
 }

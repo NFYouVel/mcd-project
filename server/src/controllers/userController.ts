@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {Users} from '../models/user.js';
+import {Users} from '../models/Users.js';
 
 
 //GET ALL Users

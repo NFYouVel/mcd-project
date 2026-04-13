@@ -31,7 +31,7 @@ module.exports = {
             }
         });
 
-        await queryInterface.addColumn('Filter_Menu', 'section_menu_id', {
+        await queryInterface.addColumn('Filter_Menu', 'sectionMenuId', {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4,
             allowNull: false,

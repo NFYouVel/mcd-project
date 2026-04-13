@@ -14,7 +14,7 @@ import {
     HasOne
 } from "sequelize-typescript";
 
-import { Payment } from "./payment.js";
+import { Payment } from "./Payment.js";
 
 @Table({
     tableName: "orders",
@@ -28,7 +28,7 @@ export class Orders extends Model {
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) 
+    })
     declare id: string;
 
     @Column({
@@ -40,14 +40,14 @@ export class Orders extends Model {
 
     @CreatedAt
     declare createdAt: Date;
-    
+
     @UpdatedAt
     declare updatedAt: Date;
-    
+
     @DeletedAt
     declare deletedAt: Date;
 
-    @HasOne(() => Payment)
-    declare payment: Payment;
+    @HasOne(() => Payment, "orderId")
+    declare payment: Payment
 
 }

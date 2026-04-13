@@ -13,8 +13,8 @@ import {
     HasMany
 } from "sequelize-typescript";
 
-import {FilterMenu} from "./filterMenu.js";
-import { OrderItem } from "./orderItem.js";
+import { FilterMenu } from "./FilterMenu.js";
+import { OrderItems } from "./OrderItems.js";
 import { Col } from "sequelize/lib/utils";
 
 @Table({
@@ -77,11 +77,10 @@ export class Menu extends Model {
         type: DataType.UUID,
         allowNull: false
     })
-    declare filter_menu_id: string;
-
-    @BelongsTo(() => FilterMenu)
+    declare filterMenuId: string;
+    @BelongsTo(() => FilterMenu, "filterMenuId")
     declare filterMenu: FilterMenu;
 
-    @HasMany(() => OrderItem)
-    declare orderItems: OrderItem[];
+    @HasMany(() => OrderItems, "menuId")
+    declare orderItems: OrderItems[];
 }

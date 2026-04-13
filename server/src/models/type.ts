@@ -14,9 +14,9 @@ import {
     DeletedAt
 } from "sequelize-typescript";
 
-import { MenuSection } from "./menuSection.js";
+import { MenuSection } from "./MenuSection.js";
 @Table({
-    tableName: "type",
+    tableName: "Type",
     timestamps: true,
     paranoid: true,
 })
@@ -50,7 +50,6 @@ export class Type extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
-
-    @HasMany(() => MenuSection)
+    @HasMany(() => MenuSection, "foodTypeId")
     declare menuSections: MenuSection[];
 }
