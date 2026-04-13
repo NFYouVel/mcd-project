@@ -38,6 +38,13 @@ export class MenuSection extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
+    @ForeignKey(() => Type)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare food_type_id: string;
+
     @BelongsTo(() => Type, "food_type_id")
     declare type: Type;
 

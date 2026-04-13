@@ -1,4 +1,4 @@
-const { down } = require("./001-Users");
+const { down } = require("./001-Users.js");
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {

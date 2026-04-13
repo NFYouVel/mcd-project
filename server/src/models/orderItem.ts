@@ -46,8 +46,22 @@ export class OrderItem extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
+    @ForeignKey(() => Menu)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare menu_id: string;
+
     @BelongsTo(() => Menu, "menu_id")
     declare menu: Menu;
+
+    @ForeignKey(() => Orders)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare order_id: string;
 
     @BelongsTo(() => Orders, "order_id")
     declare order: Orders;

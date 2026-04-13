@@ -44,8 +44,15 @@ export class FilterMenu extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
+    @ForeignKey(() => MenuSection)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare section_menu_id: string;
+
     @BelongsTo(() => MenuSection, "section_menu_id")
-    declare sectionMenu: MenuSection;
+    declare menuSection: MenuSection;
 
     @HasMany(() => Menu, "menu_id")
     declare menus: Menu[];

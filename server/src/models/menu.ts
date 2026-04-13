@@ -15,6 +15,7 @@ import {
 
 import {FilterMenu} from "./filterMenu.js";
 import { OrderItem } from "./orderItem.js";
+import { Col } from "sequelize/lib/utils";
 
 @Table({
     tableName: "menu",
@@ -71,6 +72,13 @@ export class Menu extends Model {
     declare deletedAt: Date;
     
     // relation
+    @ForeignKey(() => FilterMenu)
+    @Column({
+        type: DataType.UUID,
+        allowNull: false
+    })
+    declare filter_menu_id: string;
+
     @BelongsTo(() => FilterMenu)
     declare filterMenu: FilterMenu;
 
