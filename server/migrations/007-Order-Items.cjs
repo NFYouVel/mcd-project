@@ -12,6 +12,11 @@ module.exports = {
                 allowNull : false,
                 defaultValue : 'pending'
             },
+            quantity : {
+                type : Sequelize.INTEGER,
+                allowNull : false,
+                defaultValue : 1
+            },
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,
