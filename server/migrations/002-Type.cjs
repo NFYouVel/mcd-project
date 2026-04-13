@@ -1,5 +1,3 @@
-const { down } = require("./001-Users.js");
-
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('Type', {
@@ -7,7 +5,7 @@ module.exports = {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
                 primaryKey: true,
-                alowNull: false
+                allowNull: false
             },
             food_type_id: {
                 type: Sequelize.INTEGER,
@@ -32,8 +30,9 @@ module.exports = {
                 defaultValue: Sequelize.NOW
             }
         });
-        down: async (queryInterface, Sequelize) => {
-            await queryInterface.dropTable('Type');
-        }
+    },
+
+    down: async (queryInterface) => {
+        await queryInterface.dropTable('Type');
     }
 };

@@ -32,7 +32,7 @@ module.exports = {
             type: Sequelize.UUID,
             allowNull: false,
             references: {
-                model: 'menu',
+                model: 'Menu',
                 key: 'id'
             },
             onUpdate: 'CASCADE',

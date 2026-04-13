@@ -2,14 +2,14 @@ module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('Section_Menu', {
             id: {
-                type : Sequelize.UUID,
-                defaultValue : Sequelize.UUIDV4,
-                primaryKey : true,
-                alowNull : false
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
             },
             name: {
                 type: Sequelize.STRING,
-                alowNull: false
+                allowNull: false
             },
             description: {
                 type: Sequelize.STRING,
@@ -31,18 +31,19 @@ module.exports = {
             }
         });
 
-        await queryInterface.addColumn('Section_Menu', 'type', {
-            type: Sequelize.INTEGER,
+        await queryInterface.addColumn('Section_Menu', 'Type', {
+            type: Sequelize.UUID,
             allowNull: false,
-            references:{
+            references: {
                 model: 'Type',
-                key: 'food_type_id'
+                key: 'id'
             },
-            onUpdate : 'CASCADE',
-            onDelete : 'CASCADE'
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
         });
     },
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('MenuSections');
+
+    down: async (queryInterface) => {
+        await queryInterface.dropTable('Section_Menu');
     }
 };

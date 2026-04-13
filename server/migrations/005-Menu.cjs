@@ -1,6 +1,6 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('menu', {
+        await queryInterface.createTable('Menu', {
             id : {
                 type : Sequelize.UUID,
                 defaultValue : Sequelize.UUIDV4,
@@ -45,7 +45,7 @@ module.exports = {
             },
         });
 
-        await queryInterface.addColumn('menu', 'filter_menu_id', {
+        await queryInterface.addColumn('Menu', 'filter_menu_id', {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV4,
             allowNull: false,
@@ -59,6 +59,6 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('menu');
+        await queryInterface.dropTable('Menu');
     }
 }
