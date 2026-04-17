@@ -10,7 +10,7 @@ import {
 } from "sequelize-typescript";
 
 @Table({
-    tableName: "users",
+    tableName: "Users",
     timestamps: true,
     paranoid: true,
 })
@@ -53,7 +53,7 @@ export class Users extends Model {
         type: DataType.DATE,
         allowNull: true,
     })
-    declare birthOfDate: Date;
+    declare birth_of_date: Date;
 
     @Column({
         type: DataType.INTEGER,

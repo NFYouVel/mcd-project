@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Orders } from "../models/Orders.js";
 import { Users } from "../models/Users.js";
-import { OrderItem } from "../models/OrderItems.js";
+import { OrderItems } from "../models/OrderItems.js";
 import { Menu } from "../models/Menu.js";
 
 // ✅ CREATE ORDER
@@ -44,7 +44,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
           attributes: ["id", "name"],
         },
         {
-          model: OrderItem,
+          model: OrderItems,
           include: [
             {
               model: Menu,
@@ -79,7 +79,7 @@ export const getOrderById = async (req: Request, res: Response) => {
           attributes: ["id", "name"],
         },
         {
-          model: OrderItem,
+          model: OrderItems,
           include: [
             {
               model: Menu,

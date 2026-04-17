@@ -1,32 +1,36 @@
 import { Request, Response } from "express";
-import { OrderItem } from "../models/OrderItems.js";
+import { OrderItems } from "../models/OrderItems.js";
 import { Orders } from "../models/Orders.js";
 import { Menu } from "../models/Menu.js";
 import { Payment } from "../models/Payment.js";
 
-// 🔥 helper: calculate total
-const calculateTotal = async (order_id: string) => {
-  const items = await OrderItem.findAll({
-    where: { order_id },
+// 🔥 helper: calculate total dynamically
+const calculateTotal = async (orderId: string) => {
+  const items = await OrderItems.findAll({
+    where: { orderId },
+    include: [{ model: Menu }],
   });
 
   let total = 0;
+
   for (const item of items) {
-    total += Number(item.subtotal);
+    if (item.menu) {
+      total += item.menu.price * item.quantity;
+    }
   }
 
   return total;
 };
 
-// 🔥 helper: sync payment total if exists
-const syncPayment = async (order_id: string) => {
+// 🔥 sync payment
+const syncPayment = async (orderId: string) => {
   const payment = await Payment.findOne({
-    where: { order_id },
+    where: { orderId },
   });
 
   if (!payment) return null;
 
-  const total = await calculateTotal(order_id);
+  const total = await calculateTotal(orderId);
 
   await payment.update({
     total_price: total,
@@ -38,11 +42,11 @@ const syncPayment = async (order_id: string) => {
 // ✅ CREATE
 export const createOrderItem = async (req: Request, res: Response) => {
   try {
-    const { order_id, menu_id, quantity } = req.body;
+    const { orderId, menuId, quantity } = req.body;
 
-    const order = await Orders.findByPk(order_id);
+    const order = await Orders.findByPk(orderId);
     if (!order) {
-      return res.status(400).json({ message: "Invalid order_id" });
+      return res.status(400).json({ message: "Invalid orderId" });
     }
 
     if (order.status !== "pending") {
@@ -51,21 +55,18 @@ export const createOrderItem = async (req: Request, res: Response) => {
       });
     }
 
-    const menu = await Menu.findByPk(menu_id);
+    const menu = await Menu.findByPk(menuId);
     if (!menu) {
-      return res.status(400).json({ message: "Invalid menu_id" });
+      return res.status(400).json({ message: "Invalid menuId" });
     }
 
-    const subtotal = Number(menu.price) * quantity;
-
     const item = await OrderItems.create({
-      order_id,
-      menu_id,
+      orderId,
+      menuId,
       quantity,
-      subtotal,
     });
 
-    const total = await syncPayment(order_id);
+    const total = await syncPayment(orderId);
 
     return res.status(201).json({
       message: "Item added",
@@ -145,12 +146,10 @@ export const updateOrderItem = async (req: Request, res: Response) => {
       });
     }
 
-    const order = await Orders.findByPk(item.order_id);
-    const menu = await Menu.findByPk(item.menu_id);
-
-    if (!order || !menu) {
+    const order = await Orders.findByPk(item.orderId);
+    if (!order) {
       return res.status(400).json({
-        message: "Related data missing",
+        message: "Order not found",
       });
     }
 
@@ -160,14 +159,11 @@ export const updateOrderItem = async (req: Request, res: Response) => {
       });
     }
 
-    const newSubtotal = Number(menu.price) * quantity;
-
     await item.update({
       quantity,
-      subtotal: newSubtotal,
     });
 
-    const total = await syncPayment(item.order_id);
+    const total = await syncPayment(item.orderId);
 
     return res.status(200).json({
       message: "Item updated",
@@ -194,7 +190,7 @@ export const deleteOrderItem = async (req: Request, res: Response) => {
       });
     }
 
-    const order = await Orders.findByPk(item.order_id);
+    const order = await Orders.findByPk(item.orderId);
 
     if (!order) {
       return res.status(400).json({
@@ -208,11 +204,11 @@ export const deleteOrderItem = async (req: Request, res: Response) => {
       });
     }
 
-    const order_id = item.order_id;
+    const orderId = item.orderId;
 
     await item.destroy();
 
-    const total = await syncPayment(order_id);
+    const total = await syncPayment(orderId);
 
     return res.status(200).json({
       message: "Item deleted",

@@ -7,8 +7,12 @@ export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await Users.findAll();
     res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching users' });
+  } catch (error: any) {
+    console.error("GET USERS ERROR:", error); // 🔥 ADD THIS
+    res.status(500).json({ 
+      message: 'Error fetching users',
+      error: error.message
+    });
   }
 };
 
@@ -38,14 +42,14 @@ export const getUserById = async (req: Request, res: Response) => {
 //Create User
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const { name, email, password, address, birthOfDate } = req.body;
+        const { name, email, password, address, birth_of_date } = req.body;
 
         const newUser = await Users.create({
             name,
             email,
             password,
             address,
-            birthOfDate
+            birth_of_date
         });
 
         return res.status(201).json({
@@ -63,7 +67,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
-        const { name, email, password, address, birthOfDate } = req.body;
+        const { name, email, password, address, birth_of_date } = req.body;
         const updatedUser = await Users.findByPk(id);
 
         if(!updatedUser) {
@@ -77,7 +81,7 @@ export const updateUser = async (req: Request, res: Response) => {
             email,
             password,
             address,
-            birthOfDate  
+            birth_of_date  
         })
 
         return res.status(200).json({

@@ -2,6 +2,18 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { sequelize } from './config/database.js';
+
+//route imports
+import userRoutes from './routes/user.routes.js';
+import typeRoutes from './routes/type.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+import orderItemRoutes from './routes/orderItem.routes.js';
+import orderRoutes from './routes/order.routes.js';
+import menuSectionRoutes from './routes/menuSection.routes.js';
+import menuRoutes from './routes/menu.routes.js';
+import filterMenuRoutes from './routes/filterMenu.routes.js';
+
+
 dotenv.config();
 
 // middleware
@@ -14,9 +26,15 @@ app.use(cors());
 app.use(express.json());
 
 // route basic
-app.get('/', (req, res) => {
-  res.send('Hello World 🚀');
-});
+app.use('/api/user',userRoutes);
+app.use('/api/type', typeRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/orderitem', orderItemRoutes);
+app.use('/api/order', orderRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/menusection', menuSectionRoutes);
+app.use('/api/filtermenu', filterMenuRoutes);
+
 
 sequelize.authenticate().then(() => {
   console.log('Database connected!');
