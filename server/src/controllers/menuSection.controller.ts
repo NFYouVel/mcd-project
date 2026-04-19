@@ -17,7 +17,7 @@ export const createMenuSection = async (req: Request, res: Response) => {
     const newSection = await MenuSection.create({
       name,
       description,
-      typeId, // ✅ use model field (mapped to "Type")
+      typeId
     });
 
     return res.status(201).json({
@@ -39,7 +39,7 @@ export const getAllMenuSections = async (req: Request, res: Response) => {
       include: [
         {
           model: Type,
-          attributes: ["id", "description"], // ⚠️ remove foodTypeId (not needed)
+          attributes: ["id", "description"],
         },
       ],
     });

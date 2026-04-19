@@ -3,7 +3,7 @@ import { Menu } from "../models/Menu.js";
 import { MenuSection } from "../models/MenuSection.js";
 import { FilterMenu } from "../models/FilterMenu.js";
 
-// ✅ CREATE MENU
+//Create Menu
 export const createMenu = async (req: Request, res: Response) => {
   try {
     const {
@@ -31,7 +31,7 @@ export const createMenu = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ GET ALL MENUS (WITH RELATIONS)
+//Get All Menu (FK FilterMenu)
 export const getAllMenus = async (req: Request, res: Response) => {
   try {
     const menus = await Menu.findAll({
@@ -55,7 +55,7 @@ export const getAllMenus = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ GET MENU BY ID
+//Get Menu by ID
 export const getMenuById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -87,7 +87,7 @@ export const getMenuById = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ UPDATE MENU
+//Update Menu
 export const updateMenu = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -107,7 +107,7 @@ export const updateMenu = async (req: Request, res: Response) => {
       });
     }
 
-    // 🔥 validate section if updated
+    //check if section_menu_id is valid
     if (section_menu_id) {
       const section = await MenuSection.findByPk(section_menu_id);
       if (!section) {
@@ -117,7 +117,7 @@ export const updateMenu = async (req: Request, res: Response) => {
       }
     }
 
-    // 🔥 validate filter if updated
+    //check if filter_menu_id is valid
     if (filter_menu_id) {
       const filter = await FilterMenu.findByPk(filter_menu_id);
       if (!filter) {
@@ -147,7 +147,7 @@ export const updateMenu = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ DELETE MENU
+//Delete Menu
 export const deleteMenu = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;

@@ -11,19 +11,19 @@ import {
 
 const router: ExpressRouter = Router();
 
-// ✅ CREATE
+//Create OrderItem
 router.post("/", createOrderItem);
 
-// ✅ GET ALL
+//Get All OrderItems
 router.get("/", getAllOrderItems);
 
-// ✅ GET BY ID
+//Get OrderItem by ID
 router.get("/:id", getOrderItemById);
 
-// ✅ UPDATE
+//Update OrderItem
 router.put("/:id", updateOrderItem);
 
-// ✅ DELETE
+//Delete OrderItem
 router.delete("/:id", deleteOrderItem);
 
 export default router;

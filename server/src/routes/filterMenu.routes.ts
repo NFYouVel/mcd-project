@@ -11,19 +11,19 @@ import {
 
 const router: ExpressRouter = Router();
 
-// ✅ CREATE
+//Create FilterMenu
 router.post("/", createFilterMenu);
 
-// ✅ GET ALL
+//Get All FilterMenus
 router.get("/", getAllFilterMenus);
 
-// ✅ GET BY ID
+//Get FilterMenu by ID
 router.get("/:id", getFilterMenuById);
 
-// ✅ UPDATE
+//Update FilterMenu
 router.put("/:id", updateFilterMenu);
 
-// ✅ DELETE
+//Delete FilterMenu
 router.delete("/:id", deleteFilterMenu);
 
 export default router;

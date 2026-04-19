@@ -3,43 +3,10 @@ import { OrderItems } from "../models/OrderItems.js";
 import { Orders } from "../models/Orders.js";
 import { Menu } from "../models/Menu.js";
 import { Payment } from "../models/Payment.js";
+import { calculateTotal } from "../utils/calculateTotal.js";
+import { syncPayment } from "../utils/syncPayment.js";
 
-// 🔥 helper: calculate total dynamically
-const calculateTotal = async (orderId: string) => {
-  const items = await OrderItems.findAll({
-    where: { orderId },
-    include: [{ model: Menu }],
-  });
-
-  let total = 0;
-
-  for (const item of items) {
-    if (item.menu) {
-      total += item.menu.price * item.quantity;
-    }
-  }
-
-  return total;
-};
-
-// 🔥 sync payment
-const syncPayment = async (orderId: string) => {
-  const payment = await Payment.findOne({
-    where: { orderId },
-  });
-
-  if (!payment) return null;
-
-  const total = await calculateTotal(orderId);
-
-  await payment.update({
-    total_price: total,
-  });
-
-  return total;
-};
-
-// ✅ CREATE
+//Create Order Item
 export const createOrderItem = async (req: Request, res: Response) => {
   try {
     const { orderId, menuId, quantity } = req.body;
@@ -81,7 +48,7 @@ export const createOrderItem = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ GET ALL
+//Get All Order Items
 export const getAllOrderItems = async (req: Request, res: Response) => {
   try {
     const items = await OrderItems.findAll({
@@ -103,7 +70,7 @@ export const getAllOrderItems = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ GET BY ID
+//Get Order Item by ID
 export const getOrderItemById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -133,7 +100,7 @@ export const getOrderItemById = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ UPDATE
+//Update Order Item
 export const updateOrderItem = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -178,7 +145,7 @@ export const updateOrderItem = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ DELETE
+//Delete Order Item
 export const deleteOrderItem = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;

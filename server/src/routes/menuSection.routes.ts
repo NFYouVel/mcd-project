@@ -11,19 +11,19 @@ import {
 
 const router: ExpressRouter = Router();
 
-// ✅ CREATE
+//Create MenuSection
 router.post("/", createMenuSection);
 
-// ✅ GET ALL
+//Get All MenuSections
 router.get("/", getAllMenuSections);
 
-// ✅ GET BY ID
+//Get MenuSection by ID
 router.get("/:id", getMenuSectionById);
 
-// ✅ UPDATE
+//Update MenuSection
 router.put("/:id", updateMenuSection);
 
-// ✅ DELETE
+//Delete MenuSection
 router.delete("/:id", deleteMenuSection);
 
 export default router;

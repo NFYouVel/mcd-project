@@ -12,22 +12,22 @@ import {
 
 const router: ExpressRouter = Router();
 
-// ✅ CREATE PAYMENT
+//Create Payment
 router.post("/", createPayment);
 
-// ✅ GET ALL
+//Get All Payments
 router.get("/", getAllPayments);
 
-// ✅ GET BY ID
+//Get Payment by ID
 router.get("/:id", getPaymentById);
 
-// ✅ UPDATE
+//Update Payment
 router.put("/:id", updatePayment);
 
-// ✅ PAY (custom action)
+//PAY (custom action)
 router.patch("/:id/pay", payOrder);
 
-// ✅ DELETE
+//Delete Payment
 router.delete("/:id", deletePayment);
 
 export default router;

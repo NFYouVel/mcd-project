@@ -3,26 +3,9 @@ import { Payment } from "../models/Payment.js";
 import { Orders } from "../models/Orders.js";
 import { OrderItems } from "../models/OrderItems.js";
 import { Menu } from "../models/Menu.js";
+import { calculateTotal } from "../utils/calculateTotal.js";
 
-// 🔥 helper: calculate total dynamically
-const calculateTotal = async (orderId: string) => {
-  const items = await OrderItems.findAll({
-    where: { orderId },
-    include: [{ model: Menu }],
-  });
-
-  let total = 0;
-
-  for (const item of items) {
-    if (item.menu) {
-      total += item.menu.price * item.quantity;
-    }
-  }
-
-  return total;
-};
-
-// ✅ CREATE PAYMENT (usually when checkout)
+//Create Payment
 export const createPayment = async (req: Request, res: Response) => {
   try {
     const { paymentId, payment_method } = req.body;
@@ -65,7 +48,7 @@ export const createPayment = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ GET ALL
+//Get All Payments (FK Orders)
 export const getAllPayments = async (_req: Request, res: Response) => {
   try {
     const payments = await Payment.findAll({
@@ -84,7 +67,7 @@ export const getAllPayments = async (_req: Request, res: Response) => {
   }
 };
 
-// ✅ GET BY ID
+//Get Payment by ID (FK Orders)
 export const getPaymentById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -111,7 +94,7 @@ export const getPaymentById = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ UPDATE (change method or recalc total)
+//Update Payment
 export const updatePayment = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -143,7 +126,7 @@ export const updatePayment = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ PAY (mark as paid)
+//Paid Payment
 export const payOrder = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -165,7 +148,7 @@ export const payOrder = async (req: Request, res: Response) => {
       status: "paid",
     });
 
-    // 🔥 also update order status
+    //Update status in Order
     const order = await Orders.findByPk(payment.orderId);
     if (order) {
       await order.update({
@@ -185,7 +168,7 @@ export const payOrder = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ DELETE
+//Delete Payment
 export const deletePayment = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;

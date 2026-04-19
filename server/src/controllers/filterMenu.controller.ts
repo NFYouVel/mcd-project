@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { FilterMenu } from "../models/FilterMenu.js";
 import { MenuSection } from "../models/MenuSection.js";
 
-// ✅ CREATE Filter Menu
+// Create Filter Menu
 export const createFilterMenu = async (req: Request, res: Response) => {
     try {
         const { name, description, section_menu_id } = req.body;
@@ -32,7 +32,7 @@ export const createFilterMenu = async (req: Request, res: Response) => {
     }
 };
 
-// ✅ GET ALL (with MenuSection)
+// Get All FilterMenu (FK MenuSection)
 export const getAllFilterMenus = async (req: Request, res: Response) => {
     try {
         const filters = await FilterMenu.findAll({
@@ -56,7 +56,7 @@ export const getAllFilterMenus = async (req: Request, res: Response) => {
     }
 };
 
-// ✅ GET BY ID
+// Get FilterMenu by ID
 export const getFilterMenuById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
@@ -88,7 +88,7 @@ export const getFilterMenuById = async (req: Request, res: Response) => {
     }
 };
 
-// ✅ UPDATE
+// Update Filter Menu
 export const updateFilterMenu = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
@@ -129,7 +129,7 @@ export const updateFilterMenu = async (req: Request, res: Response) => {
     }
 };
 
-// ✅ DELETE
+// Delete Filter Menu
 export const deleteFilterMenu = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
