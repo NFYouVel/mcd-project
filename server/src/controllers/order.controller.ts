@@ -3,22 +3,12 @@ import { Orders } from "../models/Orders.js";
 import { Users } from "../models/Users.js";
 import { OrderItems } from "../models/OrderItems.js";
 import { Menu } from "../models/Menu.js";
+import model from "sequelize/lib/model";
 
 // ✅ CREATE ORDER
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    const { user_id } = req.body;
-
-    // 🔥 validate user
-    const user = await Users.findByPk(user_id);
-    if (!user) {
-      return res.status(400).json({
-        message: "Invalid user_id",
-      });
-    }
-
     const newOrder = await Orders.create({
-      user_id,
       total_price: 0, // start with 0
     });
 
@@ -39,13 +29,10 @@ export const getAllOrders = async (req: Request, res: Response) => {
   try {
     const orders = await Orders.findAll({
       include: [
-        {
-          model: Users,
-          attributes: ["id", "name"],
-        },
-        {
-          model: OrderItems,
-          include: [
+    {
+      model: OrderItems,
+      as: "orderItems",
+      include: [
             {
               model: Menu,
               attributes: ["id", "name", "price"],
@@ -104,7 +91,7 @@ export const getOrderById = async (req: Request, res: Response) => {
     return res.status(500).json({
       message: "Error fetching order",
       error,
-    });
+    });  
   }
 };
 

@@ -16,7 +16,7 @@ import { FilterMenu } from "./FilterMenu.js";
 import { Type } from "./Type.js";
 
 @Table({
-    tableName: "Menu_Section",
+    tableName: "Section_Menu",
     timestamps: true,
     paranoid: true,
 })
@@ -47,13 +47,19 @@ export class MenuSection extends Model {
     
     @ForeignKey(() => Type)
     @Column({
-        type: DataType.UUID,
-        allowNull: false
+    field: "Type", // 👈 matches DB column EXACTLY
+    type: DataType.UUID,
+    allowNull: false,
     })
-    declare foodTypeId: string;
-    @BelongsTo(() => Type, "foodTypeId")
+    declare typeId: string;
+
+    @BelongsTo(() => Type, {
+    foreignKey: "typeId",
+    })
     declare type: Type;
 
-    @HasMany(() => FilterMenu, "sectionMenuId")
+    @HasMany(() => FilterMenu, {
+    foreignKey: "sectionMenuId",
+    })
     declare filterMenus: FilterMenu[];
 }

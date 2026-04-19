@@ -10,44 +10,23 @@ export const createMenu = async (req: Request, res: Response) => {
       name,
       description,
       price,
-      section_menu_id,
-      filter_menu_id,
     } = req.body;
-
-    // 🔥 validate MenuSection
-    const section = await MenuSection.findByPk(section_menu_id);
-    if (!section) {
-      return res.status(400).json({
-        message: "Invalid section_menu_id",
-      });
-    }
-
-    // 🔥 validate FilterMenu (optional depending on your design)
-    if (filter_menu_id) {
-      const filter = await FilterMenu.findByPk(filter_menu_id);
-      if (!filter) {
-        return res.status(400).json({
-          message: "Invalid filter_menu_id",
-        });
-      }
-    }
 
     const newMenu = await Menu.create({
       name,
       description,
       price,
-      section_menu_id,
-      filter_menu_id,
     });
 
     return res.status(201).json({
       message: "Menu created successfully",
       data: newMenu,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("FULL ERROR:", error);
     return res.status(500).json({
       message: "Error creating menu",
-      error,
+      error: error.message,
     });
   }
 };
@@ -57,10 +36,6 @@ export const getAllMenus = async (req: Request, res: Response) => {
   try {
     const menus = await Menu.findAll({
       include: [
-        {
-          model: MenuSection,
-          attributes: ["id", "name"],
-        },
         {
           model: FilterMenu,
           attributes: ["id", "name"],
@@ -87,10 +62,6 @@ export const getMenuById = async (req: Request, res: Response) => {
 
     const menu = await Menu.findByPk(id, {
       include: [
-        {
-          model: MenuSection,
-          attributes: ["id", "name"],
-        },
         {
           model: FilterMenu,
           attributes: ["id", "name"],

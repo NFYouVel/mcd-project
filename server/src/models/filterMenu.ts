@@ -16,7 +16,7 @@ import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
 
 @Table({
-    tableName: "filter_menu",
+    tableName: "Filter_Menu",
     timestamps: true,
     paranoid: true,
 })
@@ -50,9 +50,12 @@ export class FilterMenu extends Model {
         allowNull: false
     })
     declare sectionMenuId: string;
+
     @BelongsTo(() => MenuSection, "sectionMenuId")
     declare menuSection: MenuSection;
 
-    @HasMany(() => Menu, "filterMenuId")
+    @HasMany(() => Menu, {
+    foreignKey: "filterMenuId",
+    })
     declare menus: Menu[];
 }

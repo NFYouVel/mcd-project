@@ -4,7 +4,7 @@ import type { Router as ExpressRouter } from "express";
 import {
   createOrder,
   getAllOrders,
-  getOrderById,
+  // getOrderById,
   updateOrder,
   deleteOrder,
 } from "../controllers/order.controller.js";
@@ -17,8 +17,8 @@ router.post("/", createOrder);
 // ✅ GET ALL
 router.get("/", getAllOrders);
 
-// ✅ GET BY ID
-router.get("/:id", getOrderById);
+// // ✅ GET BY ID
+// router.get("/:id", getOrderById);
 
 // ✅ UPDATE (status, etc.)
 router.put("/:id", updateOrder);

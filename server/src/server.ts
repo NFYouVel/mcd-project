@@ -12,6 +12,7 @@ import orderRoutes from './routes/order.routes.js';
 import menuSectionRoutes from './routes/menuSection.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
+import { OrderItems } from './models/OrderItems.js';
 
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/api/filtermenu', filterMenuRoutes);
 
 
 sequelize.authenticate().then(() => {
+  
   console.log('Database connected!');
 }).catch((error) => {
   console.error('Error connecting to database:', error);
