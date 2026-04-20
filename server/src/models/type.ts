@@ -34,7 +34,7 @@ export class Type extends Model {
         type: DataType.INTEGER,
         allowNull: false,
     })
-    declare food_type_id: number;
+    declare foodTypeId: number;
 
     @Column({
         type: DataType.ENUM("Promotion","Heavy","Light")
