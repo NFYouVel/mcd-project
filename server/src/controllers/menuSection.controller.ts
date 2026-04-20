@@ -5,20 +5,19 @@ import {Type} from "../models/Type.js";
 //CREATE Menu Section
 export const createMenuSection = async (req: Request, res: Response) => {
   try {
-    const { name, description, type_id } = req.body;
+    const { name, description, typeId } = req.body;
 
-    // 🔥 validate FK
-    const type = await Type.findByPk(type_id);
+    const type = await Type.findByPk(typeId);
     if (!type) {
       return res.status(400).json({
-        message: "Invalid type_id (Type not found)",
+        message: "Invalid typeId (Type not found)",
       });
     }
 
     const newSection = await MenuSection.create({
       name,
       description,
-      type_id,
+      typeId
     });
 
     return res.status(201).json({
@@ -40,7 +39,7 @@ export const getAllMenuSections = async (req: Request, res: Response) => {
       include: [
         {
           model: Type,
-          attributes: ["id", "food_type_id", "description"],
+          attributes: ["id", "description"],
         },
       ],
     });
@@ -66,7 +65,7 @@ export const getMenuSectionById = async (req: Request, res: Response) => {
       include: [
         {
           model: Type,
-          attributes: ["id", "food_type_id", "description"],
+          attributes: ["id", "description"],
         },
       ],
     });
@@ -93,7 +92,7 @@ export const getMenuSectionById = async (req: Request, res: Response) => {
 export const updateMenuSection = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    const { name, description, type_id } = req.body;
+    const { name, description, typeId } = req.body;
 
     const section = await MenuSection.findByPk(id);
 
@@ -103,12 +102,11 @@ export const updateMenuSection = async (req: Request, res: Response) => {
       });
     }
 
-    //check FK
-    if (type_id) {
-      const type = await Type.findByPk(type_id);
+    if (typeId) {
+      const type = await Type.findByPk(typeId);
       if (!type) {
         return res.status(400).json({
-          message: "Invalid type_id (Type not found)",
+          message: "Invalid typeId (Type not found)",
         });
       }
     }
@@ -116,7 +114,7 @@ export const updateMenuSection = async (req: Request, res: Response) => {
     await section.update({
       name,
       description,
-      type_id,
+      typeId,
     });
 
     return res.status(200).json({

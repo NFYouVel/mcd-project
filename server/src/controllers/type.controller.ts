@@ -65,7 +65,7 @@ export const getTypeById = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ UPDATE Type
+//Update Type
 export const updateType = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -96,7 +96,7 @@ export const updateType = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ DELETE Type (soft delete because paranoid = true)
+//Delete Type
 export const deleteType = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;

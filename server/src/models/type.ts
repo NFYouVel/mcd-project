@@ -50,6 +50,6 @@ export class Type extends Model {
     @DeletedAt
     declare deletedAt: Date;
 
-    @HasMany(() => MenuSection, "foodTypeId")
+    @HasMany(() => MenuSection, "Type")
     declare menuSections: MenuSection[];
 }

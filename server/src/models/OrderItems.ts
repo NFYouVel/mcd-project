@@ -70,5 +70,4 @@ export class OrderItems extends Model {
     declare orderId: string;
     @BelongsTo(() => Orders, "orderId")
     declare order: Orders;
-
 }

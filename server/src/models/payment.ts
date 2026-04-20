@@ -17,7 +17,7 @@ import {
 import { Orders } from "./Orders.js";
 
 @Table({
-    tableName: "payment",
+    tableName: "Payment",
     timestamps: true,
     paranoid: true,
 })
@@ -57,7 +57,7 @@ export class Payment extends Model {
     declare deletedAt: Date;
 
     @BelongsTo(() => Orders, "orderId")
-    declare order: Orders;
+    declare Orders: Orders;
 
     @ForeignKey(() => Orders)
     @Column({

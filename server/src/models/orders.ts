@@ -15,9 +15,10 @@ import {
 } from "sequelize-typescript";
 
 import { Payment } from "./Payment.js";
+import { OrderItems } from "./OrderItems.js";
 
 @Table({
-    tableName: "orders",
+    tableName: "Orders",
     timestamps: true,
     paranoid: true,
 })
@@ -49,5 +50,11 @@ export class Orders extends Model {
 
     @HasOne(() => Payment, "orderId")
     declare payment: Payment
+
+    @HasMany(() => OrderItems, {
+    foreignKey: "orderId",
+    as: "orderItems",
+    })
+    declare orderItems: OrderItems[];
 
 }

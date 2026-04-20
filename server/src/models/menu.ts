@@ -1,86 +1,90 @@
 import {
-    Table,
-    Column,
-    Model,
-    DataType,
-    PrimaryKey,
-    BelongsTo,
-    ForeignKey,
-    AllowNull,
-    CreatedAt,
-    DeletedAt,
-    UpdatedAt,
-    HasMany
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  BelongsTo,
+  ForeignKey,
+  HasMany,
+  CreatedAt,
+  UpdatedAt,
+  DeletedAt,
 } from "sequelize-typescript";
 
 import { FilterMenu } from "./FilterMenu.js";
 import { OrderItems } from "./OrderItems.js";
-import { Col } from "sequelize/lib/utils";
 
 @Table({
-    tableName: "menu",
-    timestamps: true,
-    paranoid: true,
+  tableName: "Menu", // ⚠️ make sure DB table is EXACTLY this
+  timestamps: true,
+  paranoid: true,
 })
 export class Menu extends Model {
-    @PrimaryKey
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-        allowNull: false,
-    }) declare id: string;
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    allowNull: false,
+  })
+  declare id: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
-    declare name: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  declare name: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: true,
-    })
-    declare description: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare description: string;
 
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    declare price: number;
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare price: number;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: true,
-        allowNull: true,
-    })
-    declare isNew: boolean;
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: true,
+  })
+  declare isNew: boolean;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        defaultValue: true,
-        allowNull: false,
-    })
-    declare isAvailable: boolean;
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: true,
+  })
+  declare isAvailable: boolean;
 
-    @CreatedAt
-    declare createdAt: Date;
+  // 🔥 FK → FilterMenu
+  @ForeignKey(() => FilterMenu)
+  @Column({
+    field: "filterMenuId", // 👈 match your DB column EXACTLY
+    type: DataType.UUID,
+    allowNull: true, // allow create without it (your controller)
+  })
+  declare filterMenuId: string;
 
-    @UpdatedAt
-    declare updatedAt: Date;
-    
-    @DeletedAt
-    declare deletedAt: Date;
-    
-    // relation
-    @ForeignKey(() => FilterMenu)
-    @Column({
-        type: DataType.UUID,
-        allowNull: false
-    })
-    declare filterMenuId: string;
-    @BelongsTo(() => FilterMenu, "filterMenuId")
-    declare filterMenu: FilterMenu;
+  @BelongsTo(() => FilterMenu, {
+    foreignKey: "filterMenuId",
+  })
+  declare filterMenu: FilterMenu;
 
-    @HasMany(() => OrderItems, "menuId")
-    declare orderItems: OrderItems[];
+  // 🔥 relation → OrderItems
+  @HasMany(() => OrderItems, {
+    foreignKey: "menuId",
+  })
+  declare orderItems: OrderItems[];
+
+  @CreatedAt
+  declare createdAt: Date;
+
+  @UpdatedAt
+  declare updatedAt: Date;
+
+  @DeletedAt
+  declare deletedAt: Date;
 }
