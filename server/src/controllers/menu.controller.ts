@@ -95,8 +95,8 @@ export const updateMenu = async (req: Request, res: Response) => {
       name,
       description,
       price,
-      section_menu_id,
-      filter_menu_id,
+      sectionMenuId,
+      filterMenuId,
     } = req.body;
 
     const menu = await Menu.findByPk(id);
@@ -108,18 +108,18 @@ export const updateMenu = async (req: Request, res: Response) => {
     }
 
     //check if section_menu_id is valid
-    if (section_menu_id) {
-      const section = await MenuSection.findByPk(section_menu_id);
+    if (sectionMenuId) {
+      const section = await MenuSection.findByPk(sectionMenuId);
       if (!section) {
         return res.status(400).json({
-          message: "Invalid section_menu_id",
+          message: "Invalid sectionMenuId",
         });
       }
     }
 
     //check if filter_menu_id is valid
-    if (filter_menu_id) {
-      const filter = await FilterMenu.findByPk(filter_menu_id);
+    if (filterMenuId) {
+      const filter = await FilterMenu.findByPk(filterMenuId);
       if (!filter) {
         return res.status(400).json({
           message: "Invalid filter_menu_id",
@@ -131,8 +131,8 @@ export const updateMenu = async (req: Request, res: Response) => {
       name,
       description,
       price,
-      section_menu_id,
-      filter_menu_id,
+      sectionMenuId,
+      filterMenuId,
     });
 
     return res.status(200).json({

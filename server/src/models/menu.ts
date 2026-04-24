@@ -16,7 +16,7 @@ import { FilterMenu } from "./FilterMenu.js";
 import { OrderItems } from "./OrderItems.js";
 
 @Table({
-  tableName: "Menu", // ⚠️ make sure DB table is EXACTLY this
+  tableName: "Menu",
   timestamps: true,
   paranoid: true,
 })
