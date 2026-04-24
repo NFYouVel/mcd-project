@@ -182,14 +182,7 @@ const Navbar = () => {
       </Box>
 
       {/* Right content */}
-      <Box
-        sx={{
-          flex: 1,
-          p: 3,
-          ml: "250px",
-          pb: "100px"
-        }}
-      >
+      <Box sx={{ flex: 1, p: 3, ml: "250px", pb: "170px" }}>
         <Outlet />
       </Box>
       {/* Bottom Bar */}

@@ -43,6 +43,10 @@ module.exports = {
                 allowNull: false,
                 defaultValue: Sequelize.NOW
             },
+            imageUrl: {
+                type: Sequelize.STRING,
+                allowNull: true
+            }
         });
 
         await queryInterface.addColumn('Menu', 'filterMenuId', {
