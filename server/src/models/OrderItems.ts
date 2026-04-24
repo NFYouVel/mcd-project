@@ -12,8 +12,8 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./Menu.js";
-import { Orders } from "./Orders.js";
+import { Menu } from "./menu.js";
+import { Orders } from "./orders.js";
 
 @Table({
     tableName: "Order_Items",

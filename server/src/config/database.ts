@@ -1,12 +1,12 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Users } from '../models/Users.js';
-import { Orders } from '../models/Orders.js';
-import { Payment } from '../models/Payment.js';
-import { Type } from '../models/Type.js';
+import { Orders } from '../models/orders.js';
+import { Payment } from '../models/payment.js';
+import { Type } from '../models/type.js';
 import { OrderItems } from '../models/OrderItems.js';
-import { MenuSection } from '../models/MenuSection.js';
-import { Menu } from '../models/Menu.js';
-import { FilterMenu } from '../models/FilterMenu.js';
+import { MenuSection } from '../models/menuSection.js';
+import { Menu } from '../models/menu.js';
+import { FilterMenu } from '../models/filterMenu.js';
 
 import dotenv from 'dotenv';
 dotenv.config();

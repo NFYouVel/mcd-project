@@ -75,22 +75,22 @@ function Login() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 sx={{
                                     marginBottom: "20px",
-                                    input: { color: "#fff" },
-                                    label: { color: "#f5e6d3" },
+                                    input: { color: "#000000" },
+                                    label: { color: "#000000" },
                                     "& label.Mui-focused": {
-                                        color: "#f5e6d3",
+                                        color: "#000000",
                                     },
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: "rgba(255,255,255,0.05)",
                                         "& fieldset": {
-                                            borderColor: "#d2b48c",
+                                            borderColor: "#000000",
                                         },
                                         "&:hover fieldset": {
-                                            borderColor: "#f5e6d3",
+                                            borderColor: "#000000",
                                         },
                                         "&.Mui-focused fieldset": {
-                                            borderColor: "#f5e6d3",
+                                            borderColor: "#000000",
                                             borderWidth: "2px",
                                         },
                                     },
@@ -106,22 +106,22 @@ function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 sx={{
-                                    input: { color: "#fff" },
-                                    label: { color: "#f5e6d3" },
+                                    input: { color: "#000000" },
+                                    label: { color: "#000000" },
                                     "& label.Mui-focused": {
-                                        color: "#f5e6d3",
+                                        color: "#000000",
                                     },
                                     "& .MuiOutlinedInput-root": {
                                         borderRadius: "12px",
                                         backgroundColor: "rgba(255,255,255,0.05)",
                                         "& fieldset": {
-                                            borderColor: "#d2b48c",
+                                            borderColor: "#000000",
                                         },
                                         "&:hover fieldset": {
-                                            borderColor: "#f5e6d3",
+                                            borderColor: "#000000",
                                         },
                                         "&.Mui-focused fieldset": {
-                                            borderColor: "#f5e6d3",
+                                            borderColor: "#000000",
                                             borderWidth: "2px",
                                         },
                                     },

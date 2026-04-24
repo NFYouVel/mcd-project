@@ -1,4 +1,4 @@
-import { Payment } from "../models/Payment.js";
+import { Payment } from "../models/payment.js";
 import { calculateTotal } from "../utils/calculateTotal.js";
 
 export const syncPayment = async (orderId: string) => {

@@ -14,7 +14,7 @@ import {
     HasOne
 } from "sequelize-typescript";
 
-import { Orders } from "./Orders.js";
+import { Orders } from "./orders.js";
 
 @Table({
     tableName: "Payment",
