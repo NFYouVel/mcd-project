@@ -59,6 +59,12 @@ export class Menu extends Model {
   })
   declare isAvailable: boolean;
 
+  @Column({
+    type: DataType.STRING,
+    defaultValue: true,
+  })
+  declare imageUrl: string;
+
   // 🔥 FK → FilterMenu
   @ForeignKey(() => FilterMenu)
   @Column({

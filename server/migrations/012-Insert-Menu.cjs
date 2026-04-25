@@ -24,7 +24,7 @@ module.exports = {
                 price: 35000,
                 isNew: true,
                 isAvailable: true,
-                imageUrl: "/images/bigmac.png",
+                imageUrl: "bigmac",
                 filterMenuId: burger.id,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -36,19 +36,19 @@ module.exports = {
                 price: 28000,
                 isNew: false,
                 isAvailable: true,
-                imageUrl: "/images/chicken.png",
+                imageUrl: "chicken",
                 filterMenuId: chicken.id,
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
             {
                 id: uuidv4(),
-                name: "Coca Cola",
+                name: "Coca Cola Float",
                 description: "Cold drink",
                 price: 12000,
                 isNew: false,
                 isAvailable: true,
-                imageUrl: "/images/coke.png",
+                imageUrl: "cocafloat",
                 filterMenuId: drinks.id,
                 createdAt: new Date(),
                 updatedAt: new Date()
