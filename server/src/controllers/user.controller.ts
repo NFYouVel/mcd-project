@@ -19,7 +19,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     });
   }
 };
-
 //Get User by ID 
 export const getUserById = async (req: Request, res: Response) => {
     try{
@@ -162,7 +161,8 @@ export const userLogin = async (req: Request, res: Response) => {
             token
         });
     }
-    catch{
-
+    catch(error){
+        console.error("LOGIN ERROR:", error);
+        res.status(500).json({message: "Server error during login", error: error instanceof Error ? error.message : String(error)});
     }
 }

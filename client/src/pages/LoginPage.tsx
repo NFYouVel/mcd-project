@@ -40,9 +40,9 @@ function Login() {
         }
     };
 
-    // const handleRegisterNavigation = () => {
-    //     navigate("/register")
-    // }
+    const handleRegisterNavigation = () => {
+        navigate("/register")
+    }
 
     return (
         <div className="login-page">
@@ -60,7 +60,7 @@ function Login() {
                     {/* Title */}
                     <div className="title-login">
                         <p>Welcome!</p>
-                        <span>Log in to explore our cafe features and enjoy your experience</span>
+                        <span>Log in to explore our restaurant features and enjoy your experience</span>
                     </div>
 
                     {/* Form */}
@@ -172,7 +172,7 @@ function Login() {
                                 Sign In
                             </Button>
                         </div>
-                        {/* <p className="title-register">Don't have an account?&nbsp;<a className="register-navigation" onClick={handleRegisterNavigation}> REGISTER NOW</a></p> */}
+                        <p className="title-register">Don't have an account?&nbsp;<a className="register-navigation" onClick={handleRegisterNavigation}> REGISTER NOW</a></p>
                     </div>
                 </div>
             </div>

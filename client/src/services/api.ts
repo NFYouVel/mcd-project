@@ -17,3 +17,25 @@ export async function loginRequest(email: string, password: string) {
     console.log(message);
     return message
 }
+
+export async function registerRequest(name: string, email: string, password: string, address: string, birth_of_date: string) {
+    const response = await fetch(`${BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name,
+            email,
+            password,
+            address,
+            birth_of_date
+        }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Register failed");
+    }
+}

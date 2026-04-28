@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router"
 import Login from "../pages/LoginPage"
 import NavBar from "../pages/NavBar";
 import MainMenu from "../pages/MainMenu";
+import Register from "../pages/RegisterPage";
+
 
 const Dashboard = () => <h1>Dashboard</h1>;
 const Products = () => <h1>Products</h1>;
@@ -13,6 +15,7 @@ const Promosi = () => <h1>Promosi</h1>
 const Router = () => {
     return(
         <Routes>
+             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/menu" element={<NavBar />}>
                 <Route path="" index element={<MainMenu />} /> 
