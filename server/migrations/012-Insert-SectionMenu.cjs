@@ -2,23 +2,25 @@ const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-
-        // get Type IDs dynamically (recommended)
         const types = await queryInterface.sequelize.query(
-            'SELECT id, description FROM "Type";',
+            'SELECT id, description FROM "Type"',
             { type: Sequelize.QueryTypes.SELECT }
         );
 
-        const promotion = types.find(t => t.description === "promotion");
-        const heavy = types.find(t => t.description === "heavy");
-        const light = types.find(t => t.description === "light");
+        const typeMap = {};
+
+        types.forEach(type => {
+            typeMap[type.description] = type.id;
+        });
+
+        console.log(typeMap);
 
         await queryInterface.bulkInsert("Section_Menu", [
             {
                 id: uuidv4(),
                 name: "Promo Deals",
                 description: "Special promotions",
-                Type: promotion.id,
+                Type: typeMap["promotion"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -26,7 +28,7 @@ module.exports = {
                 id: uuidv4(),
                 name: "Main Meals",
                 description: "Heavy meals",
-                Type: heavy.id,
+                Type: typeMap["heavy"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -34,14 +36,14 @@ module.exports = {
                 id: uuidv4(),
                 name: "Snacks & Drinks",
                 description: "Light menu",
-                Type: light.id,
+                Type: typeMap["light"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
         ]);
     },
 
-    down: async (queryInterface, Sequelize) => {
+    down: async (queryInterface) => {
         await queryInterface.bulkDelete("Section_Menu", null, {});
     }
 };

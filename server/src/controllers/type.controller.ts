@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Type } from "../models/type.js";
+import { Type } from "../models/Type.js";
 
 //Create Type
 export const createType = async (req: Request, res: Response) => {

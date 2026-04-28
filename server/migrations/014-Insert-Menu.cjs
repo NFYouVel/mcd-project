@@ -2,19 +2,16 @@ const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-
         const filters = await queryInterface.sequelize.query(
-            'SELECT id, name FROM "Filter_Menu";',
+            'SELECT id, name FROM "Filter_Menu"',
             { type: Sequelize.QueryTypes.SELECT }
         );
 
-        const burger = filters.find(f => f.name === "Burgers");
-        const chicken = filters.find(f => f.name === "Chicken");
-        const drinks = filters.find(f => f.name === "Drinks");
+        const filterMap = {};
 
-        if (!burger || !chicken || !drinks) {
-            throw new Error("Filter_Menu data not found");
-        }
+        filters.forEach(filter => {
+            filterMap[filter.name] = filter.id;
+        });
 
         await queryInterface.bulkInsert("Menu", [
             {
@@ -25,7 +22,7 @@ module.exports = {
                 isNew: true,
                 isAvailable: true,
                 imageUrl: "bigmac",
-                filterMenuId: burger.id,
+                filterMenuId: filterMap["Burgers"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -37,7 +34,7 @@ module.exports = {
                 isNew: false,
                 isAvailable: true,
                 imageUrl: "chicken",
-                filterMenuId: chicken.id,
+                filterMenuId: filterMap["Chicken"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -49,14 +46,14 @@ module.exports = {
                 isNew: false,
                 isAvailable: true,
                 imageUrl: "cocafloat",
-                filterMenuId: drinks.id,
+                filterMenuId: filterMap["Drinks"],
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
         ]);
     },
 
-    down: async (queryInterface, Sequelize) => {
+    down: async (queryInterface) => {
         await queryInterface.bulkDelete("Menu", null, {});
     }
 };
