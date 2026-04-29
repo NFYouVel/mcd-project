@@ -45,6 +45,7 @@ export class PackageItems extends Model {
 
     @BelongsTo(() => Menu, {
         foreignKey: "packageId",
+        as: "package"
     })
     declare package: Menu;
 
@@ -59,6 +60,7 @@ export class PackageItems extends Model {
 
     @BelongsTo(() => Menu, {
         foreignKey: "packageItemId",
+        as: "packageItem"
     })
     declare packageItem: Menu;
 
