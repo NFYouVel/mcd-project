@@ -38,12 +38,6 @@ export class OrderItems extends Model {
     })
     declare status: string;
 
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    declare quantity: number;
-
     @CreatedAt
     declare createdAt: Date;
 

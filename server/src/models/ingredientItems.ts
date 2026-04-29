@@ -35,6 +35,12 @@ export class IngredientItems extends Model{
   })
   declare quantity: number;
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  declare price: number;
+
   @CreatedAt
   declare createdAt: Date;
   @UpdatedAt

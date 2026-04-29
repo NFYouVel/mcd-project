@@ -4,6 +4,8 @@ import { Users } from "../models/Users.js";
 import { OrderItems } from "../models/OrderItems.js";
 import { Menu } from "../models/Menu.js";
 import model from "sequelize/lib/model";
+import { Ingredients } from "../models/Ingredients.js";
+import { IngredientItems } from "../models/IngredientItems.js";
 
 //Create Order
 export const createOrder = async (req: Request, res: Response) => {
@@ -27,15 +29,24 @@ export const createOrder = async (req: Request, res: Response) => {
 //Get All Orders (FK OrdersItems -> Menu)
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const orders = await Orders.findAll({
+      const orders = await Orders.findAll({
       include: [
-    {
-      model: OrderItems,
-      as: "orderItems",
-      include: [
+        {
+          model: OrderItems,
+          as: "orderItems",
+          include: [
             {
               model: Menu,
               attributes: ["id", "name", "price"],
+            },
+            {
+              model: IngredientItems,
+              include: [
+                {
+                  model: Ingredients,
+                  attributes: ["id", "name", "price"],
+                },
+              ],
             },
           ],
         },

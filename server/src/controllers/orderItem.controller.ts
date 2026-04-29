@@ -21,6 +21,10 @@ export const createOrderItem = async (req: Request, res: Response) => {
       ingredients = []
     } = req.body;
 
+    if (!quantity || quantity <= 0) {
+      return res.status(400).json({ message: "Invalid quantity" });
+    }
+
     const order = await Orders.findByPk(orderId);
 
     if (!order) {

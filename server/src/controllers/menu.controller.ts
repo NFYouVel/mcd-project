@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Menu } from "../models/Menu.js";
+import { MenuSection } from "../models/MenuSection.js";
 import { FilterMenu } from "../models/FilterMenu.js";
 import { PackageItems } from "../models/PackageItems.js";
 import { MenuVariantGroups } from "../models/MenuVariantGroups.js";
