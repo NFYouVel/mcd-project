@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router";
-import { loginRequest } from "../services/api";
+// import { loginRequest } from "../services/api";
 // import IconButton from "@mui/material/IconButton";
 // import InputAdornment from "@mui/material/InputAdornment";
 // import Visibility from "@mui/icons-material/Visibility";
@@ -29,16 +29,16 @@ function Login() {
     // Dispatch
     // const dispatch = useAppDispatch();
 
-    const handleLogin = async () => {
-        try {
-            const res = await loginRequest(email, password);
-            // dispatch(authAction.setUser(res));
-            console.log(res);
-            // navigate("/home")
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const handleLogin = async () => {
+    //     try {
+    //         const res = await loginRequest(email, password);
+    //         // dispatch(authAction.setUser(res));
+    //         console.log(res);
+    //         // navigate("/home")
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
 
     const handleRegisterNavigation = () => {
         navigate("/register")
@@ -156,7 +156,7 @@ function Login() {
                         <div className="wrapper-login-button">
                             <Button
                                 variant="contained"
-                                onClick={handleLogin}
+                                // onClick={handleLogin}
                                 className="button-login"
                                 sx={{
                                     transition: "all 0.2s ease",

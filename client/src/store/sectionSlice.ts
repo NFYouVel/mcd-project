@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MenuSection } from "../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { MenuSection } from "../types";
 
 interface State { items: MenuSection[]; loading: boolean; }
 const initialState: State = { items: [], loading: false };

@@ -1,12 +1,23 @@
 import { Sequelize } from 'sequelize-typescript';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
 import dotenv from 'dotenv';
-dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Import semua models
+import { Type } from '../models/type.js';
+import { MenuSection } from '../models/menuSection.js';
+import { FilterMenu } from '../models/filterMenu.js';
+import { Menu } from '../models/menu.js';
+import { OrderItems } from '../models/OrderItems.js';
+import { Orders } from '../models/orders.js';
+import { IngredientItems } from '../models/ingredientItems.js';
+import { Payment } from '../models/payment.js';
+import { Ingredients } from '../models/ingredients.js';
+import { Users } from '../models/Users.js';
+// Tambahkan model lain kalo ada (User, Order, Payment, dll)
+// import { User } from '../models/user.js';
+// import { Order } from '../models/order.js';
+// import { Payment } from '../models/payment.js';
+
+dotenv.config();
 
 export const sequelize = new Sequelize({
     database: process.env.DB_NAME as string,
@@ -14,5 +25,17 @@ export const sequelize = new Sequelize({
     password: process.env.DB_PASSWORD as string,
     host: process.env.DB_HOST as string,
     dialect: 'postgres',
-    models: [path.join(__dirname, "../src/models")],
+    models: [
+        Type,
+        MenuSection,
+        FilterMenu,   // 👈 harus AFTER MenuSection
+        Menu,         // 👈 harus AFTER FilterMenu
+        OrderItems,
+        Orders,
+        IngredientItems,
+        Payment,
+        Ingredients,
+        Users
+    ],
+    logging: false,
 });

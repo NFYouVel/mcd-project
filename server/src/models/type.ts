@@ -27,7 +27,7 @@ export class Type extends Model {
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) 
+    })
     declare id: string;
 
     @Column({
@@ -37,19 +37,21 @@ export class Type extends Model {
     declare foodTypeId: number;
 
     @Column({
-        type: DataType.ENUM("Promotion","Heavy","Light")
+        type: DataType.ENUM("Promotion", "Heavy", "Light")
     })
     declare description: string;
 
     @CreatedAt
     declare createdAt: Date;
-    
+
     @UpdatedAt
     declare updatedAt: Date;
-    
+
     @DeletedAt
     declare deletedAt: Date;
 
-    @HasMany(() => MenuSection, "Type")
+    @HasMany(() => MenuSection, {
+        foreignKey: "typeId",
+    })
     declare menuSections: MenuSection[];
 }

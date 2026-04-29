@@ -1,8 +1,13 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { setTypes, addType, updateTypeItem, removeType } from "../store/typeSlice";
-import { api } from "../api/client";
-import { Type } from "../types";
+import {
+    getTypesRequest,
+    createTypeRequest,
+    updateTypeRequest,
+    deleteTypeRequest,
+} from "../services/api";
+import type { Type } from "../types";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
 
@@ -15,33 +20,36 @@ export default function TypeManagement() {
     const [form, setForm] = useState({ foodTypeId: "", description: "Heavy" as Type["description"] });
 
     useEffect(() => {
-        api.get<Type[]>("/types")
+        getTypesRequest()
             .then((d) => dispatch(setTypes(d)))
             .catch((e) => alert(e.message))
             .finally(() => setLoading(false));
     }, [dispatch]);
 
-    const submit = async (e: FormEvent) => {
+    const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const payload = { foodTypeId: Number(form.foodTypeId), description: form.description };
         try {
             if (editing) {
-                const updated = await api.put<Type>(`/types/${editing.id}`, payload);
+                const updated = await updateTypeRequest(editing.id, Number(form.foodTypeId), form.description);
                 dispatch(updateTypeItem(updated));
             } else {
-                const created = await api.post<Type>("/types", payload);
+                const created = await createTypeRequest(Number(form.foodTypeId), form.description);
                 dispatch(addType(created));
             }
             setOpen(false);
-        } catch (error) { 
-            alert(error); 
+        } catch (err: any) {
+            alert(err.message);
         }
     };
 
     const remove = async (id: string) => {
         if (!confirm("Yakin hapus?")) return;
-        await api.delete(`/types/${id}`);
-        dispatch(removeType(id));
+        try {
+            await deleteTypeRequest(id);
+            dispatch(removeType(id));
+        } catch (err: any) {
+            alert(err.message);
+        }
     };
 
     if (loading) return <Loading />;

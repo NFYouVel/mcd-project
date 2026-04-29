@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FilterMenu } from "../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { FilterMenu } from "../types";
 
 interface State { items: FilterMenu[]; loading: boolean; }
 const initialState: State = { items: [], loading: false };

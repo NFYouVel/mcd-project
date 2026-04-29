@@ -1,9 +1,15 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { setFilters, addFilter, updateFilterItem, removeFilter } from "../store/filterSlice";
 import { setSections } from "../store/sectionSlice";
-import { api } from "../api/client";
-import { FilterMenu, MenuSection } from "../types";
+import {
+    getFiltersRequest,
+    getSectionsRequest,
+    createFilterRequest,
+    updateFilterRequest,
+    deleteFilterRequest,
+} from "../services/api";
+import type { FilterMenu } from "../types";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
 
@@ -17,34 +23,39 @@ export default function FilterManagement() {
     const [form, setForm] = useState({ name: "", description: "", sectionMenuId: "" });
 
     useEffect(() => {
-        Promise.all([
-            api.get<FilterMenu[]>("/filters"),
-            api.get<MenuSection[]>("/sections"),
-        ]).then(([f, s]) => {
-            dispatch(setFilters(f));
-            dispatch(setSections(s));
-        }).catch((e) => alert(e.message))
+        Promise.all([getFiltersRequest(), getSectionsRequest()])
+            .then(([f, s]) => {
+                dispatch(setFilters(f));
+                dispatch(setSections(s));
+            })
+            .catch((e) => alert(e.message))
             .finally(() => setLoading(false));
     }, [dispatch]);
 
-    const submit = async (e: FormEvent) => {
+    const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             if (editing) {
-                const updated = await api.put<FilterMenu>(`/filters/${editing.id}`, form);
+                const updated = await updateFilterRequest(editing.id, form.name, form.description, form.sectionMenuId);
                 dispatch(updateFilterItem(updated));
             } else {
-                const created = await api.post<FilterMenu>("/filters", form);
+                const created = await createFilterRequest(form.name, form.description, form.sectionMenuId);
                 dispatch(addFilter(created));
             }
             setOpen(false);
-        } catch (err) { alert(err.message); }
+        } catch (err: any) {
+            alert(err.message);
+        }
     };
 
     const remove = async (id: string) => {
         if (!confirm("Yakin hapus?")) return;
-        await api.delete(`/filters/${id}`);
-        dispatch(removeFilter(id));
+        try {
+            await deleteFilterRequest(id);
+            dispatch(removeFilter(id));
+        } catch (err: any) {
+            alert(err.message);
+        }
     };
 
     if (loading) return <Loading />;

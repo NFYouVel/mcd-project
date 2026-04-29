@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { registerRequest } from '../services/api';
+// import { registerRequest } from '../services/api';
 import BackgroundLogin from '../components/BackgroundLogin';
 import TextField from '@mui/material/TextField';
 import { Button }  from '@mui/material';
@@ -14,22 +14,22 @@ function Register() {
     const [address, setAddress] = useState('');
     const [birthOfDate, setBirthOfDate] = useState('');
 
-    const handleRegister = async () => {
-        try{
-            const res = await registerRequest(
-                name,
-                email,
-                password,
-                address,
-                birthOfDate
-            );
-            console.log(res);
-            navigate("/");
-        } catch (error) {
-            console.error(error);
-        }
+    // const handleRegister = async () => {
+    //     try{
+    //         const res = await registerRequest(
+    //             name,
+    //             email,
+    //             password,
+    //             address,
+    //             birthOfDate
+    //         );
+    //         console.log(res);
+    //         navigate("/");
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
 
-    };
+    // };
 
     const handleLoginNavigation = () => {
         navigate("/login");
@@ -108,7 +108,7 @@ function Register() {
                         <div className="wrapper-login-button">
                             <Button
                                 variant="contained"
-                                onClick={handleRegister}
+                                // onClick={handleRegister}
                                 className="button-login"
                                 sx={{
                                     backgroundColor: "white",

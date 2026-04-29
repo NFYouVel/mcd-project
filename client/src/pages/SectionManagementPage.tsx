@@ -1,9 +1,15 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { setSections, addSection, updateSectionItem, removeSection } from "../store/sectionSlice";
 import { setTypes } from "../store/typeSlice";
-import { api } from "../api/client";
-import { MenuSection, Type } from "../types";
+import {
+  getSectionsRequest,
+  getTypesRequest,
+  createSectionRequest,
+  updateSectionRequest,
+  deleteSectionRequest,
+} from "../services/api";
+import type { MenuSection } from "../types";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
 
@@ -17,36 +23,39 @@ export default function SectionManagement() {
   const [form, setForm] = useState({ name: "", description: "", typeId: "" });
 
   useEffect(() => {
-    Promise.all([
-      api.get<MenuSection[]>("/sections"),
-      api.get<Type[]>("/types"),
-    ]).then(([s, t]) => {
-      dispatch(setSections(s));
-      dispatch(setTypes(t));
-    }).catch((e) => alert(e.message))
+    Promise.all([getSectionsRequest(), getTypesRequest()])
+      .then(([s, t]) => {
+        dispatch(setSections(s));
+        dispatch(setTypes(t));
+      })
+      .catch((e) => alert(e.message))
       .finally(() => setLoading(false));
   }, [dispatch]);
 
-  const submit = async (e: FormEvent) => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (editing) {
-        const updated = await api.put<MenuSection>(`/sections/${editing.id}`, form);
+        const updated = await updateSectionRequest(editing.id, form.name, form.description, form.typeId);
         dispatch(updateSectionItem(updated));
       } else {
-        const created = await api.post<MenuSection>("/sections", form);
+        const created = await createSectionRequest(form.name, form.description, form.typeId);
         dispatch(addSection(created));
       }
       setOpen(false);
-    } catch (err) { 
-        alert(err.message); 
+    } catch (err: any) {
+      alert(err.message);
     }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Yakin hapus?")) return;
-    await api.delete(`/sections/${id}`);
-    dispatch(removeSection(id));
+    try {
+      await deleteSectionRequest(id);
+      dispatch(removeSection(id));
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   if (loading) return <Loading />;
@@ -66,7 +75,7 @@ export default function SectionManagement() {
       <div className="table-wrap">
         <table className="table">
           <thead>
-            <tr><th>Name</th><th>Description</th><th>Type</th><th style={{textAlign:"center"}}>Action</th></tr>
+            <tr><th>Name</th><th>Description</th><th>Type</th><th style={{ textAlign: "center" }}>Action</th></tr>
           </thead>
           <tbody>
             {items.map((it) => (
