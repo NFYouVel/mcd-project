@@ -15,6 +15,7 @@ import { MenuVariantGroups } from '../models/MenuVariantGroups.js';
 import { PackageItems } from '../models/PackageItems.js';
 
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 export const sequelize = new Sequelize({
@@ -24,19 +25,19 @@ export const sequelize = new Sequelize({
     host: process.env.DB_HOST as string,
     dialect: 'postgres',
     models: [
-  Users,
-  Type,
-  Menu,
-  Orders,
-  OrderItems,
-  Payment,
-  FilterMenu,
-  MenuSection,
-  Ingredients,
-  IngredientItems,
-  VariantGroups,
-  VariantItems,
-  MenuVariantGroups,
-  PackageItems
-]
+        Users,
+        Type,
+        Menu,
+        Orders,
+        OrderItems,
+        Payment,
+        FilterMenu,
+        MenuSection,
+        Ingredients,
+        IngredientItems,
+        VariantGroups,
+        VariantItems,
+        MenuVariantGroups,
+        PackageItems
+    ]
 });

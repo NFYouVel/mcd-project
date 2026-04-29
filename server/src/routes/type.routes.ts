@@ -1,29 +1,10 @@
 import { Router } from "express";
-import type { Router as ExpressRouter } from "express";
+import * as ctrl from "../controllers/type.controller.js";
 
-import {
-  createType,
-  getAllTypes,
-  getTypeById,
-  updateType,
-  deleteType,
-} from "../controllers/type.controller.js";
-
-const router: ExpressRouter = Router();
-
-//Create Type
-router.post("/", createType);
-
-//Get All Types
-router.get("/", getAllTypes);
-
-//Get Type by ID
-router.get("/:id", getTypeById);
-
-//Update Type
-router.put("/:id", updateType);
-
-//Delete Type
-router.delete("/:id", deleteType);
-
+const router: Router = Router();
+router.get("/", ctrl.getAllTypes);
+router.get("/:id", ctrl.getTypeById);
+router.post("/", ctrl.createType);
+router.put("/:id", ctrl.updateType);
+router.delete("/:id", ctrl.deleteType);
 export default router;

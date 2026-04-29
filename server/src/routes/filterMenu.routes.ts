@@ -1,29 +1,10 @@
 import { Router } from "express";
-import type { Router as ExpressRouter } from "express";
+import * as ctrl from "../controllers/filterMenu.controller.js";
 
-import {
-  createFilterMenu,
-  getAllFilterMenus,
-  getFilterMenuById,
-  updateFilterMenu,
-  deleteFilterMenu,
-} from "../controllers/filterMenu.controller.js";
-
-const router: ExpressRouter = Router();
-
-//Create FilterMenu
-router.post("/", createFilterMenu);
-
-//Get All FilterMenus
-router.get("/", getAllFilterMenus);
-
-//Get FilterMenu by ID
-router.get("/:id", getFilterMenuById);
-
-//Update FilterMenu
-router.put("/:id", updateFilterMenu);
-
-//Delete FilterMenu
-router.delete("/:id", deleteFilterMenu);
-
+const router: Router = Router();
+router.get("/", ctrl.getAllFilters);
+router.get("/:id", ctrl.getFilterById);
+router.post("/", ctrl.createFilter);
+router.put("/:id", ctrl.updateFilter);
+router.delete("/:id", ctrl.deleteFilter);
 export default router;

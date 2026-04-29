@@ -1,12 +1,10 @@
-import AppRouters from "./routers/AppRouters"
-import { CssBaseline } from "@mui/material";
-function App() {
-    return (
-        <>
-        <CssBaseline /> 
-        <AppRouters/>
-        </>
-    )
-}
+import { BrowserRouter } from "react-router";
+import Router from "./routers/AppRouters";
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Router />
+    </BrowserRouter>
+  );
+}

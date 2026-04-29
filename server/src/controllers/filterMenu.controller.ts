@@ -1,156 +1,54 @@
-import { Request, Response } from "express";
 import { FilterMenu } from "../models/FilterMenu.js";
 import { MenuSection } from "../models/MenuSection.js";
+import { Menu } from "../models/Menu.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { getIdParam } from "../utils/validateId.js";
+import { Request, Response } from "express";
 
-// Create Filter Menu
-export const createFilterMenu = async (req: Request, res: Response) => {
-    try {
-        const { name, description, section_menu_id } = req.body;
+export const getAllFilters = asyncHandler(async (req, res) => {
+  const sectionMenuId = req.query.sectionMenuId;
+  const where: any = {};
+  if (sectionMenuId && typeof sectionMenuId === "string") {
+    where.sectionMenuId = sectionMenuId;
+  }
 
-        const section = await MenuSection.findByPk(section_menu_id);
-        if (!section) {
-            return res.status(400).json({
-                message: "Invalid section_menu_id (MenuSection not found)",
-            });
-        }
+  const filters = await FilterMenu.findAll({
+    where,
+    include: [MenuSection, Menu],
+  });
+  res.json({ success: true, data: filters });
+});
 
-        const newFilter = await FilterMenu.create({
-            name,
-            description,
-            section_menu_id,
-        });
+export const getFilterById = asyncHandler(async (req, res) => {
+  const id = getIdParam(req);
+  const filter = await FilterMenu.findByPk(id, {
+    include: [MenuSection, Menu],
+  });
+  if (!filter) return res.status(404).json({ success: false, message: "Not found" });
+  res.json({ success: true, data: filter });
+});
 
-        return res.status(201).json({
-            message: "Filter menu created successfully",
-            data: newFilter,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error creating filter menu",
-            error,
-        });
-    }
-};
+export const createFilter = asyncHandler(async (req, res) => {
+  const { name, description, sectionMenuId } = req.body;
+  if (!name || !sectionMenuId) {
+    return res.status(400).json({ success: false, message: "name & sectionMenuId required" });
+  }
+  const filter = await FilterMenu.create({ name, description, sectionMenuId });
+  res.status(201).json({ success: true, data: filter });
+});
 
-// Get All FilterMenu (FK MenuSection)
-export const getAllFilterMenus = async (req: Request, res: Response) => {
-    try {
-        const filters = await FilterMenu.findAll({
-            include: [
-                {
-                    model: MenuSection,
-                    attributes: ["id", "name"],
-                },
-            ],
-        });
+export const updateFilter = asyncHandler(async (req, res) => {
+  const id = getIdParam(req);
+  const filter = await FilterMenu.findByPk(id);
+  if (!filter) return res.status(404).json({ success: false, message: "Not found" });
+  await filter.update(req.body);
+  res.json({ success: true, data: filter });
+});
 
-        return res.status(200).json({
-            message: "Success",
-            data: filters,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error fetching filter menus",
-            error,
-        });
-    }
-};
-
-// Get FilterMenu by ID
-export const getFilterMenuById = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-
-        const filter = await FilterMenu.findByPk(id, {
-            include: [
-                {
-                    model: MenuSection,
-                    attributes: ["id", "name"],
-                },
-            ],
-        });
-
-        if (!filter) {
-            return res.status(404).json({
-                message: "Filter menu not found",
-            });
-        }
-
-        return res.status(200).json({
-            message: "Success",
-            data: filter,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error fetching filter menu",
-            error,
-        });
-    }
-};
-
-// Update Filter Menu
-export const updateFilterMenu = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-        const { name, description, section_menu_id } = req.body;
-
-        const filter = await FilterMenu.findByPk(id);
-
-        if (!filter) {
-            return res.status(404).json({
-                message: "Filter menu not found",
-            });
-        }
-
-        if (section_menu_id) {
-            const section = await MenuSection.findByPk(section_menu_id);
-            if (!section) {
-                return res.status(400).json({
-                    message: "Invalid section_menu_id (MenuSection not found)",
-                });
-            }
-        }
-
-        await filter.update({
-            name,
-            description,
-            section_menu_id,
-        });
-
-        return res.status(200).json({
-            message: "Filter menu updated successfully",
-            data: filter,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error updating filter menu",
-            error,
-        });
-    }
-};
-
-// Delete Filter Menu
-export const deleteFilterMenu = async (req: Request, res: Response) => {
-    try {
-        const id = req.params.id as string;
-
-        const filter = await FilterMenu.findByPk(id);
-
-        if (!filter) {
-            return res.status(404).json({
-                message: "Filter menu not found",
-            });
-        }
-
-        await filter.destroy();
-
-        return res.status(200).json({
-            message: "Filter menu deleted successfully",
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error deleting filter menu",
-            error,
-        });
-    }
-};
+export const deleteFilter = asyncHandler(async (req, res) => {
+  const id = getIdParam(req);
+  const filter = await FilterMenu.findByPk(id);
+  if (!filter) return res.status(404).json({ success: false, message: "Not found" });
+  await filter.destroy();
+  res.json({ success: true, message: "Filter deleted" });
+});

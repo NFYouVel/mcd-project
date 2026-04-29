@@ -1,9 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
 import { sequelize } from './config/database.js';
 
-//route imports
+// route imports
 import userRoutes from './routes/user.routes.js';
 import typeRoutes from './routes/type.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
@@ -12,22 +13,21 @@ import orderRoutes from './routes/order.routes.js';
 import menuSectionRoutes from './routes/menuSection.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
-import { OrderItems } from './models/OrderItems.js';
 
+// 👇 IMPORT ERROR HANDLER
+import { errorHandler } from './middlewares/errorHandler.js';
 
 dotenv.config();
-
-// middleware
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
-// middleware (biar bisa baca JSON)
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// route basic
-app.use('/api/user',userRoutes);
+// routes
+app.use('/api/user', userRoutes);
 app.use('/api/type', typeRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/orderitem', orderItemRoutes);
@@ -37,15 +37,15 @@ app.use('/api/menusection', menuSectionRoutes);
 app.use('/api/filtermenu', filterMenuRoutes);
 app.use('/api/orderitem', orderItemRoutes);
 
+// 👇 ERROR HANDLER (HARUS PALING BAWAH, SEBELUM app.listen)
+app.use(errorHandler);
 
 sequelize.authenticate().then(() => {
-  
-  console.log('Database connected!');
+  console.log('✅ Database connected!');
 }).catch((error) => {
-  console.error('Error connecting to database:', error);
-})
+  console.error('❌ Error:', error);
+});
 
-// jalanin server
 app.listen(PORT, () => {
-  console.log(`Server running di http://localhost:${PORT}`);
+  console.log(`🚀 Server running di http://localhost:${PORT}`);
 });

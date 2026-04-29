@@ -6,7 +6,6 @@ import {
     PrimaryKey,
     BelongsTo,
     ForeignKey,
-    AllowNull,
     HasMany,
     CreatedAt,
     UpdatedAt,
@@ -20,14 +19,14 @@ import { Type } from "./Type.js";
     timestamps: true,
     paranoid: true,
 })
-
 export class MenuSection extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
         allowNull: false,
-    }) declare id: string;
+    })
+    declare id: string;
 
     @Column({ type: DataType.STRING })
     declare name: string;
@@ -35,31 +34,26 @@ export class MenuSection extends Model {
     @Column({ type: DataType.STRING })
     declare description: string;
 
-    @CreatedAt
-    declare createdAt: Date;
-
-    @UpdatedAt
-    declare updatedAt: Date;
-
-    @DeletedAt
-    declare deletedAt: Date;
-
-    
     @ForeignKey(() => Type)
     @Column({
-    field: "Type", // 👈 matches DB column EXACTLY
-    type: DataType.UUID,
-    allowNull: false,
+        field: "Type",
+        type: DataType.UUID,
+        allowNull: false,
     })
     declare typeId: string;
 
     @BelongsTo(() => Type, {
-    foreignKey: "typeId",
+        foreignKey: "typeId",
     })
     declare type: Type;
 
+    // 🔥 INI YANG PENTING
     @HasMany(() => FilterMenu, {
-    foreignKey: "sectionMenuId",
+        foreignKey: "sectionMenuId",
     })
     declare filterMenus: FilterMenu[];
+
+    @CreatedAt declare createdAt: Date;
+    @UpdatedAt declare updatedAt: Date;
+    @DeletedAt declare deletedAt: Date;
 }
