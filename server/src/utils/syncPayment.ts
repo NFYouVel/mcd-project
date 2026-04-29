@@ -1,9 +1,9 @@
 
 import { OrderItems } from "../models/OrderItems.js";
-import { IngredientItems } from "../models/ingredientItems.js";
-import { Menu } from "../models/menu.js";
-import { Payment } from "../models/payment.js";
-import { Orders } from "../models/orders.js";
+import { IngredientItems } from "../models/IngredientItems.js";
+import { Menu } from "../models/Menu.js";
+import { Payment } from "../models/Payment.js";
+import { Orders } from "../models/Orders.js";
 
 export const syncPayment = async (orderId: string) => {
   const order = await Orders.findByPk(orderId, {

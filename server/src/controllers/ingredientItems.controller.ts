@@ -1,9 +1,9 @@
 import e, { Request, Response } from "express";
-import { IngredientItems } from "../models/ingredientItems.js";
-import { Ingredients } from "../models/ingredients.js";
+import { IngredientItems } from "../models/IngredientItems.js";
+import { Ingredients } from "../models/Ingredients.js";
 import { OrderItems } from "../models/OrderItems.js";
 import { syncPayment } from "../utils/syncPayment.js";
-import { Orders } from "../models/orders.js";
+import { Orders } from "../models/Orders.js";
 
 
 //Add Ingredient Item

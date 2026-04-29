@@ -14,7 +14,7 @@ import {
     DeletedAt
 } from "sequelize-typescript";
 
-import { MenuSection } from "./menuSection.js";
+import { MenuSection } from "./MenuSection.js";
 @Table({
     tableName: "Type",
     timestamps: true,
