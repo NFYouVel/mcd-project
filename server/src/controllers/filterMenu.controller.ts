@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { FilterMenu } from "../models/FlterMenu.js";
+import { FilterMenu } from "../models/FilterMenu.js";
 import { MenuSection } from "../models/MenuSection.js";
 
 // Create Filter Menu

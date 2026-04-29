@@ -4,6 +4,7 @@ import { IngredientItems } from "../models/IngredientItems.js";
 import { Menu } from "../models/Menu.js";
 import { Payment } from "../models/Payment.js";
 import { Orders } from "../models/Orders.js";
+import { calculateTotal } from "../utils/calculateTotal.js";
 
 export const syncPayment = async (orderId: string) => {
   const order = await Orders.findByPk(orderId, {

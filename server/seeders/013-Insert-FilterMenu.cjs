@@ -34,6 +34,14 @@ module.exports = {
       },
       {
         id: uuidv4(),
+        name: "Rice",
+        description: "Rice",
+        sectionMenuId: sectionMap["Snacks & Drinks"],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
         name: "Chicken",
         description: "Chicken meals",
         sectionMenuId: sectionMap["Main Meals"],
@@ -45,6 +53,14 @@ module.exports = {
         name: "Drinks",
         description: "Beverages",
         sectionMenuId: sectionMap["Snacks & Drinks"],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
+        name: "Packages",
+        description: "Cheap Bundles",
+        sectionMenuId: sectionMap["Main Meals"],
         createdAt: new Date(),
         updatedAt: new Date()
       }

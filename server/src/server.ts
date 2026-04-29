@@ -35,6 +35,7 @@ app.use('/api/order', orderRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/menusection', menuSectionRoutes);
 app.use('/api/filtermenu', filterMenuRoutes);
+app.use('/api/orderitem', orderItemRoutes);
 
 
 sequelize.authenticate().then(() => {
