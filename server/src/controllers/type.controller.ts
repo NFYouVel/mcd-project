@@ -1,5 +1,5 @@
-import { Type } from "../models/type.js";
-import { MenuSection } from "../models/menuSection.js";
+import { Type } from "../models/Type.js";
+import { MenuSection } from "../models/MenuSection.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
 
