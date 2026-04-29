@@ -1,29 +1,10 @@
 import { Router } from "express";
-import type { Router as ExpressRouter } from "express";
+import * as ctrl from "../controllers/menuSection.controller.js";
 
-import {
-  createMenuSection,
-  getAllMenuSections,
-  getMenuSectionById,
-  updateMenuSection,
-  deleteMenuSection,
-} from "../controllers/menuSection.controller.js";
-
-const router: ExpressRouter = Router();
-
-//Create MenuSection
-router.post("/", createMenuSection);
-
-//Get All MenuSections
-router.get("/", getAllMenuSections);
-
-//Get MenuSection by ID
-router.get("/:id", getMenuSectionById);
-
-//Update MenuSection
-router.put("/:id", updateMenuSection);
-
-//Delete MenuSection
-router.delete("/:id", deleteMenuSection);
-
+const router : Router= Router();
+router.get("/", ctrl.getAllSections);
+router.get("/:id", ctrl.getSectionById);
+router.post("/", ctrl.createSection);
+router.put("/:id", ctrl.updateSection);
+router.delete("/:id", ctrl.deleteSection);
 export default router;

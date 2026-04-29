@@ -13,7 +13,7 @@ import menuSectionRoutes from './routes/menuSection.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
 import { OrderItems } from './models/OrderItems.js';
-
+import path from 'path';
 
 dotenv.config();
 
@@ -23,8 +23,8 @@ const app = express();
 const PORT = 5000;
 
 app.use(cors());
-// middleware (biar bisa baca JSON)
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // route basic
 app.use('/api/user',userRoutes);
@@ -38,7 +38,6 @@ app.use('/api/filtermenu', filterMenuRoutes);
 
 
 sequelize.authenticate().then(() => {
-  
   console.log('Database connected!');
 }).catch((error) => {
   console.error('Error connecting to database:', error);

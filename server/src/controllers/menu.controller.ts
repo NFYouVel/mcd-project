@@ -1,174 +1,110 @@
-import { Request, Response } from "express";
 import { Menu } from "../models/menu.js";
-import { MenuSection } from "../models/menuSection.js";
 import { FilterMenu } from "../models/filterMenu.js";
+import { MenuSection } from "../models/menuSection.js";
+import { Type } from "../models/type.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { getIdParam } from "../utils/validateId.js";
+import fs from "fs";
+import path from "path";
 
-//Create Menu
-export const createMenu = async (req: Request, res: Response) => {
-  try {
-    const {
-      name,
-      description,
-      price,
-    } = req.body;
+export const getAllMenus = asyncHandler(async (req, res) => {
+    const filterMenuId = req.query.filterMenuId;
+    const isAvailable = req.query.isAvailable;
+    const search = req.query.search;
 
-    const newMenu = await Menu.create({
-      name,
-      description,
-      price,
-    });
+    const where: any = {};
+    if (filterMenuId && typeof filterMenuId === "string") {
+        where.filterMenuId = filterMenuId;
+    }
+    if (isAvailable !== undefined) {
+        where.isAvailable = isAvailable === "true";
+    }
 
-    return res.status(201).json({
-      message: "Menu created successfully",
-      data: newMenu,
-    });
-  } catch (error: any) {
-    console.error("FULL ERROR:", error);
-    return res.status(500).json({
-      message: "Error creating menu",
-      error: error.message,
-    });
-  }
-};
-
-//Get All Menu (FK FilterMenu)
-export const getAllMenus = async (req: Request, res: Response) => {
-  try {
     const menus = await Menu.findAll({
-      include: [
-        {
-          model: FilterMenu,
-          attributes: ["id", "name"],
-        },
-      ],
+        where,
+        include: [
+            {
+                model: FilterMenu,
+                include: [{ model: MenuSection, include: [Type] }],
+            },
+        ],
+        order: [["createdAt", "DESC"]],
     });
 
-    return res.status(200).json({
-      message: "Success",
-      data: menus,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching menus",
-      error,
-    });
-  }
-};
+    const filtered =
+        search && typeof search === "string"
+            ? menus.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
+            : menus;
 
-//Get Menu by ID
-export const getMenuById = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
+    res.json({ success: true, data: filtered });
+});
 
+export const getMenuById = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
     const menu = await Menu.findByPk(id, {
-      include: [
-        {
-          model: FilterMenu,
-          attributes: ["id", "name"],
-        },
-      ],
+        include: [{ model: FilterMenu, include: [MenuSection] }],
     });
+    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
+    res.json({ success: true, data: menu });
+});
 
-    if (!menu) {
-      return res.status(404).json({
-        message: "Menu not found",
-      });
+export const createMenu = asyncHandler(async (req, res) => {
+    const { name, description, price, isNew, isAvailable, filterMenuId } = req.body;
+    if (!name || !price) {
+        return res.status(400).json({ success: false, message: "name & price required" });
     }
+    const imageUrl = req.file ? `/uploads/menu/${req.file.filename}` : null;
 
-    return res.status(200).json({
-      message: "Success",
-      data: menu,
+    const menu = await Menu.create({
+        name,
+        description,
+        price: Number(price),
+        isNew: isNew === "true" || isNew === true,
+        isAvailable: isAvailable === "true" || isAvailable === true,
+        filterMenuId,
+        imageUrl,
     });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching menu",
-      error,
-    });
-  }
-};
+    res.status(201).json({ success: true, data: menu });
+});
 
-//Update Menu
-export const updateMenu = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const {
-      name,
-      description,
-      price,
-      sectionMenuId,
-      filterMenuId,
-    } = req.body;
-
+export const updateMenu = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
     const menu = await Menu.findByPk(id);
+    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
 
-    if (!menu) {
-      return res.status(404).json({
-        message: "Menu not found",
-      });
+    const update: any = { ...req.body };
+    if (update.price) update.price = Number(update.price);
+    if (update.isNew !== undefined) {
+        update.isNew = update.isNew === "true" || update.isNew === true;
+    }
+    if (update.isAvailable !== undefined) {
+        update.isAvailable = update.isAvailable === "true" || update.isAvailable === true;
     }
 
-    //check if section_menu_id is valid
-    if (sectionMenuId) {
-      const section = await MenuSection.findByPk(sectionMenuId);
-      if (!section) {
-        return res.status(400).json({
-          message: "Invalid sectionMenuId",
-        });
-      }
+    if (req.file) {
+        if (menu.imageUrl) {
+            const oldPath = path.join(process.cwd(), menu.imageUrl);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+        update.imageUrl = `/uploads/menu/${req.file.filename}`;
     }
 
-    //check if filter_menu_id is valid
-    if (filterMenuId) {
-      const filter = await FilterMenu.findByPk(filterMenuId);
-      if (!filter) {
-        return res.status(400).json({
-          message: "Invalid filter_menu_id",
-        });
-      }
-    }
+    await menu.update(update);
+    res.json({ success: true, data: menu });
+});
 
-    await menu.update({
-      name,
-      description,
-      price,
-      sectionMenuId,
-      filterMenuId,
-    });
-
-    return res.status(200).json({
-      message: "Menu updated successfully",
-      data: menu,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error updating menu",
-      error,
-    });
-  }
-};
-
-//Delete Menu
-export const deleteMenu = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-
+export const toggleAvailability = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
     const menu = await Menu.findByPk(id);
+    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
+    await menu.update({ isAvailable: !menu.isAvailable });
+    res.json({ success: true, data: menu });
+});
 
-    if (!menu) {
-      return res.status(404).json({
-        message: "Menu not found",
-      });
-    }
-
+export const deleteMenu = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
+    const menu = await Menu.findByPk(id);
+    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
     await menu.destroy();
-
-    return res.status(200).json({
-      message: "Menu deleted successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error deleting menu",
-      error,
-    });
-  }
-};
+    res.json({ success: true, message: "Menu deleted" });
+});

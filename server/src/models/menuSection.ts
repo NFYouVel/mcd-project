@@ -13,7 +13,7 @@ import {
     DeletedAt
 } from "sequelize-typescript";
 import { FilterMenu } from "./filterMenu.js";
-import { Type } from "./Type.js";
+import { Type } from "./type.js";
 
 @Table({
     tableName: "Section_Menu",

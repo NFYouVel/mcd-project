@@ -1,123 +1,44 @@
-import { Request, Response } from "express";
-import { Type } from "../models/Type.js";
+import { Type } from "../models/type.js";
+import { MenuSection } from "../models/menuSection.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { getIdParam } from "../utils/validateId.js";
 
-//Create Type
-export const createType = async (req: Request, res: Response) => {
-  try {
-    const { food_type_id, description } = req.body;
-
-    const newType = await Type.create({
-      food_type_id,
-      description,
+export const getAllTypes = asyncHandler(async (_req, res) => {
+    const types = await Type.findAll({
+        include: [{ model: MenuSection }],
+        order: [["foodTypeId", "ASC"]],
     });
+    res.json({ success: true, data: types });
+});
 
-    return res.status(201).json({
-      message: "Type created successfully",
-      data: newType,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error creating type",
-      error,
-    });
-  }
-};
+export const getTypeById = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
+    const type = await Type.findByPk(id, { include: [MenuSection] });
+    if (!type) return res.status(404).json({ success: false, message: "Type not found" });
+    res.json({ success: true, data: type });
+});
 
-//GET ALL types
-export const getAllTypes = async (req: Request, res: Response) => {
-  try {
-    const types = await Type.findAll();
-
-    return res.status(200).json({
-      message: "Success",
-      data: types,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching types",
-      error,
-    });
-  }
-};
-
-//Get type by ID
-export const getTypeById = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-
-    const type = await Type.findByPk(id);
-
-    if (!type) {
-      return res.status(404).json({
-        message: "Type not found",
-      });
+export const createType = asyncHandler(async (req, res) => {
+    const { foodTypeId, description } = req.body;
+    if (!foodTypeId || !description) {
+        return res.status(400).json({ success: false, message: "foodTypeId & description required" });
     }
+    const type = await Type.create({ foodTypeId, description });
+    res.status(201).json({ success: true, data: type });
+});
 
-    return res.status(200).json({
-      message: "Success",
-      data: type,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching type",
-      error,
-    });
-  }
-};
-
-//Update Type
-export const updateType = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const { food_type_id, description } = req.body;
-
+export const updateType = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
     const type = await Type.findByPk(id);
+    if (!type) return res.status(404).json({ success: false, message: "Not found" });
+    await type.update(req.body);
+    res.json({ success: true, data: type });
+});
 
-    if (!type) {
-      return res.status(404).json({
-        message: "Type not found",
-      });
-    }
-
-    await type.update({
-      food_type_id,
-      description,
-    });
-
-    return res.status(200).json({
-      message: "Type updated successfully",
-      data: type,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error updating type",
-      error,
-    });
-  }
-};
-
-//Delete Type
-export const deleteType = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-
+export const deleteType = asyncHandler(async (req, res) => {
+    const id = getIdParam(req);
     const type = await Type.findByPk(id);
-
-    if (!type) {
-      return res.status(404).json({
-        message: "Type not found",
-      });
-    }
-
+    if (!type) return res.status(404).json({ success: false, message: "Not found" });
     await type.destroy();
-
-    return res.status(200).json({
-      message: "Type deleted successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error deleting type",
-      error,
-    });
-  }
-};
+    res.json({ success: true, message: "Type deleted" });
+});

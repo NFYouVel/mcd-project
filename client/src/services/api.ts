@@ -1,41 +1,43 @@
 const BASE_URL = "http://localhost:5000/api"
 
-export async function loginRequest(email: string, password: string) {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-    })
 
-    if (!response.ok) {
-        throw new Error("Login failed")
-    }
 
-    const message = response.json();
-    console.log(message);
-    return message
-}
+// export async function loginRequest(email: string, password: string) {
+//     const response = await fetch(`${BASE_URL}/auth/login`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ email, password }),
+//     })
 
-export async function registerRequest(name: string, email: string, password: string, address: string, birth_of_date: string) {
-    const response = await fetch(`${BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name,
-            email,
-            password,
-            address,
-            birth_of_date
-        }),
-    });
+//     if (!response.ok) {
+//         throw new Error("Login failed")
+//     }
 
-    const data = await response.json();
+//     const message = response.json();
+//     console.log(message);
+//     return message
+// }
 
-    if (!response.ok) {
-        throw new Error(data.message || "Register failed");
-    }
-}
+// export async function registerRequest(name: string, email: string, password: string, address: string, birth_of_date: string) {
+//     const response = await fetch(`${BASE_URL}/auth/register`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({
+//             name,
+//             email,
+//             password,
+//             address,
+//             birth_of_date
+//         }),
+//     });
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//         throw new Error(data.message || "Register failed");
+//     }
+// }

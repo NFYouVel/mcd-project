@@ -1,29 +1,12 @@
 import { Router } from "express";
-import type { Router as ExpressRouter } from "express";
+import * as ctrl from "../controllers/menu.controller.js";
+import { upload } from "../middlewares/upload.js";
 
-import {
-  createMenu,
-  getAllMenus,
-  getMenuById,
-  updateMenu,
-  deleteMenu,
-} from "../controllers/menu.controller.js";
-
-const router: ExpressRouter = Router();
-
-//Create Menu
-router.post("/", createMenu);
-
-//Get All Menus
-router.get("/", getAllMenus);
-
-//Get Menu by ID
-router.get("/:id", getMenuById);
-
-//Update Menu
-router.put("/:id", updateMenu);
-
-//Delete Menu
-router.delete("/:id", deleteMenu);
-
+const router: Router = Router();
+router.get("/", ctrl.getAllMenus);
+router.get("/:id", ctrl.getMenuById);
+router.post("/", upload.single("image"), ctrl.createMenu);
+router.put("/:id", upload.single("image"), ctrl.updateMenu);
+router.patch("/:id/toggle", ctrl.toggleAvailability);
+router.delete("/:id", ctrl.deleteMenu);
 export default router;
