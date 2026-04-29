@@ -12,7 +12,7 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Ingredients } from "./ingredients.js";
+import { Ingredients } from "./Ingredients.js";
 import { OrderItems } from "./OrderItems.js";
 
 @Table({
@@ -28,12 +28,6 @@ export class IngredientItems extends Model{
     allowNull: false,
   })
   declare id: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  declare name: string;
 
   @Column({
     type: DataType.INTEGER,

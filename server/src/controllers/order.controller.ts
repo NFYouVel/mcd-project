@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Orders } from "../models/orders.js";
+import { Orders } from "../models/Orders.js";
 import { Users } from "../models/Users.js";
 import { OrderItems } from "../models/OrderItems.js";
-import { Menu } from "../models/menu.js";
+import { Menu } from "../models/Menu.js";
 import model from "sequelize/lib/model";
 
 //Create Order

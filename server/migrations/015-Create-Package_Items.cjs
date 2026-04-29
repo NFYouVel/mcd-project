@@ -1,6 +1,6 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('Ingredient_Items', {
+        await queryInterface.createTable('Package_Items', {
             id: {
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUIDV4,
@@ -24,21 +24,23 @@ module.exports = {
                 type: Sequelize.DATE
             }
         });
-        await queryInterface.addColumn('Ingredient_Items', 'ingredientsId', {
+
+        await queryInterface.addColumn('Package_Items', 'packageId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {
-                model: 'Ingredients',
+                model: 'Menu',
                 key: 'id'
             },
             onUpdate: 'CASCADE',
             onDelete: 'CASCADE'
         });
-        await queryInterface.addColumn('Ingredient_Items', 'orderItemsId', {
+
+        await queryInterface.addColumn('Package_Items', 'packageItemId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {
-                model: 'Order_Items',
+                model: 'Menu',
                 key: 'id'
             },
             onUpdate: 'CASCADE',
@@ -46,6 +48,6 @@ module.exports = {
         });
     },
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('Ingredient_Items');
+        await queryInterface.dropTable('Package_Items');
     }
-}
+};

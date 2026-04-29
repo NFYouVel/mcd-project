@@ -12,8 +12,11 @@ import {
   DeletedAt,
 } from "sequelize-typescript";
 
-import { FilterMenu } from "./filterMenu.js";
+import { FilterMenu } from "./FilterMenu.js";
 import { OrderItems } from "./OrderItems.js";
+import { MenuSection } from "./MenuSection.js";
+import { MenuVariantGroups } from "./MenuVariantGroups.js";
+import { PackageItems } from "./PackageItems.js";
 
 @Table({
   tableName: "Menu",
@@ -46,6 +49,12 @@ export class Menu extends Model {
     allowNull: false,
   })
   declare price: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  declare isPackage: boolean;
 
   @Column({
     type: DataType.BOOLEAN,
@@ -84,6 +93,26 @@ export class Menu extends Model {
     foreignKey: "menuId",
   })
   declare orderItems: OrderItems[];
+
+  // menu as package parent
+  @HasMany(() => PackageItems, {
+    foreignKey: "packageId",
+    as: "packages"
+  })
+  declare packages: PackageItems[];
+
+  // menu as individual item inside package
+  @HasMany(() => PackageItems, {
+    foreignKey: "packageItemId",
+    as: "packageItems"
+  })
+  declare packageItems: PackageItems[];
+
+  // menu -> variant groups
+  @HasMany(() => MenuVariantGroups, {
+    foreignKey: "menuId",
+  })
+  declare menuVariantGroups: MenuVariantGroups[];
 
   @CreatedAt
   declare createdAt: Date;

@@ -1,5 +1,5 @@
 import { OrderItems } from "../models/OrderItems.js";
-import { Menu } from "../models/menu.js";
+import { Menu } from "../models/Menu.js";
 
 export const calculateTotal = async (orderId: string) => {
   const items = await OrderItems.findAll({

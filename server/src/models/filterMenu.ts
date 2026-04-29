@@ -12,8 +12,8 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { MenuSection } from "./menuSection.js";
+import { Menu } from "./Menu.js";
+import { MenuSection } from "./MenuSection.js";
 
 @Table({
     tableName: "Filter_Menu",
