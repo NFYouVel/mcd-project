@@ -1,8 +1,9 @@
-import { FilterMenu } from "../models/filterMenu.js";
-import { MenuSection } from "../models/menuSection.js";
-import { Menu } from "../models/menu.js";
+import { FilterMenu } from "../models/FilterMenu.js";
+import { MenuSection } from "../models/MenuSection.js";
+import { Menu } from "../models/Menu.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
+import { Request, Response } from "express";
 
 export const getAllFilters = asyncHandler(async (req, res) => {
   const sectionMenuId = req.query.sectionMenuId;

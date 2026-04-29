@@ -1,27 +1,25 @@
-import { timeStamp } from "node:console";
 import {
     Table,
     Column,
     Model,
     DataType,
     PrimaryKey,
-    BelongsTo,
     ForeignKey,
-    AllowNull,
-    HasMany,
+    BelongsTo,
     CreatedAt,
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
 
-import { MenuSection } from "./MenuSection.js";
+import { VariantGroups } from "./VariantGroups.js";
+
 @Table({
-    tableName: "Type",
+    tableName: "Variant_Items",
     timestamps: true,
     paranoid: true,
 })
+export class VariantItems extends Model {
 
-export class Type extends Model {
     @PrimaryKey
     @Column({
         type: DataType.UUID,
@@ -31,15 +29,29 @@ export class Type extends Model {
     declare id: string;
 
     @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
+    declare name: string;
+
+    @Column({
         type: DataType.INTEGER,
         allowNull: false,
     })
-    declare foodTypeId: number;
+    declare priceModifier: number;
 
+    @ForeignKey(() => VariantGroups)
     @Column({
-        type: DataType.ENUM("Promotion", "Heavy", "Light")
+        field: "variantGroupId",
+        type: DataType.UUID,
+        allowNull: false,
     })
-    declare description: string;
+    declare variantGroupId: string;
+
+    @BelongsTo(() => VariantGroups, {
+        foreignKey: "variantGroupId",
+    })
+    declare variantGroup: VariantGroups;
 
     @CreatedAt
     declare createdAt: Date;
@@ -49,9 +61,4 @@ export class Type extends Model {
 
     @DeletedAt
     declare deletedAt: Date;
-
-    @HasMany(() => MenuSection, {
-        foreignKey: "typeId",
-    })
-    declare menuSections: MenuSection[];
 }

@@ -1,21 +1,20 @@
 import { Sequelize } from 'sequelize-typescript';
-import dotenv from 'dotenv';
-
-// Import semua models
-import { Type } from '../models/type.js';
-import { MenuSection } from '../models/menuSection.js';
-import { FilterMenu } from '../models/filterMenu.js';
-import { Menu } from '../models/menu.js';
-import { OrderItems } from '../models/OrderItems.js';
-import { Orders } from '../models/orders.js';
-import { IngredientItems } from '../models/ingredientItems.js';
-import { Payment } from '../models/payment.js';
-import { Ingredients } from '../models/ingredients.js';
 import { Users } from '../models/Users.js';
-// Tambahkan model lain kalo ada (User, Order, Payment, dll)
-// import { User } from '../models/user.js';
-// import { Order } from '../models/order.js';
-// import { Payment } from '../models/payment.js';
+import { Orders } from '../models/Orders.js';
+import { Payment } from '../models/Payment.js';
+import { Type } from '../models/Type.js';
+import { OrderItems } from '../models/OrderItems.js';
+import { MenuSection } from '../models/MenuSection.js';
+import { Menu } from '../models/Menu.js';
+import { FilterMenu } from '../models/FilterMenu.js';
+import { IngredientItems } from '../models/IngredientItems.js';
+import { Ingredients } from '../models/Ingredients.js';
+import { VariantGroups } from '../models/VariantGroups.js';
+import { VariantItems } from '../models/VariantItems.js';
+import { MenuVariantGroups } from '../models/MenuVariantGroups.js';
+import { PackageItems } from '../models/PackageItems.js';
+
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -26,16 +25,19 @@ export const sequelize = new Sequelize({
     host: process.env.DB_HOST as string,
     dialect: 'postgres',
     models: [
+        Users,
         Type,
-        MenuSection,
-        FilterMenu,   // 👈 harus AFTER MenuSection
-        Menu,         // 👈 harus AFTER FilterMenu
-        OrderItems,
+        Menu,
         Orders,
-        IngredientItems,
+        OrderItems,
         Payment,
+        FilterMenu,
+        MenuSection,
         Ingredients,
-        Users
-    ],
-    logging: false,
+        IngredientItems,
+        VariantGroups,
+        VariantItems,
+        MenuVariantGroups,
+        PackageItems
+    ]
 });

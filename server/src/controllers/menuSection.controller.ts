@@ -1,6 +1,6 @@
-import { MenuSection } from "../models/menuSection.js";
-import { Type } from "../models/type.js";
-import { FilterMenu } from "../models/filterMenu.js";
+import { MenuSection } from "../models/MenuSection.js";
+import { Type } from "../models/Type.js";
+import { FilterMenu } from "../models/FilterMenu.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
 

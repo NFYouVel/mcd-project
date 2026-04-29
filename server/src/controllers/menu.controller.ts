@@ -1,98 +1,285 @@
-import { Menu } from "../models/menu.js";
-import { FilterMenu } from "../models/filterMenu.js";
-import { MenuSection } from "../models/menuSection.js";
-import { Type } from "../models/type.js";
+import { Menu } from "../models/Menu.js";
+import { FilterMenu } from "../models/FilterMenu.js";
+import { MenuSection } from "../models/MenuSection.js";
+import { Type } from "../models/Type.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
 import fs from "fs";
 import path from "path";
 
-export const getAllMenus = asyncHandler(async (req, res) => {
-    const filterMenuId = req.query.filterMenuId;
-    const isAvailable = req.query.isAvailable;
-    const search = req.query.search;
-
-    const where: any = {};
-    if (filterMenuId && typeof filterMenuId === "string") {
-        where.filterMenuId = filterMenuId;
-    }
-    if (isAvailable !== undefined) {
-        where.isAvailable = isAvailable === "true";
-    }
-
+export const getAllMenus = async (req: Request, res: Response) => {
+  try {
     const menus = await Menu.findAll({
-        where,
-        include: [
-            {
-                model: FilterMenu,
-                include: [{ model: MenuSection, include: [Type] }],
-            },
-        ],
-        order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: FilterMenu,
+          attributes: ["id", "name"]
+        },
+        {
+          model: PackageItems,
+          as: "packages"
+        },
+        {
+          model: MenuVariantGroups
+        }
+      ]
     });
 
-    const filtered =
-        search && typeof search === "string"
-            ? menus.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
-            : menus;
+    return res.status(200).json({
+      message: "Success",
+      data: menus
+    });
 
-    res.json({ success: true, data: filtered });
-});
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching menus",
+      error
+    });
+  }
+};
+
+// CREATE MENU
+export const createMenu = async (req: Request, res: Response) => {
+  try {
+    const {
+      name,
+      description,
+      price,
+      isNew = false,
+      isAvailable = true,
+      imageUrl,
+      isPackage = false,
+      filterMenuId,
+      packageItems = [],
+      variantGroupIds = []
+    } = req.body;
+
+    //--------------------------------
+    // Validate filter
+    //--------------------------------
+    if (filterMenuId) {
+      const filter = await FilterMenu.findByPk(filterMenuId);
+
+      if (!filter) {
+        return res.status(400).json({
+          message: "Invalid filterMenuId"
+        });
+      }
+    }
+
+    //--------------------------------
+    // Create menu
+    //--------------------------------
+    const menu = await Menu.create({
+      name,
+      description,
+      price,
+      isNew,
+      isAvailable,
+      imageUrl,
+      isPackage,
+      filterMenuId
+    });
+
+    //--------------------------------
+    // Create package items
+    //--------------------------------
+    if (isPackage && packageItems.length > 0) {
+      for (const item of packageItems) {
+        const existingMenu = await Menu.findByPk(item.itemId);
+
+        if (!existingMenu) {
+          return res.status(400).json({
+            message: `Invalid package item ID: ${item.itemId}`
+          });
+        }
+
+        await PackageItems.create({
+          packageId: menu.id,
+          packageItemId: item.itemId,
+          quantity: item.quantity
+        });
+      }
+    }
+
+    //--------------------------------
+    // Create variant groups
+    //--------------------------------
+    if (variantGroupIds.length > 0) {
+      for (const variantGroupId of variantGroupIds) {
+        const variantGroup = await VariantGroups.findByPk(
+          variantGroupId
+        );
+
+        if (!variantGroup) {
+          return res.status(400).json({
+            message: `Invalid variantGroupId: ${variantGroupId}`
+          });
+        }
+
+        await MenuVariantGroups.create({
+          menuId: menu.id,
+          variantGroupId
+        });
+      }
+    }
+
+    return res.status(201).json({
+      message: "Menu created successfully",
+      data: menu
+    });
+
+  } catch (error: any) {
+    return res.status(500).json({
+      message: "Error creating menu",
+      error: error.message
+    });
+  }
+};
 
 export const getMenuById = asyncHandler(async (req, res) => {
     const id = getIdParam(req);
     const menu = await Menu.findByPk(id, {
         include: [{ model: FilterMenu, include: [MenuSection] }],
+      include: [
+        {
+          model: FilterMenu
+        },
+        {
+          model: PackageItems,
+          as: "packages"
+        },
+        {
+          model: MenuVariantGroups
+        }
+      ]
     });
     if (!menu) return res.status(404).json({ success: false, message: "Not found" });
     res.json({ success: true, data: menu });
 });
 
-export const createMenu = asyncHandler(async (req, res) => {
-    const { name, description, price, isNew, isAvailable, filterMenuId } = req.body;
-    if (!name || !price) {
-        return res.status(400).json({ success: false, message: "name & price required" });
-    }
-    const imageUrl = req.file ? `/uploads/menu/${req.file.filename}` : null;
-
-    const menu = await Menu.create({
-        name,
-        description,
-        price: Number(price),
-        isNew: isNew === "true" || isNew === true,
-        isAvailable: isAvailable === "true" || isAvailable === true,
-        filterMenuId,
-        imageUrl,
-    });
-    res.status(201).json({ success: true, data: menu });
-});
-
+// UPDATE MENU
 export const updateMenu = asyncHandler(async (req, res) => {
+  try {
     const id = getIdParam(req);
     const menu = await Menu.findByPk(id);
-    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
 
-    const update: any = { ...req.body };
-    if (update.price) update.price = Number(update.price);
-    if (update.isNew !== undefined) {
-        update.isNew = update.isNew === "true" || update.isNew === true;
-    }
-    if (update.isAvailable !== undefined) {
-        update.isAvailable = update.isAvailable === "true" || update.isAvailable === true;
+    if (!menu) {
+      return res.status(404).json({
+        message: "Menu not found"
+      });
     }
 
-    if (req.file) {
-        if (menu.imageUrl) {
-            const oldPath = path.join(process.cwd(), menu.imageUrl);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    const {
+      name,
+      description,
+      price,
+      isNew,
+      isAvailable,
+      imageUrl,
+      isPackage,
+      filterMenuId,
+      packageItems = [],
+      variantGroupIds = []
+    } = req.body;
+
+    //--------------------------------
+    // Validate filter
+    //--------------------------------
+    if (filterMenuId) {
+      const filter = await FilterMenu.findByPk(filterMenuId);
+
+      if (!filter) {
+        return res.status(400).json({
+          message: "Invalid filterMenuId"
+        });
+      }
+    }
+
+    //--------------------------------
+    // Update menu
+    //--------------------------------
+    await menu.update({
+      name,
+      description,
+      price,
+      isNew,
+      isAvailable,
+      imageUrl,
+      isPackage,
+      filterMenuId
+    });
+
+    //--------------------------------
+    // Update package items
+    //--------------------------------
+    if (packageItems.length > 0) {
+      await PackageItems.destroy({
+        where: {
+          packageId: menu.id
         }
-        update.imageUrl = `/uploads/menu/${req.file.filename}`;
+      });
+
+      for (const item of packageItems) {
+        const existingMenu = await Menu.findByPk(item.itemId);
+
+        if (!existingMenu) {
+          return res.status(400).json({
+            message: `Invalid package item ID: ${item.itemId}`
+          });
+        }
+
+        await PackageItems.create({
+          packageId: menu.id,
+          packageItemId: item.itemId,
+          quantity: item.quantity
+        });
+      }
     }
 
-    await menu.update(update);
-    res.json({ success: true, data: menu });
+    //--------------------------------
+    // Update variant groups
+    //--------------------------------
+    if (variantGroupIds.length > 0) {
+      await MenuVariantGroups.destroy({
+        where: {
+          menuId: menu.id
+        }
+      });
+
+      for (const variantGroupId of variantGroupIds) {
+        const variantGroup = await VariantGroups.findByPk(
+          variantGroupId
+        );
+
+        if (!variantGroup) {
+          return res.status(400).json({
+            message: `Invalid variantGroupId: ${variantGroupId}`
+          });
+        }
+
+        await MenuVariantGroups.create({
+          menuId: menu.id,
+          variantGroupId
+        });
+      }
+    }
+
+    return res.status(200).json({
+      message: "Menu updated successfully",
+      data: menu
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error updating menu",
+      error
+    });
+  }
 });
 
+
+// DELETE MENU
 export const toggleAvailability = asyncHandler(async (req, res) => {
     const id = getIdParam(req);
     const menu = await Menu.findByPk(id);
@@ -102,9 +289,69 @@ export const toggleAvailability = asyncHandler(async (req, res) => {
 });
 
 export const deleteMenu = asyncHandler(async (req, res) => {
+  try {
     const id = getIdParam(req);
     const menu = await Menu.findByPk(id);
-    if (!menu) return res.status(404).json({ success: false, message: "Not found" });
+
+    if (!menu) {
+      return res.status(404).json({
+        message: "Menu not found"
+      });
+    }
+
+    //--------------------------------
+    // Prevent deletion if used in orders
+    //--------------------------------
+    const existingOrderItems = await OrderItems.findOne({
+      where: {
+        menuId: id
+      }
+    });
+
+    if (existingOrderItems) {
+      return res.status(400).json({
+        message:
+          "Cannot delete menu because it already exists in customer orders"
+      });
+    }
+
+    //--------------------------------
+    // Remove package relationships
+    //--------------------------------
+    await PackageItems.destroy({
+      where: {
+        packageId: id
+      }
+    });
+
+    await PackageItems.destroy({
+      where: {
+        packageItemId: id
+      }
+    });
+
+    //--------------------------------
+    // Remove variant mappings
+    //--------------------------------
+    await MenuVariantGroups.destroy({
+      where: {
+        menuId: id
+      }
+    });
+
+    //--------------------------------
+    // Delete menu
+    //--------------------------------
     await menu.destroy();
-    res.json({ success: true, message: "Menu deleted" });
+
+    return res.status(200).json({
+      message: "Menu deleted successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error deleting menu",
+      error
+    });
+  }
 });
