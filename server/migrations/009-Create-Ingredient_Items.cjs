@@ -11,6 +11,10 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: false
             },
+            price: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
@@ -24,7 +28,7 @@ module.exports = {
                 type: Sequelize.DATE
             }
         });
-        await queryInterface.addColumn('Ingredient_Items', 'IngredientsId', {
+        await queryInterface.addColumn('Ingredient_Items', 'ingredientsId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {
@@ -34,7 +38,7 @@ module.exports = {
             onUpdate: 'CASCADE',
             onDelete: 'CASCADE'
         });
-        await queryInterface.addColumn('Ingredient_Items', 'OrderItemsId', {
+        await queryInterface.addColumn('Ingredient_Items', 'orderItemsId', {
             type: Sequelize.UUID,
             allowNull: false,
             references: {

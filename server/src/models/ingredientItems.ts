@@ -30,16 +30,16 @@ export class IngredientItems extends Model{
   declare id: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   })
-  declare name: string;
+  declare quantity: number;
 
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
-  declare quantity: number;
+  declare price: number;
 
   @CreatedAt
   declare createdAt: Date;

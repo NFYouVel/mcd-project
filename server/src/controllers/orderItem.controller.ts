@@ -11,6 +11,10 @@ export const createOrderItem = async (req: Request, res: Response) => {
   try {
     const { orderId, menuId, quantity } = req.body;
 
+    if (!quantity || quantity <= 0) {
+      return res.status(400).json({ message: "Invalid quantity" });
+    }
+
     const order = await Orders.findByPk(orderId);
     if (!order) {
       return res.status(400).json({ message: "Invalid orderId" });
@@ -40,6 +44,7 @@ export const createOrderItem = async (req: Request, res: Response) => {
       data: item,
       payment_total: total,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Error creating item",
