@@ -12,7 +12,7 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Ingredients } from "./ingredients.js";
+import { Ingredients } from "./Ingredients.js";
 import { OrderItems } from "./OrderItems.js";
 
 @Table({

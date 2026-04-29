@@ -12,9 +12,9 @@ import {
     UpdatedAt,
     DeletedAt
 } from "sequelize-typescript";
-import { Menu } from "./menu.js";
-import { Orders } from "./orders.js";
-import { IngredientItems } from "./ingredientItems.js";
+import { Menu } from "./Menu.js";
+import { Orders } from "./Orders.js";
+import { IngredientItems } from "./IngredientItems.js";
 
 @Table({
     tableName: "Order_Items",

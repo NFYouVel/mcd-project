@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { OrderItems } from "../models/OrderItems.js";
-import { Orders } from "../models/orders.js";
-import { Menu } from "../models/menu.js";
-import { Payment } from "../models/payment.js";
+import { Orders } from "../models/Orders.js";
+import { Menu } from "../models/Menu.js";
+import { Payment } from "../models/Payment.js";
 import { calculateTotal } from "../utils/calculateTotal.js";
 import { syncPayment } from "../utils/syncPayment.js";
 
