@@ -13,6 +13,8 @@ import orderRoutes from './routes/order.routes.js';
 import menuSectionRoutes from './routes/menuSection.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
+import ingredientRoutes from './routes/ingredients.routes.js';
+import ingredientItemsRoutes from './routes/ingredientItems.routes.js';
 
 // 👇 IMPORT ERROR HANDLER
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -36,6 +38,9 @@ app.use('/api/menu', menuRoutes);
 app.use('/api/menusection', menuSectionRoutes);
 app.use('/api/filtermenu', filterMenuRoutes);
 app.use('/api/orderitem', orderItemRoutes);
+app.use('/api/ingredient', ingredientRoutes);
+app.use('/api/ingredientitem', ingredientItemsRoutes);
+
 
 // 👇 ERROR HANDLER (HARUS PALING BAWAH, SEBELUM app.listen)
 app.use(errorHandler);
