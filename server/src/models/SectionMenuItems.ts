@@ -12,6 +12,7 @@ import {
 
 import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
+import { FilterMenu } from "./FilterMenu.js";
 
 @Table({
   tableName: "Section_Menu_Items",
@@ -48,6 +49,16 @@ export class SectionMenuItems extends Model {
 
   @BelongsTo(() => MenuSection)
   declare menuSection: MenuSection;
+  
+  @ForeignKey(() => FilterMenu)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  declare filterMenuId: string;
+
+  @BelongsTo(() => FilterMenu)
+  declare filterMenu: FilterMenu;
 
   @CreatedAt
   declare createdAt: Date;

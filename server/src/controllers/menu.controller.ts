@@ -10,6 +10,7 @@ import { PackageItems } from "../models/PackageItems.js";
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
+import { MenuSection } from "../models/MenuSection.js";
 
 // 🔥 helper
 const parseBool = (v: any) => v === true || v === "true";

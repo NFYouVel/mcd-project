@@ -54,18 +54,30 @@ export class Users extends Model {
         allowNull: true,
     })
     declare birth_of_date: Date;
-
+    
     @Column({
         type: DataType.INTEGER,
         allowNull: true,
     })
     declare salary: number;
-
+    
     @Column({
-        type: DataType.ENUM("staff", "manager"),
+        type: DataType.ENUM("customer", "manager", "cashier"),
         allowNull: true,
     })
     declare role: string;
+    
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    declare resetPasswordToken: string | null;
+    
+    @Column({
+        type: DataType.DATE,
+        allowNull: true,
+    })
+    declare resetPasswordExpires: Date | null;
 
     @CreatedAt
     declare createdAt: Date;
