@@ -12,7 +12,7 @@ module.exports = {
                 allowNull: false
             },
             description: {
-                type: Sequelize.ENUM('heavy', 'light', 'promotion'),
+                type: Sequelize.ENUM('heavy', 'light', 'promotion', 'drinks', 'dessert', 'rice'),
                 allowNull: false
             },
             createdAt: {

@@ -46,24 +46,6 @@ module.exports = {
         variantGroupId: groupMap['Chicken Part'],
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-
-      // Chicken Type (vg-2)
-      {
-        id: uuidv4(),
-        name: 'Krispy',
-        priceModifier: 0,
-        variantGroupId: groupMap['Chicken Type'],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        id: uuidv4(),
-        name: 'Hot',
-        priceModifier: 0,
-        variantGroupId: groupMap['Chicken Type'],
-        createdAt: new Date(),
-        updatedAt: new Date()
       }
     ]);
   },

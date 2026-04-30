@@ -1,61 +1,44 @@
 import {
-    Table,
-    Column,
-    Model,
-    DataType,
-    PrimaryKey,
-    BelongsTo,
-    ForeignKey,
-    AllowNull,
-    HasMany,
-    CreatedAt,
-    UpdatedAt,
-    DeletedAt
+  Table, Column, Model, DataType, PrimaryKey,
+  BelongsToMany, HasMany,
+  CreatedAt, UpdatedAt, DeletedAt
 } from "sequelize-typescript";
+
 import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
+import { SectionMenuItems } from "./SectionMenuItems.js";
 
 @Table({
-    tableName: "Filter_Menu",
-    timestamps: true,
-    paranoid: true,
+  tableName: "Filter_Menu",
+  timestamps: true,
+  paranoid: true,
 })
-
 export class FilterMenu extends Model {
-    @PrimaryKey
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-        allowNull: false,
-    }) declare id: string;
 
-    @Column({type: DataType.STRING})
-    declare name: string;
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+  })
+  declare id: string;
 
-    @Column({type: DataType.STRING})
-    declare description: string;
+  @Column(DataType.STRING)
+  declare name: string;
 
-    @CreatedAt
-    declare createdAt: Date;
-    
-    @UpdatedAt
-    declare updatedAt: Date;
-    
-    @DeletedAt
-    declare deletedAt: Date;
+  @Column(DataType.STRING)
+  declare description: string;
 
-    @ForeignKey(() => MenuSection)
-    @Column({
-        type: DataType.UUID,
-        allowNull: false
-    })
-    declare sectionMenuId: string;
+  // 🔥 M:N with Section
+  @BelongsToMany(() => MenuSection, () => SectionMenuItems)
+  declare sections: MenuSection[];
 
-    @BelongsTo(() => MenuSection, "sectionMenuId")
-    declare menuSection: MenuSection;
-
-    @HasMany(() => Menu, {
+  // 🔥 1:N with Menu
+  @HasMany(() => Menu, {
     foreignKey: "filterMenuId",
-    })
-    declare menus: Menu[];
+  })
+  declare menus: Menu[];
+
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
+  @DeletedAt declare deletedAt: Date;
 }

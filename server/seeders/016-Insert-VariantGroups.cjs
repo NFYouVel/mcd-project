@@ -8,19 +8,13 @@ module.exports = {
         name: 'Chicken Part',
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      {
-        id: uuidv4(),
-        name: 'Chicken Type',
-        createdAt: new Date(),
-        updatedAt: new Date()
       }
     ]);
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('Variant_Groups', {
-      name: ['Chicken Part', 'Chicken Type']
+      name: ['Chicken Part']
     });
   }
 };

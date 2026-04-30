@@ -1,70 +1,78 @@
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    const sections = await queryInterface.sequelize.query(
-      'SELECT id, name FROM "Section_Menu"',
-      { type: Sequelize.QueryTypes.SELECT }
-    );
-
-    const sectionMap = {};
-
-    sections.forEach(section => {
-      sectionMap[section.name] = section.id;
-    });
-
-    console.log(sectionMap);
-
+  up: async (queryInterface) => {
     await queryInterface.bulkInsert("Filter_Menu", [
       {
         id: uuidv4(),
-        name: "Discount",
-        description: "Promo discounts",
-        sectionMenuId: sectionMap["Promo Deals"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "Sapi",
+        description: "beef",
       },
       {
         id: uuidv4(),
-        name: "Burgers",
-        description: "All burgers",
-        sectionMenuId: sectionMap["Main Meals"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "Camilan",
+        description: "Appetizers",
       },
       {
         id: uuidv4(),
-        name: "Rice",
-        description: "Rice",
-        sectionMenuId: sectionMap["Snacks & Drinks"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "Ayam",
+        description: "Chicken",
       },
       {
         id: uuidv4(),
-        name: "Chicken",
-        description: "Chicken meals",
-        sectionMenuId: sectionMap["Main Meals"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "Ikan",
+        description: "Fish",
       },
       {
         id: uuidv4(),
-        name: "Drinks",
-        description: "Beverages",
-        sectionMenuId: sectionMap["Snacks & Drinks"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "McNuggets",
+        description: "McNuggets",
       },
       {
         id: uuidv4(),
-        name: "Packages",
-        description: "Cheap Bundles",
-        sectionMenuId: sectionMap["Main Meals"],
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: "Ayam Krispy",
+        description: "Crispy Chicken",
+      },
+      {
+        id: uuidv4(),
+        name: "Ayam Spicy",
+        description: "Spicy Chicken",
+      },
+      {
+        id: uuidv4(),
+        name: "Minuman Soda",
+        description: "Sodas",
+      },
+      {
+        id: uuidv4(),
+        name: "Teh",
+        description: "Tea",
+      },
+      {
+        id: uuidv4(),
+        name: "Kopi",
+        description: "Coffee",
+      },
+      {
+        id: uuidv4(),
+        name: "McCafe",
+        description: "McCafe Drinks",
+      },
+      {
+        id: uuidv4(),
+        name: "Pie",
+        description: "McD Pies",
+      },
+      {
+        id: uuidv4(),
+        name: "McFlurry",
+        description: "IceCreams",
       }
-    ]);
+    ].map(item => ({
+      ...item,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })));
   },
 
   down: async (queryInterface) => {

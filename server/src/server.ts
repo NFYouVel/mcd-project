@@ -13,7 +13,13 @@ import orderRoutes from './routes/order.routes.js';
 import menuSectionRoutes from './routes/menuSection.routes.js';
 import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
-
+import ingredientRoutes from './routes/ingredients.routes.js';
+import ingredientItemsRoutes from './routes/ingredientItems.routes.js';
+import packageItemsRoutes from './routes/packageItems.routes.js';
+import variantGroupsRoutes from './routes/variantGroups.routes.js';
+import variantItemsRoutes from './routes/variantItems.routes.js';
+import menuVariantGroupsRoutes from './routes/menuVariantGroups.routes.js';
+import filterMenuitemsRoutes from './routes/filterMenuItems.routes.js'
 // 👇 IMPORT ERROR HANDLER
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -36,9 +42,19 @@ app.use('/api/menu', menuRoutes);
 app.use('/api/menusection', menuSectionRoutes);
 app.use('/api/filtermenu', filterMenuRoutes);
 app.use('/api/orderitem', orderItemRoutes);
+app.use('/api/ingredient', ingredientRoutes);
+app.use('/api/ingredientitem', ingredientItemsRoutes);
+app.use('/api/packageitem', packageItemsRoutes);
+app.use('/api/variantgroup', variantGroupsRoutes);
+app.use('/api/variantitem', variantItemsRoutes);
+app.use('/api/menuvariantgroup', menuVariantGroupsRoutes);
+app.use('/api/filtermenuitem', filterMenuitemsRoutes);
 
 // 👇 ERROR HANDLER (HARUS PALING BAWAH, SEBELUM app.listen)
 app.use(errorHandler);
+
+//Image Handler
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 sequelize.authenticate().then(() => {
   console.log('✅ Database connected!');
