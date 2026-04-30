@@ -15,6 +15,7 @@ import menuRoutes from './routes/menu.routes.js';
 import filterMenuRoutes from './routes/filterMenu.routes.js';
 import ingredientRoutes from './routes/ingredients.routes.js';
 import ingredientItemsRoutes from './routes/ingredientItems.routes.js';
+import packageItemsRoutes from './routes/packageItems.routes.js';
 
 // 👇 IMPORT ERROR HANDLER
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -40,7 +41,7 @@ app.use('/api/filtermenu', filterMenuRoutes);
 app.use('/api/orderitem', orderItemRoutes);
 app.use('/api/ingredient', ingredientRoutes);
 app.use('/api/ingredientitem', ingredientItemsRoutes);
-
+app.use('/api/packageitem', packageItemsRoutes);
 
 // 👇 ERROR HANDLER (HARUS PALING BAWAH, SEBELUM app.listen)
 app.use(errorHandler);

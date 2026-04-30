@@ -1,4 +1,5 @@
 import { Router } from "express";
+import type { Router as ExpressRouter } from "express";
 import {
   createIngredient,
   getAllIngredients,
@@ -7,7 +8,7 @@ import {
   deleteIngredient,
 } from "../controllers/ingredients.controller.js";
 
-const router = Router();
+const router: ExpressRouter = Router();
 
 // CREATE
 router.post("/", createIngredient);
