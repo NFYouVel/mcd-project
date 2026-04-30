@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 
 import { Menu } from "../models/Menu.js";
-import { MenuSection } from "../models/MenuSection.js";
 import { FilterMenu } from "../models/FilterMenu.js";
 import { MenuSection } from "../models/MenuSection.js";
 import { OrderItems } from "../models/OrderItems.js";
