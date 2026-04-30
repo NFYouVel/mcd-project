@@ -33,7 +33,7 @@ export class Orders extends Model {
     declare id: string;
 
     @Column({
-        type: DataType.ENUM("pending", "checkedout", "closed", "cancelled"),
+        type: DataType.ENUM("pending", "checkedout", "served", "cancelled"),
         defaultValue: "pending",
         allowNull: false,
     })

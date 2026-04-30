@@ -3,9 +3,6 @@ import {Users} from '../models/Users.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 
-
-
-
 //GET ALL Users
 export const getAllUsers = async (req: Request, res: Response) => {
   try {

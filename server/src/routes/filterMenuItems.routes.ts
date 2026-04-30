@@ -2,32 +2,32 @@ import { Router } from "express";
 import type { Router as ExpressRouter } from "express";
 
 import {
-  createFilterMenuItem,
-  getAllFilterMenuItems,
-  getFiltersByMenu,
-  deleteFilterMenuItem,
-} from "../controllers/filterMenuItems.controller.js";
+  createFilterMenu,
+  getAllFilterMenus,
+  getFilterMenuById,
+  deleteFilterMenu,
+} from "../controllers/filterMenu.controller.js";
 
 const router: ExpressRouter = Router();
 
 // =============================================
 // CREATE relation (menu ↔ filter)
 // =============================================
-router.post("/", createFilterMenuItem);
+router.post("/", createFilterMenu);
 
 // =============================================
 // GET all relations
 // =============================================
-router.get("/", getAllFilterMenuItems);
+router.get("/", getAllFilterMenus);
 
 // =============================================
 // GET filters by menuId
 // =============================================
-router.get("/menu/:menuId", getFiltersByMenu);
+router.get("/menu/:menuId", getFilterMenuById);
 
 // =============================================
 // DELETE relation by id
 // =============================================
-router.delete("/:id", deleteFilterMenuItem);
+router.delete("/:id", deleteFilterMenu);
 
 export default router;
