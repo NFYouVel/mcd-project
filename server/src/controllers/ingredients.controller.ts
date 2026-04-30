@@ -53,7 +53,7 @@ export const getAllIngredients = async (req: Request, res: Response) => {
 // GET Ingredient by ID
 export const getIngredientById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const ingredient = await Ingredients.findByPk(id);
 
@@ -78,7 +78,7 @@ export const getIngredientById = async (req: Request, res: Response) => {
 // UPDATE Ingredient
 export const updateIngredient = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name, price } = req.body;
 
     const ingredient = await Ingredients.findByPk(id);
@@ -109,7 +109,7 @@ export const updateIngredient = async (req: Request, res: Response) => {
 // DELETE Ingredient (soft delete if paranoid enabled)
 export const deleteIngredient = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const ingredient = await Ingredients.findByPk(id);
 

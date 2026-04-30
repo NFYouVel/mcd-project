@@ -1,146 +1,276 @@
-import { Link, Outlet, useLocation } from "react-router";
-import { Box, Stack, Typography } from "@mui/material";
-import logo from "../assets/mcd logo.webp";
+import {
+  Box,
+  Button,
+  Stack,
+  Typography
+} from "@mui/material";
 
-const menuItems = [
-  { label: "Awal", path: "/" },
-  { label: "Promosi", path: "/promosi" },
-  { label: "Burger", path: "/burger" },
-  { label: "Ayam McD Spicy", path: "/ayam" },
-  { label: "Paket Keluarga", path: "/keluarga" },
-  { label: "Happy Meal", path: "/happymeal" },
-  { label: "Paket Hebat", path: "/hemat" },
+import { Link, Outlet } from "react-router";
+import { Badge } from "@mui/material";
+
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import FastfoodIcon from "@mui/icons-material/Fastfood";
+import logo from "../assets/mcd logo.webp";
+import paperbag from "../assets/mcd_paperbag.png"
+import recs from "../assets/reccomendations.png"
+import BigMac from "../assets/BigMac.webp"
+const categories = [
+  {
+    name: "Promosi",
+    icon: <Box
+        component="img"
+        src={recs}
+        alt="recs"
+        sx={{ width: 35, height: 35, objectFit: "contain" }}
+      />,
+    path: "/menu/promosi"
+  },
+  {
+    name: "Burgers & McNuggets",
+    icon: <Box
+        component="img"
+        src={BigMac}
+        alt="bigmac"
+        sx={{ width: 50, height: 50, objectFit: "contain" }}
+      />,
+    path: "/menu/dashboard"
+  },
+  {
+    name: "Products",
+    icon: <LocalOfferIcon />,
+    path: "/menu/products"
+  },
+  {
+    name: "Orders",
+    icon: <FastfoodIcon />,
+    path: "/menu/orders"
+  }
 ];
 
-export default function EmployeeNavBar() {
-  const location = useLocation();
-
+const EmployeeNavbar = () => {
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
+    <Box sx={{ display: "flex", m: 0, p: 0 }}>
 
-      {/* SIDEBAR */}
+      {/* Sidebar */}
       <Box
         sx={{
-          width: 250,
-          py: 2,
-          pr: 2,
-          pl: 0, // 👈 remove left padding so border sticks to edge
-          overflowY: "auto",
+          width: 200,
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          m: 0,
+          p: 0
         }}
       >
-        {/* LOGO */}
+        {/* Logo */}
         <Box
           sx={{
-            px: 2,
-            py: 1.5,
+            height: 150,
+            ml: 0,
+            mr: 2,
+            mt: 2,
             border: "1px solid #ddd",
-            borderRadius: "0 8px 8px 0",
-            mb: 2,
-            height: 100, // 👈 YOU can change this freely later
+            boxShadow: 2,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderTopRightRadius: 4,
+            borderBottomRightRadius: 4,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mb: 4
           }}
         >
-          <img
+          <Box
+            component="img"
             src={logo}
             alt="logo"
-            style={{
-              height: "40px", // 👈 FIXED size (won’t change)
-              width: "auto",
-              objectFit: "contain",
+            sx={{
+              height: "40%",
+              objectFit: "contain"
             }}
           />
         </Box>
 
-        {/* MENU WITH BORDER */}
-        <Stack
-          spacing={1}
+        {/* Awal Button */}
+        <Button
+          component={Link}
+          to="/menu"
           sx={{
+            ml: 0,
+            mr: 2,
+            mb: 4,
+            justifyContent: "flex-start",
             border: "1px solid #ddd",
-            borderRadius: "0 12px 12px 0", // 👈 no rounding on left
-            py: 1,
+            boxShadow: 2,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderTopRightRadius: 12,
+            borderBottomRightRadius: 12,
+            py: 1.5,
+            textTransform: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 1
           }}
         >
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
+          <Box
+            component="img"
+            src={recs}
+            alt="recs"
+            sx={{
+              width: 24,
+              height: 24,
+              objectFit: "contain"
+            }}
+          />
+
+          <Typography sx={{ fontWeight: "bold", color: "black" }}>
+            Awal
+          </Typography>
+        </Button>
+
+        {/* Buttons */}
+        <Stack
+          spacing={0}
+          sx={{
+            pl: 0,
+            pr: 2,
+            overflowY: "auto"
+          }}
+        >
+          {categories.map((item, index) => {
+            const isLast = index === categories.length - 1;
 
             return (
-              <Link
-                key={item.path}
+              <Button
+                key={item.name}
+                component={Link}
                 to={item.path}
-                style={{ textDecoration: "none" }}
+                startIcon={item.icon}
+                sx={{
+                  justifyContent: "flex-start",
+                  bgcolor: "white",
+                  color: "black",
+                  border: "1px solid #ddd",
+
+                  borderTopLeftRadius: 0,
+                  borderBottomLeftRadius: 0,
+
+                  // connect buttons (no double borders)
+                  borderTop: index === 0 ? "1px solid #ddd" : "none",
+
+                  // rounding only on last button
+                  borderTopRightRadius: index === 0 ? 12 : 0,
+                  borderBottomRightRadius: isLast ? 12 : 0,
+
+                  // 👇 shadow only on last button
+                  borderBottom: isLast ? "2px solid #ddd" : undefined,
+                  boxShadow: isLast ? "0px 6px 6px -2px rgba(0,0,0,0.2)" : "none",
+                  py: 2,
+                  textTransform: "none"
+                }}
               >
-                <Box
-                  sx={{
-                    px: 2,
-                    py: 1.5,
-                    borderRadius: "0 8px 8px 0", // 👈 no left rounding
-                    backgroundColor: isActive ? "#ffe082" : "transparent",
-                    "&:hover": { backgroundColor: "#fff3cd" },
-                  }}
-                >
-                  <Typography fontWeight={isActive ? "bold" : "normal"}>
-                    {item.label}
-                  </Typography>
-                </Box>
-              </Link>
+                {item.name}
+              </Button>
             );
           })}
         </Stack>
       </Box>
 
-      {/* MAIN CONTENT */}
-      <Box sx={{ flex: 1, p: 3, overflowY: "auto" }}>
+      {/* Right content */}
+      <Box
+        sx={{
+          flex: 1,
+          p: 3,
+          ml: "250px",
+          pb: "100px"
+        }}
+      >
         <Outlet />
       </Box>
-
+      {/* Bottom Bar */}
       <Box
         sx={{
           position: "fixed",
           bottom: 0,
-          left: 0,
-          width: "100%",
-          height: 80,
+          left: 200, // same as sidebar width
+          right: 0,
+          height: 150,
+          bgcolor: "white",
           borderTop: "1px solid #ddd",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           px: 3,
-          backgroundColor: "#fff",
-          zIndex: 1000,
+          boxShadow: "0px -2px 8px rgba(0,0,0,0.1)",
+          zIndex: 1000
         }}
       >
-        {/* LEFT: TOTAL */}
+        {/* Left side */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: "#ffc107",
-              borderRadius: 2,
+          <Badge
+            badgeContent={3} // 👈 change later dynamically
+            color="error"
+            overlap="circular"
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right"
             }}
-          />
-          <Typography fontWeight="bold">Rp0</Typography>
+            sx={{
+              "& .MuiBadge-badge": {
+                fontSize: "0.6rem",
+                height: 16,
+                minWidth: 16,
+                top: 4,
+                right: 4
+              }
+            }}
+          >
+            <Box
+              component="img"
+              src={paperbag}
+              alt="paperbag"
+              sx={{
+                width: 40,
+                height: 40
+              }}
+            />
+          </Badge>
+
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Rp0
+          </Typography>
         </Box>
 
-        {/* RIGHT: BUTTON (moved here) */}
-        <Box
-          sx={{
-            px: 4,
-            py: 1.5,
-            backgroundColor: "#ffe082",
-            borderRadius: 2,
-            cursor: "pointer",
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          Lihat Pesanan
+        {/* Right side */}
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            variant="outlined"
+            sx={{ textTransform: "none" }}
+          >
+            Lihat Pesanan
+          </Button>
+
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: "#FFC72C",
+              color: "black",
+              textTransform: "none",
+              fontWeight: "bold",
+              px: 3
+            }}
+          >
+            Bayar
+          </Button>
         </Box>
       </Box>
     </Box>
-
-
   );
-}
+};
+
+export default EmployeeNavbar;
