@@ -3,31 +3,32 @@ import fs from "fs";
 import path from "path";
 
 import { Menu } from "../models/Menu.js";
-import { MenuSection } from "../models/MenuSection.js";
 import { FilterMenu } from "../models/FilterMenu.js";
 import { MenuSection } from "../models/MenuSection.js";
 import { OrderItems } from "../models/OrderItems.js";
 import { MenuVariantGroups } from "../models/MenuVariantGroups.js";
 import { PackageItems } from "../models/PackageItems.js";
-// import { VariantGroups } from "../models/VariantGroups.js"; // 👈 import kalo lo udah punya
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { getIdParam } from "../utils/validateId.js";
+
+// 🔥 helper
+const parseBool = (v: any) => v === true || v === "true";
 
 // =============================================
 // GET ALL MENUS
 // =============================================
 export const getAllMenus = asyncHandler(async (req: Request, res: Response) => {
-  const filterMenuId = req.query.filterMenuId;
-  const isAvailable = req.query.isAvailable;
-  const search = req.query.search;
+  const { filterMenuId, isAvailable, search } = req.query;
 
   const where: any = {};
-  if (filterMenuId && typeof filterMenuId === "string") {
+
+  if (filterMenuId) {
     where.filterMenuId = filterMenuId;
   }
+
   if (isAvailable !== undefined) {
-    where.isAvailable = isAvailable === "true";
+    where.isAvailable = parseBool(isAvailable);
   }
 
   const menus = await Menu.findAll({
@@ -49,8 +50,10 @@ export const getAllMenus = asyncHandler(async (req: Request, res: Response) => {
   });
 
   const filtered =
-    search && typeof search === "string"
-      ? menus.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
+    typeof search === "string"
+      ? menus.filter((m) =>
+          m.name.toLowerCase().includes(search.toLowerCase())
+        )
       : menus;
 
   res.json({ success: true, data: filtered });
@@ -59,13 +62,15 @@ export const getAllMenus = asyncHandler(async (req: Request, res: Response) => {
 // =============================================
 // GET MENU BY ID
 // =============================================
-export const getMenuById = asyncHandler(async (req, res) => {
+export const getMenuById = asyncHandler(async (req: Request, res: Response) => {
   const id = getIdParam(req);
+
   const menu = await Menu.findByPk(id, {
     include: [
       {
         model: FilterMenu,
-        include: [MenuSection],
+        attributes: ["id", "name"],
+        include: [MenuSection], // OK because FilterMenu ↔ Section
       },
       {
         model: PackageItems,
@@ -76,12 +81,19 @@ export const getMenuById = asyncHandler(async (req, res) => {
       },
     ],
   });
-  if (!menu) return res.status(404).json({ success: false, message: "Menu not found" });
+
+  if (!menu) {
+    return res.status(404).json({
+      success: false,
+      message: "Menu not found",
+    });
+  }
+
   res.json({ success: true, data: menu });
 });
 
 // =============================================
-// CREATE MENU (with image upload)
+// CREATE MENU
 // =============================================
 export const createMenu = asyncHandler(async (req: Request, res: Response) => {
   const {
@@ -95,106 +107,56 @@ export const createMenu = asyncHandler(async (req: Request, res: Response) => {
   } = req.body;
 
   if (!name || !price) {
-    return res.status(400).json({ success: false, message: "name & price required" });
+    return res.status(400).json({
+      success: false,
+      message: "name & price required",
+    });
   }
 
-  // -------------------------------
-  // Validate filterMenuId
-  // -------------------------------
+  // ✅ validate FK
   if (filterMenuId) {
     const filter = await FilterMenu.findByPk(filterMenuId);
     if (!filter) {
-      return res.status(400).json({ success: false, message: "Invalid filterMenuId" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid filterMenuId",
+      });
     }
   }
 
-  // -------------------------------
-  // Image URL from multer
-  // -------------------------------
-  const imageUrl = req.file ? `/uploads/menu/${req.file.filename}` : null;
+  const imageUrl = req.file
+    ? `/uploads/menu/${req.file.filename}`
+    : null;
 
-  // -------------------------------
-  // Parse package & variant data (FormData kirim string)
-  // -------------------------------
-  let packageItems: any[] = [];
-  let variantGroupIds: string[] = [];
-  try {
-    if (req.body.packageItems) {
-      packageItems = typeof req.body.packageItems === "string"
-        ? JSON.parse(req.body.packageItems)
-        : req.body.packageItems;
-    }
-    if (req.body.variantGroupIds) {
-      variantGroupIds = typeof req.body.variantGroupIds === "string"
-        ? JSON.parse(req.body.variantGroupIds)
-        : req.body.variantGroupIds;
-    }
-  } catch {
-    return res.status(400).json({ success: false, message: "Invalid packageItems or variantGroupIds JSON" });
-  }
-
-  // -------------------------------
-  // Create menu
-  // -------------------------------
   const menu = await Menu.create({
     name,
     description,
     price: Number(price),
-    isNew: isNew === "true" || isNew === true,
-    isAvailable: isAvailable === "true" || isAvailable === true,
-    isPackage: isPackage === "true" || isPackage === true,
+    isNew: parseBool(isNew),
+    isAvailable: parseBool(isAvailable),
+    isPackage: parseBool(isPackage),
     filterMenuId,
     imageUrl,
   });
 
-  // -------------------------------
-  // Create package items
-  // -------------------------------
-  if ((isPackage === "true" || isPackage === true) && packageItems.length > 0) {
-    for (const item of packageItems) {
-      const existingMenu = await Menu.findByPk(item.itemId);
-      if (!existingMenu) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid package item ID: ${item.itemId}`,
-        });
-      }
-      await PackageItems.create({
-        packageId: menu.id,
-        packageItemId: item.itemId,
-        quantity: item.quantity,
-      });
-    }
-  }
-
-  // -------------------------------
-  // Create variant groups
-  // -------------------------------
-  if (variantGroupIds.length > 0) {
-    for (const variantGroupId of variantGroupIds) {
-      // Kalo lo punya model VariantGroups, validate dulu:
-      // const vg = await VariantGroups.findByPk(variantGroupId);
-      // if (!vg) {
-      //   return res.status(400).json({ success: false, message: `Invalid variantGroupId: ${variantGroupId}` });
-      // }
-      await MenuVariantGroups.create({
-        menuId: menu.id,
-        variantGroupId,
-      });
-    }
-  }
-
-  res.status(201).json({ success: true, data: menu });
+  res.status(201).json({
+    success: true,
+    data: menu,
+  });
 });
 
 // =============================================
-// UPDATE MENU (with image upload)
+// UPDATE MENU
 // =============================================
 export const updateMenu = asyncHandler(async (req: Request, res: Response) => {
   const id = getIdParam(req);
   const menu = await Menu.findByPk(id);
+
   if (!menu) {
-    return res.status(404).json({ success: false, message: "Menu not found" });
+    return res.status(404).json({
+      success: false,
+      message: "Menu not found",
+    });
   }
 
   const {
@@ -207,33 +169,29 @@ export const updateMenu = asyncHandler(async (req: Request, res: Response) => {
     filterMenuId,
   } = req.body;
 
-  // -------------------------------
-  // Validate filterMenuId
-  // -------------------------------
+  // ✅ validate FK
   if (filterMenuId) {
     const filter = await FilterMenu.findByPk(filterMenuId);
     if (!filter) {
-      return res.status(400).json({ success: false, message: "Invalid filterMenuId" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid filterMenuId",
+      });
     }
   }
 
-  // -------------------------------
-  // Build update payload
-  // -------------------------------
   const update: any = {};
+
   if (name !== undefined) update.name = name;
   if (description !== undefined) update.description = description;
   if (price !== undefined) update.price = Number(price);
-  if (isNew !== undefined) update.isNew = isNew === "true" || isNew === true;
-  if (isAvailable !== undefined) update.isAvailable = isAvailable === "true" || isAvailable === true;
-  if (isPackage !== undefined) update.isPackage = isPackage === "true" || isPackage === true;
+  if (isNew !== undefined) update.isNew = parseBool(isNew);
+  if (isAvailable !== undefined) update.isAvailable = parseBool(isAvailable);
+  if (isPackage !== undefined) update.isPackage = parseBool(isPackage);
   if (filterMenuId !== undefined) update.filterMenuId = filterMenuId;
 
-  // -------------------------------
-  // Handle image upload (replace old)
-  // -------------------------------
+  // 🔥 handle image replace
   if (req.file) {
-    // Delete old image if exists
     if (menu.imageUrl) {
       const oldPath = path.join(process.cwd(), menu.imageUrl);
       if (fs.existsSync(oldPath)) {
@@ -244,86 +202,57 @@ export const updateMenu = asyncHandler(async (req: Request, res: Response) => {
         }
       }
     }
+
     update.imageUrl = `/uploads/menu/${req.file.filename}`;
   }
 
   await menu.update(update);
 
-  // -------------------------------
-  // Parse & update package items
-  // -------------------------------
-  let packageItems: any[] = [];
-  let variantGroupIds: string[] = [];
-  try {
-    if (req.body.packageItems) {
-      packageItems = typeof req.body.packageItems === "string"
-        ? JSON.parse(req.body.packageItems)
-        : req.body.packageItems;
-    }
-    if (req.body.variantGroupIds) {
-      variantGroupIds = typeof req.body.variantGroupIds === "string"
-        ? JSON.parse(req.body.variantGroupIds)
-        : req.body.variantGroupIds;
-    }
-  } catch {
-    return res.status(400).json({ success: false, message: "Invalid packageItems or variantGroupIds JSON" });
-  }
-
-  if (packageItems.length > 0) {
-    await PackageItems.destroy({ where: { packageId: menu.id } });
-    for (const item of packageItems) {
-      const existingMenu = await Menu.findByPk(item.itemId);
-      if (!existingMenu) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid package item ID: ${item.itemId}`,
-        });
-      }
-      await PackageItems.create({
-        packageId: menu.id,
-        packageItemId: item.itemId,
-        quantity: item.quantity,
-      });
-    }
-  }
-
-  if (variantGroupIds.length > 0) {
-    await MenuVariantGroups.destroy({ where: { menuId: menu.id } });
-    for (const variantGroupId of variantGroupIds) {
-      await MenuVariantGroups.create({
-        menuId: menu.id,
-        variantGroupId,
-      });
-    }
-  }
-
-  res.json({ success: true, data: menu });
+  res.json({
+    success: true,
+    data: menu,
+  });
 });
 
 // =============================================
 // TOGGLE AVAILABILITY
 // =============================================
-export const toggleAvailability = asyncHandler(async (req, res) => {
+export const toggleAvailability = asyncHandler(async (req: Request, res: Response) => {
   const id = getIdParam(req);
   const menu = await Menu.findByPk(id);
-  if (!menu) return res.status(404).json({ success: false, message: "Menu not found" });
-  await menu.update({ isAvailable: !menu.isAvailable });
-  res.json({ success: true, data: menu });
+
+  if (!menu) {
+    return res.status(404).json({
+      success: false,
+      message: "Menu not found",
+    });
+  }
+
+  await menu.update({
+    isAvailable: !menu.isAvailable,
+  });
+
+  res.json({
+    success: true,
+    data: menu,
+  });
 });
 
 // =============================================
 // DELETE MENU
 // =============================================
-export const deleteMenu = asyncHandler(async (req, res) => {
+export const deleteMenu = asyncHandler(async (req: Request, res: Response) => {
   const id = getIdParam(req);
   const menu = await Menu.findByPk(id);
+
   if (!menu) {
-    return res.status(404).json({ success: false, message: "Menu not found" });
+    return res.status(404).json({
+      success: false,
+      message: "Menu not found",
+    });
   }
 
-  // -------------------------------
-  // Prevent deletion if used in orders
-  // -------------------------------
+  // 🚫 prevent delete if used
   const existingOrderItems = await OrderItems.findOne({
     where: { menuId: id },
   });
@@ -331,24 +260,16 @@ export const deleteMenu = asyncHandler(async (req, res) => {
   if (existingOrderItems) {
     return res.status(400).json({
       success: false,
-      message: "Cannot delete menu because it already exists in customer orders",
+      message: "Menu already used in orders",
     });
   }
 
-  // -------------------------------
-  // Remove package relationships
-  // -------------------------------
+  // cleanup relations
   await PackageItems.destroy({ where: { packageId: id } });
   await PackageItems.destroy({ where: { packageItemId: id } });
-
-  // -------------------------------
-  // Remove variant mappings
-  // -------------------------------
   await MenuVariantGroups.destroy({ where: { menuId: id } });
 
-  // -------------------------------
-  // Delete image file
-  // -------------------------------
+  // delete image
   if (menu.imageUrl) {
     const imgPath = path.join(process.cwd(), menu.imageUrl);
     if (fs.existsSync(imgPath)) {
@@ -360,10 +281,10 @@ export const deleteMenu = asyncHandler(async (req, res) => {
     }
   }
 
-  // -------------------------------
-  // Soft delete (paranoid: true)
-  // -------------------------------
   await menu.destroy();
 
-  res.json({ success: true, message: "Menu deleted successfully" });
+  res.json({
+    success: true,
+    message: "Menu deleted",
+  });
 });

@@ -11,6 +11,11 @@ import TypeManagement from "../pages/TypeManagementPage";
 import SectionManagement from "../pages/SectionManagementPage";
 import FilterManagement from "../pages/FilterManagementPage";
 
+// Employee pages
+import EmployeeMenu from "../pages/MainMenuEmployee";
+import EmployeeNavBar from "../pages/EmployeeNavBar";
+import MakePackage from "../pages/MakePackage";
+
 const Orders = () => <h1>Orders (Coming Soon)</h1>;
 
 const Router = () => {
@@ -39,7 +44,20 @@ const Router = () => {
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
+
+      <Route path="/employee" element={<EmployeeNavBar />}>
+        <Route index element={<EmployeeMenu />} />
+
+        {/* make package flow */}
+        <Route path=":id/make-package" element={<MakePackage />} />
+
+
+        {/* normal menu detail page (YOU NEED THIS) */}
+        <Route path=":id" element={<div>Menu Detail</div>} />
+        
+      </Route>
     </Routes>
+
   );
 };
 

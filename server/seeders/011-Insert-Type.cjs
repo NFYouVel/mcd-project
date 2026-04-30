@@ -23,6 +23,27 @@ module.exports = {
                 description: 'light',
                 createdAt: new Date(),
                 updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                foodTypeId: 4,
+                description: 'drinks',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                foodTypeId: 5,
+                description: 'dessert',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                foodTypeId: 6,
+                description: 'rice',
+                createdAt: new Date(),
+                updatedAt: new Date()
             }
         ]);
     },
