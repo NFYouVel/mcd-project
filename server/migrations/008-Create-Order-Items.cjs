@@ -12,7 +12,6 @@ module.exports = {
                 allowNull : false,
                 defaultValue : 'pending'
             },
-            
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,

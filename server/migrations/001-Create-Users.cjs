@@ -33,9 +33,9 @@ module.exports = {
                 allowNull: true
             },
             role: {
-                type: Sequelize.ENUM('staff', 'manager'),
+                type: Sequelize.ENUM('customer', 'manager', 'cashier'),
                 allowNull: false,
-                defaultValue: 'staff'
+                defaultValue: 'customer'
             },
             createdAt: {
                 type: Sequelize.DATE,

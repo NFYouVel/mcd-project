@@ -18,7 +18,7 @@ module.exports = {
         await queryInterface.bulkInsert("Section_Menu", [
             {
                 id: uuidv4(),
-                name: "Promo Deals",
+                name: "Promosi",
                 description: "Special promotions",
                 Type: typeMap["promotion"],
                 createdAt: new Date(),
@@ -26,7 +26,7 @@ module.exports = {
             },
             {
                 id: uuidv4(),
-                name: "Main Meals",
+                name: "Burger & McNuggets",
                 description: "Heavy meals",
                 Type: typeMap["heavy"],
                 createdAt: new Date(),
@@ -34,12 +34,93 @@ module.exports = {
             },
             {
                 id: uuidv4(),
-                name: "Snacks & Drinks",
-                description: "Light menu",
+                name: "Ayam McD Krispy",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Ayam McD Spicy",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Paket Keluarga",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Happy Meal",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Paket HeBat",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Menu Receh",
+                description: "Cheaper meals",
                 Type: typeMap["light"],
                 createdAt: new Date(),
                 updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "McSpaghetti",
+                description: "Heavy meals",
+                Type: typeMap["heavy"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Camilan",
+                description: "Light meals",
+                Type: typeMap["light"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Minuman",
+                description: "drinks",
+                Type: typeMap["drinks"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Pencuci Mulut",
+                description: "Palette Cleansers",
+                Type: typeMap["dessert"],
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            {
+                id: uuidv4(),
+                name: "Nasi",
+                description: "rice",
+                Type: typeMap["rice"],
+                createdAt: new Date(),
+                updatedAt: new Date()
             }
+
         ]);
     },
 

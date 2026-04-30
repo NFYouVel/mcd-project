@@ -4,17 +4,16 @@ import {
   Model,
   DataType,
   PrimaryKey,
-  BelongsTo,
-  ForeignKey,
   HasMany,
   CreatedAt,
   UpdatedAt,
   DeletedAt,
+  ForeignKey,
+  BelongsTo,
 } from "sequelize-typescript";
 
 import { FilterMenu } from "./FilterMenu.js";
 import { OrderItems } from "./OrderItems.js";
-import { MenuSection } from "./MenuSection.js";
 import { MenuVariantGroups } from "./MenuVariantGroups.js";
 import { PackageItems } from "./PackageItems.js";
 
@@ -24,6 +23,7 @@ import { PackageItems } from "./PackageItems.js";
   paranoid: true,
 })
 export class Menu extends Model {
+
   @PrimaryKey
   @Column({
     type: DataType.UUID,
@@ -32,94 +32,63 @@ export class Menu extends Model {
   })
   declare id: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   declare name: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
+  @Column({ type: DataType.STRING })
   declare description: string;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   declare price: number;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: false,
-  })
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
   declare isPackage: boolean;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: true,
-  })
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
   declare isNew: boolean;
 
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: true,
-  })
+  @Column({ type: DataType.BOOLEAN, defaultValue: true })
   declare isAvailable: boolean;
 
-  @Column({
-    type: DataType.STRING,
-    defaultValue: true,
-  })
+  @Column({ type: DataType.STRING, allowNull: true })
   declare imageUrl: string;
 
-  // 🔥 FK → FilterMenu
+  // 🔥 FIX: FK → FilterMenu (1:N)
   @ForeignKey(() => FilterMenu)
   @Column({
-    field: "filterMenuId", // 👈 match your DB column EXACTLY
     type: DataType.UUID,
-    allowNull: true, // allow create without it (your controller)
+    allowNull: false,
   })
   declare filterMenuId: string;
 
-  @BelongsTo(() => FilterMenu, {
-    foreignKey: "filterMenuId",
-  })
+  @BelongsTo(() => FilterMenu)
   declare filterMenu: FilterMenu;
 
-  // 🔥 relation → OrderItems
-  @HasMany(() => OrderItems, {
-    foreignKey: "menuId",
-  })
+  // ============================
+  // RELATIONS
+  // ============================
+
+  @HasMany(() => OrderItems, { foreignKey: "menuId" })
   declare orderItems: OrderItems[];
 
-  // menu as package parent
   @HasMany(() => PackageItems, {
     foreignKey: "packageId",
-    as: "packages"
+    as: "packages",
   })
   declare packages: PackageItems[];
 
-  // menu as individual item inside package
   @HasMany(() => PackageItems, {
     foreignKey: "packageItemId",
-    as: "packageItems"
+    as: "packageItems",
   })
   declare packageItems: PackageItems[];
 
-  // menu -> variant groups
   @HasMany(() => MenuVariantGroups, {
     foreignKey: "menuId",
   })
   declare menuVariantGroups: MenuVariantGroups[];
 
-  @CreatedAt
-  declare createdAt: Date;
-
-  @UpdatedAt
-  declare updatedAt: Date;
-
-  @DeletedAt
-  declare deletedAt: Date;
+  @CreatedAt declare createdAt: Date;
+  @UpdatedAt declare updatedAt: Date;
+  @DeletedAt declare deletedAt: Date;
 }
