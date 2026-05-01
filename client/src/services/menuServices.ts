@@ -56,17 +56,17 @@ const buildFormData = (payload: MenuPayload): FormData => {
 
 export const menuService = {
   getAll: async (): Promise<Menu[]> => {
-    const res = await apiRequest("/menus");
+    const res = await apiRequest("/menu");
     return res.data || res;
   },
 
   getById: async (id: string): Promise<Menu> => {
-    const res = await apiRequest(`/menus/${id}`);
+    const res = await apiRequest(`/menu/${id}`);
     return res.data || res;
   },
 
   create: async (payload: MenuPayload) => {
-    return apiRequest("/menus", {
+    return apiRequest("/menu", {
       method: "POST",
       body: buildFormData(payload),
       isFormData: true,
@@ -74,7 +74,7 @@ export const menuService = {
   },
 
   update: async (id: string, payload: MenuPayload) => {
-    return apiRequest(`/menus/${id}`, {
+    return apiRequest(`/menu/${id}`, {
       method: "PUT",
       body: buildFormData(payload),
       isFormData: true,
@@ -82,7 +82,7 @@ export const menuService = {
   },
 
   delete: async (id: string) => {
-    return apiRequest(`/menus/${id}`, {
+    return apiRequest(`/menu/${id}`, {
       method: "DELETE",
     });
   },
@@ -91,7 +91,7 @@ export const menuService = {
 export const filterMenuService = {
   getAll: async (): Promise<FilterMenu[]> => {
     // Sesuaikan endpoint backend lo
-    const res = await apiRequest("/filtermenuitem");
+    const res = await apiRequest("/filtermenu");
     return res.data || res;
   },
 };
