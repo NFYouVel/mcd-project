@@ -1,7 +1,7 @@
 import {
   Box, Button, Stack, Typography, Skeleton
 } from "@mui/material";
-import { Link, Outlet, useLocation } from "react-router";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { Badge } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -9,6 +9,7 @@ import logo from "../assets/mcd logo.webp";
 import paperbag from "../assets/mcd_paperbag.png";
 import recs from "../assets/reccomendations.png";
 import { getSectionsRequest } from "../services/api";
+import { useAppSelector } from "../store/index";
 
 interface Section {
   id: string;
@@ -18,14 +19,21 @@ interface Section {
 const EmployeeNavbar = () => {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
-  const location = useLocation(); // buat highlight active button
+  const location = useLocation();
+  const navigate = useNavigate();
 
-useEffect(() => {
-  getSectionsRequest()
-    .then((data) => setSections(data))
-    .catch(console.error)
-    .finally(() => setLoading(false));
-}, []);
+  // ── Cart state from Redux ──
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const formatPrice = (price: number) => `Rp${price.toLocaleString("id-ID")}`;
+
+  useEffect(() => {
+    getSectionsRequest()
+      .then((data) => setSections(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <Box sx={{ display: "flex", m: 0, p: 0 }}>
@@ -104,8 +112,7 @@ useEffect(() => {
         {/* Category Buttons */}
         <Stack spacing={0} sx={{ pl: 0, pr: 2, overflowY: "auto" }}>
           {loading
-            ? // Skeleton sementara data belum datang
-              Array.from({ length: 6 }).map((_, i) => (
+            ? Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton
                   key={i}
                   variant="rectangular"
@@ -115,8 +122,7 @@ useEffect(() => {
               ))
             : sections.map((item, index) => {
                 const isLast = index === sections.length - 1;
-                const isActive =
-                  location.pathname === `/menu/category/${item.id}`;
+                const isActive = location.pathname === `/employee/category/${item.id}`;
 
                 return (
                   <Button
@@ -135,8 +141,7 @@ useEffect(() => {
                       borderTopRightRadius: index === 0 ? 12 : 0,
                       borderBottomRightRadius: isLast ? 12 : 0,
                       borderBottom: isLast ? "2px solid #ddd" : undefined,
-                      boxShadow:
-                        isLast ? "0px 6px 6px -2px rgba(0,0,0,0.2)" : "none",
+                      boxShadow: isLast ? "0px 6px 6px -2px rgba(0,0,0,0.2)" : "none",
                       py: 2,
                       textTransform: "none",
                     }}
@@ -171,10 +176,10 @@ useEffect(() => {
           zIndex: 1000,
         }}
       >
-        {/* Left side */}
+        {/* Left side — cart summary */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Badge
-            badgeContent={3}
+            badgeContent={totalCount}
             color="error"
             overlap="circular"
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
@@ -197,31 +202,38 @@ useEffect(() => {
           </Badge>
 
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Rp0
+            {formatPrice(totalPrice)}
           </Typography>
         </Box>
 
         {/* Right side */}
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button variant="outlined" sx={{ textTransform: "none" }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate("/employee/cart")}
+            sx={{ textTransform: "none" }}
+          >
             Lihat Pesanan
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
+            onClick={() => navigate("/employee/checkout")}
+            disabled={totalCount === 0}
             sx={{
               bgcolor: "#FFC72C",
               color: "black",
               textTransform: "none",
               fontWeight: "bold",
               px: 3,
+              "&:disabled": { bgcolor: "#eee", color: "#aaa" },
             }}
           >
             Bayar
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default EmployeeNavbar; 
+export default EmployeeNavbar;

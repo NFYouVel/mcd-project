@@ -5,6 +5,7 @@ import typeReducer from "./typeSlice";
 import sectionReducer from "./sectionSlice";
 import filterReducer from "./filterSlice";
 import menuReducer from "./menuSlice";
+import cartReducer from "./cartSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     sections: sectionReducer,
     filters: filterReducer,
     menus: menuReducer,
+    cart: cartReducer,
   },
 });
 

@@ -28,6 +28,13 @@ import MakePackage from "../pages/MakePackage";
 import ProtectedRoutes from "./ProtectedRoute";
 import MenuCategory from "../pages/MenuCategory";
 import ItemPackageChoice from "../pages/ItemPackageChoice";
+import ItemCart from "../pages/ItemCart";
+
+// // TODO: aktifkan setelah halaman dibuat
+// import OrderManagementPage from "../pages/OrderManagementPage";
+// import AdminManagementPage from "../pages/AdminManagementPage";
+
+// const Orders = () => <h1>Orders (Coming Soon)</h1>;
 import ItemCustomization from "../pages/ItemCustomization"; 
 
 const Router = () => {
@@ -65,6 +72,7 @@ const Router = () => {
           <Route path=":id/make-package" element={<MakePackage />} />
           <Route path="category/:sectionId" element={<MenuCategory />} />
           <Route path="category/:sectionId/item/:itemId" element={<ItemPackageChoice />} />
+          <Route path="cart" element={<ItemCart />} />
           <Route path="category/:sectionId/customize/:menuId" element={<ItemCustomization />} />
         </Route>
       </Route>

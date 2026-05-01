@@ -44,7 +44,7 @@ export const getAllVariantGroups = async (req: Request, res: Response) => {
 // GET BY ID
 export const getVariantGroupById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const group = await VariantGroups.findByPk(id, {
       include: [{ model: VariantItems, as: "variantItems" }],
@@ -98,10 +98,11 @@ export const getAllVariantGroupsByMenu = async (req: Request, res: Response) => 
   }
 };
 
+
 // UPDATE
 export const updateVariantGroup = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name } = req.body;
 
     const group = await VariantGroups.findByPk(id);
@@ -121,7 +122,7 @@ export const updateVariantGroup = async (req: Request, res: Response) => {
 // DELETE
 export const deleteVariantGroup = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const group = await VariantGroups.findByPk(id);
 

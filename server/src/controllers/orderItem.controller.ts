@@ -13,12 +13,13 @@ import { MenuVariantGroups } from "../models/MenuVariantGroups.js";
 
 export const createOrderItem = async (req: Request, res: Response) => {
   try {
-    const {
+      const {
       orderId,
       menuId,
+      quantity = 1,      // ← was missing
       variantItemIds = [],
       ingredients = []
-    } = req.body;
+  } = req.body;
 
     if (!quantity || quantity <= 0) {
       return res.status(400).json({ message: "Invalid quantity" });
@@ -113,6 +114,7 @@ export const createOrderItem = async (req: Request, res: Response) => {
     });
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: "Error creating order item",
       error
