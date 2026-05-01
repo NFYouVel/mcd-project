@@ -10,7 +10,6 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 
-import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
 import { FilterMenu } from "./FilterMenu.js";
 

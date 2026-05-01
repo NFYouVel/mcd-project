@@ -30,7 +30,7 @@ export class FilterMenu extends Model {
 
   // 🔥 M:N with Section
   @BelongsToMany(() => MenuSection, () => SectionMenuItems)
-  declare sections: MenuSection[];
+  declare menuSections: MenuSection[];
 
   // 🔥 1:N with Menu
   @HasMany(() => Menu, {
