@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 import { Link } from "react-router";
 import ad from "../assets/ad.webp";
-import BigMac from "../assets/BigMac.webp";
-import Chicken from "../assets/chicken.webp";
-import IceCream from "../assets/icecream.png";
-import Spaghetti from "../assets/spaghetti.png";
+const BigMac = "http://localhost:5000/uploads/menu/bigmac.webp";
+const Chicken = "http://localhost:5000/uploads/menu/ayam_krispy.webp";
+const IceCream = "http://localhost:5000/uploads/menu/mcflurry_oreo.webp";
+const Spaghetti = "http://localhost:5000/uploads/menu/mcspaghetti.png";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Menu {
