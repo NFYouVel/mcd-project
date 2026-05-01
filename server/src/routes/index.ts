@@ -15,7 +15,7 @@ import variantGroupsRoutes from "./variantGroups.routes.js";
 import variantItemsRoutes from "./variantItems.routes.js";
 import menuVariantGroupsRoutes from "./menuVariantGroups.routes.js";
 import ingredientRoutes from "./ingredients.routes.js";
-
+import filterMenu from "./filterMenu.routes.js"
 
 const router: ExpressRouter= Router();
 
@@ -35,5 +35,6 @@ router.use("/packageitem", packageItemsRoutes);
 router.use("/variantgroup", variantGroupsRoutes);
 router.use("/variantitem", variantItemsRoutes);
 router.use("/menuvariantgroup", menuVariantGroupsRoutes);
+router.use('/filtermenu', filterMenu);
 
 export default router;

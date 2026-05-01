@@ -19,12 +19,12 @@ const LoginPage = () => {
             const data = await authService.login(email, password);
             const role = data.user.role;
 
-            if (role === "manager" || role === "cashier") {
-                console.log(localStorage.getItem("token"));
-                console.log(localStorage.getItem("user"));
-                navigate("/admin/dashboard");
+            if (role === "manager") {
+                navigate("/admin");
+            } else if (role === "cashier") {
+                navigate("/cashier/orders");
             } else {
-                navigate("/");
+                navigate("/")
             }
         } catch (err: any) {
             setError(err.message || "Login failed");

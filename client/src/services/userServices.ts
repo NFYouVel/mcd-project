@@ -10,7 +10,7 @@ export interface AdminUser {
 
 export const userService = {
     getAll: async (): Promise<AdminUser[]> => {
-        return apiRequest("/users");
+        return apiRequest("/user");
     },
 
     create: async (payload: {
@@ -34,14 +34,14 @@ export const userService = {
             role?: "manager" | "cashier";
         }
     ) => {
-        return apiRequest(`/users/${id}`, {
+        return apiRequest(`/user/${id}`, {
             method: "PUT",
             body: payload,
         });
     },
 
     delete: async (id: number) => {
-        return apiRequest(`/users/${id}`, {
+        return apiRequest(`/user/${id}`, {
             method: "DELETE",
         });
     },

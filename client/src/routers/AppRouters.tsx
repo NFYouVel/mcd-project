@@ -13,34 +13,27 @@ import EmployeeNavBar from "../pages/EmployeeNavBar";
 
 // Admin pages
 import MainMenu from "../pages/MainMenu";
-import Dashboard from "../pages/Dashboard";
 import MenuManagement from "../pages/MenuManagementPage";
 import TypeManagement from "../pages/TypeManagementPage";
 import SectionManagement from "../pages/SectionManagementPage";
 import FilterManagement from "../pages/FilterManagementPage";
+import AdminManagementPage from "../pages/AdminManagementPage";
+import OrderManagementPage from "../pages/OrderManagementPage";
 
-// Employee (kasir) pages
+// Employee (cashier) pages
 import EmployeeMenu from "../pages/MainMenuEmployee";
 import MakePackage from "../pages/MakePackage";
 
 // Protected route wrapper
 import ProtectedRoutes from "./ProtectedRoute";
-import AdminManagementPage from "../pages/AdminManagementPage";
-import OrderManagementPage from "../pages/OrderManagementPage";
 import MenuCategory from "../pages/MenuCategory";
 import ItemPackageChoice from "../pages/ItemPackageChoice";
 import ItemCustomization from "../pages/ItemCustomization"; 
 
-// // TODO: aktifkan setelah halaman dibuat
-// import OrderManagementPage from "../pages/OrderManagementPage";
-// import AdminManagementPage from "../pages/AdminManagementPage";
-
-const Orders = () => <h1>Orders (Coming Soon)</h1>;
-
 const Router = () => {
   return (
     <Routes>
-      {/* ===== Public routes (semua user bisa akses) ===== */}
+      {/* ===== Public routes ===== */}
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forget-password" element={<ForgetPasswordPage />} />
@@ -51,22 +44,21 @@ const Router = () => {
       <Route element={<ProtectedRoutes allowedRoles={["manager"]} />}>
         <Route path="/admin" element={<NavBar />}>
           <Route index element={<MainMenu />} />
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="menu" element={<MenuManagement />} />
           <Route path="types" element={<TypeManagement />} />
           <Route path="sections" element={<SectionManagement />} />
           <Route path="filters" element={<FilterManagement />} />
-          <Route path="admin-users" element={<AdminManagementPage />} /> {/* BARU */}
+          <Route path="admin-users" element={<AdminManagementPage />} />
           <Route path="orders" element={<OrderManagementPage />} />
         </Route>
       </Route>
 
-      {/* ===== Admin & Kasir ===== */}
+      {/* ===== Manager + Cashier (orders) ===== */}
       <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
-        <Route path="/menu/orders" element={<OrderManagementPage />} /> {/* GANTI dari placeholder */}
+        <Route path="/cashier/orders" element={<OrderManagementPage />} />
       </Route>
 
-      {/* ===== Kasir only (employee area) ===== */}
+      {/* ===== Cashier area ===== */}
       <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
         <Route path="/employee" element={<EmployeeNavBar />}>
           <Route index element={<EmployeeMenu />} />
