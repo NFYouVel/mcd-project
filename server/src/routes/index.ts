@@ -14,6 +14,7 @@ import packageItemsRoutes from "./packageItems.routes.js";
 import variantGroupsRoutes from "./variantGroups.routes.js";
 import variantItemsRoutes from "./variantItems.routes.js";
 import menuVariantGroupsRoutes from "./menuVariantGroups.routes.js";
+import filterMenu from "./filterMenu.routes.js"
 
 const router: ExpressRouter= Router();
 
@@ -21,7 +22,7 @@ const router: ExpressRouter= Router();
 router.use('/auth', AuthRoutes);
 router.use('/orders', orderRoutes);
 router.use("/user", userRoutes);
-router.use("/types", typeRoutes);
+router.use("/type", typeRoutes);
 router.use("/payment", paymentRoutes);
 router.use("/orderitem", orderItemRoutes);
 router.use("/filtermenu", filterMenuRoutes);
@@ -33,5 +34,6 @@ router.use("/packageitem", packageItemsRoutes);
 router.use("/variantgroup", variantGroupsRoutes);
 router.use("/variantitem", variantItemsRoutes);
 router.use("/menuvariantgroup", menuVariantGroupsRoutes);
+router.use('/filtermenu', filterMenu);
 
 export default router;

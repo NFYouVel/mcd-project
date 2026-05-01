@@ -1,20 +1,23 @@
+// src/pages/NavBar.tsx
 import { NavLink, Outlet, useNavigate } from "react-router";
 
 const links = [
-  { to: "/menu", label: "🏠 Home", end: true },
-  // { to: "/menu/dashboard", label: "📊 Dashboard" },
+  { to: "/admin", label: "🏠 Home", end: true },
+  { to: "/admin/dashboard", label: "📊 Dashboard" },
   { to: "/admin/menu", label: "🍔 Menu" },
-  // { to: "/menu/types", label: "🏷️ Types" },
-  // { to: "/menu/sections", label: "📑 Sections" },
+  { to: "/admin/types", label: "🏷️ Types" },        // ← aktif
+  { to: "/admin/sections", label: "📑 Sections" },  // ← aktif
   { to: "/admin/filters", label: "🔍 Filters" },
   { to: "/admin/orders", label: "📦 Orders" },
+  { to: "/admin/admin-users", label: "👥 Users" },  // ← tambah ini juga
 ];
 
 export default function NavBar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // kalo nanti pake auth
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
