@@ -152,6 +152,27 @@ module.exports = {
         filterMenuId: getFilter("McFlurry"),
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
+        sectionMenuId: getSection("Paket HeBat"),
+        filterMenuId: getFilter("Ayam"),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
+        sectionMenuId: getSection("Paket HeBat"),
+        filterMenuId: getFilter("Sapi"),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
+        sectionMenuId: getSection("Paket HeBat"),
+        filterMenuId: getFilter("Ikan"),
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
 
     ]);

@@ -66,7 +66,7 @@ const Router = () => {
       </Route>
 
       {/* ===== Cashier area ===== */}
-      <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
+      <Route element={<ProtectedRoutes allowedRoles={["manager", "customer"]} />}>
         <Route path="/employee" element={<EmployeeNavBar />}>
           <Route index element={<EmployeeMenu />} />
           <Route path=":id/make-package" element={<MakePackage />} />

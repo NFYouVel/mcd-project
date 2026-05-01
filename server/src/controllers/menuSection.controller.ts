@@ -19,7 +19,10 @@ export const getAllSections = async (req: any, res: any) => {
                 { model: Type },
                 { model: FilterMenu, through: { attributes: [] } }, // hide junction fields
             ],
-            order: [["createdAt", "ASC"]],
+            order: [
+                [sequelize.literal(`CASE WHEN "MenuSection"."name" = 'Promosi' THEN 0 ELSE 1 END`), "ASC"],
+                ["name", "ASC"],
+            ],
         });
 
         return res.json({ success: true, data: sections });

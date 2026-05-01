@@ -184,7 +184,7 @@ const MenuCategory = () => {
 
 
       {/* Grid */}
-      <Grid container spacing={1.5}>
+      <Grid container spacing={1.5} sx={{ mt: 2}}>
         {loadingItems
           ? Array.from({ length: 6 }).map((_, i) => (
             <Grid item xs={4} key={i}>

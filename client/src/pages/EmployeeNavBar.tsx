@@ -80,7 +80,7 @@ const EmployeeNavbar = () => {
         {/* Awal Button */}
         <Button
           component={Link}
-          to="/menu"
+          to="/employee"
           sx={{
             ml: 0, mr: 2, mb: 4,
             justifyContent: "flex-start",

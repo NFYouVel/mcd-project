@@ -27,6 +27,7 @@ module.exports = {
     // IDS
     // =========================
     const bigMacId    = uuidv4();
+    const chickenDeluxeBurgerId = uuidv4();
     const ayamId      = uuidv4();
     const colaId      = uuidv4();
     const nasiId      = uuidv4();
@@ -50,6 +51,19 @@ module.exports = {
         isAvailable: true,
         imageUrl: "/uploads/menu/bigmac.webp",
         filterMenuId: getFilterId("Sapi"),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: chickenDeluxeBurgerId,
+        name: "Chicken Burger Deluxe",
+        description: "Deluxe Chicken burger",
+        price: 20000,
+        isPackage: false,
+        isNew: true,
+        isAvailable: true,
+        imageUrl: "/uploads/menu/chicken_cheeseburger_deluxe.png",
+        filterMenuId: getFilterId("Ayam"),
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -78,7 +92,7 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/coca_cola.webp",
+        imageUrl: "/uploads/menu/coca_cola.png",
         filterMenuId: getFilterId("Minuman Soda"),
         createdAt: new Date(),
         updatedAt: new Date()
@@ -93,7 +107,7 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/nasi.webp",
+        imageUrl: "/uploads/menu/rice.png",
         filterMenuId: getFilterId("Camilan"), // ⚠️ better: create "Nasi" filter later
         createdAt: new Date(),
         updatedAt: new Date()
@@ -108,7 +122,7 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/mflurry",
+        imageUrl: "/uploads/menu/mcflurry_oreo.webp",
         filterMenuId: getFilterId("McFlurry"),
         createdAt: new Date(),
         updatedAt: new Date()
@@ -119,14 +133,14 @@ module.exports = {
       // =========================
       {
         id: paketAId,
-        name: "Paket Burger Komplit",
+        name: "PaHebat Chicken Burger Deluxe",
         description: "Big Mac + Coca Cola",
-        price: 42000,
+        price: 30000,
         isPackage: true,
         isNew: true,
         isAvailable: true,
-        imageUrl: "/uploads/menu/paket_burger.webp",
-        filterMenuId: getFilterId("Camilan"),
+        imageUrl: "/uploads/menu/Paket_HeBat _Chicken_Burger_Deluxe.png",
+        filterMenuId: getFilterId("Ayam"),
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -139,7 +153,7 @@ module.exports = {
         isPackage: true,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/paket_ayam.webp",
+        imageUrl: "/uploads/menu/PaNas_1.webp",
         filterMenuId: getFilterId("Camilan"),
         createdAt: new Date(),
         updatedAt: new Date()
@@ -152,11 +166,11 @@ module.exports = {
     // =========================
     await queryInterface.bulkInsert("Package_Items", [
 
-      // 🍔 Paket Burger
+      // 🍔 PaHebat Burger Deluxe
       {
         id: uuidv4(),
         packageId: paketAId,
-        packageItemId: bigMacId,
+        packageItemId: chickenDeluxeBurgerId,
         quantity: 1,
         createdAt: new Date(),
         updatedAt: new Date()

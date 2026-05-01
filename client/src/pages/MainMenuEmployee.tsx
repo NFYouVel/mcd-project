@@ -9,13 +9,20 @@ import {
   Alert,
 } from "@mui/material";
 import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import ad from "../assets/ad.webp";
-import BigMac from "../assets/BigMac.webp";
-import Chicken from "../assets/chicken.webp";
-import IceCream from "../assets/icecream.png";
-import Spaghetti from "../assets/spaghetti.png";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
+const BigMac = "http://localhost:5000/uploads/menu/bigmac.webp";
+const Chicken = "http://localhost:5000/uploads/menu/ayam_krispy.webp";
+const IceCream = "http://localhost:5000/uploads/menu/mcflurry_oreo.webp";
+const Spaghetti = "http://localhost:5000/uploads/menu/mcspaghetti.png";
+
+// ── Types ─────────────────────────────────────────────
+interface MenuSection {
+  id: string;
+  name: string;
+}
+
 interface Menu {
   id: string;
   name: string;
@@ -23,36 +30,53 @@ interface Menu {
   imageUrl: string | null;
   isAvailable: boolean;
   isNew: boolean;
+  filterMenu: {
+    id: string;
+    name: string;
+    menuSections?: MenuSection[];
+  };
 }
 
-// ── Static menu cards (top section) ───────────────────────────────────────────
-const STATIC_MENUS = [
-  { title: "Burger",     path: "/products/burger",  image: BigMac    },
-  { title: "Ayam McD",  path: "/products/chicken", image: Chicken   },
-  { title: "Menu Receh",path: "/products/value",   image: IceCream  },
-  { title: "Menu Hebat",path: "/products/cheap",   image: Spaghetti },
-];
+// ── Image mapper ──────────────────────────────────────
+const sectionImageMap: Record<string, string> = {
+  Burger: BigMac,
+  "Ayam McD Krispy": Chicken,
+  "Menu Receh": IceCream,
+  "Menu Hebat": Spaghetti,
+};
 
-// ── Reusable static card ───────────────────────────────────────────────────────
-function StaticMenuCard({ title, path, image }: { title: string; path: string; image: string }) {
+// ── Section Card ──────────────────────────────────────
+function SectionCard({ section }: { section: MenuSection }) {
+  const image = sectionImageMap[section.name] || Spaghetti;
+
   return (
     <Box sx={{ flex: 1 }}>
       <Card sx={{ height: "100%", minHeight: 200 }}>
         <CardActionArea
           component={Link}
-          to={path}
-          sx={{ display: "flex", justifyContent: "space-between", height: 200, overflow: "hidden" }}
+          to={`/employee/category/${section.id}`}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            height: 200,
+            overflow: "hidden",
+          }}
         >
           <CardContent sx={{ flex: 1, display: "flex", alignItems: "center" }}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1 }}>
-              <Typography variant="h5">{title}</Typography>
-            </Box>
+            <Typography variant="h5">{section.name}</Typography>
           </CardContent>
+
           <Box
             component="img"
             src={image}
-            alt={title}
-            sx={{ width: "60%", height: "100%", objectFit: "cover", objectPosition: "left", flexShrink: 0 }}
+            alt={section.name}
+            sx={{
+              width: "60%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "left",
+              flexShrink: 0,
+            }}
           />
         </CardActionArea>
       </Card>
@@ -60,46 +84,53 @@ function StaticMenuCard({ title, path, image }: { title: string; path: string; i
   );
 }
 
-// ── Dynamic recommendation card ────────────────────────────────────────────────
+// ── Recommendation Card ───────────────────────────────
 function RecommendationCard({ menu }: { menu: Menu }) {
-    const imageSrc = menu.imageUrl ? menu.imageUrl : Spaghetti;
+  const navigate = useNavigate();
+
+  const sectionId = menu.filterMenu?.menuSections?.[0]?.id;
+
+  const imageSrc = menu.imageUrl ? menu.imageUrl : Spaghetti;
 
   return (
     <Box sx={{ flex: 1 }}>
       <Card sx={{ height: "100%", minHeight: 200 }}>
         <CardActionArea
-          component={Link}
-          to={`/products/${menu.id}`}
-          sx={{ display: "flex", justifyContent: "space-between", height: 200, overflow: "hidden" }}
+          onClick={() => {
+            if (!menu.isAvailable || !sectionId) return;
+            navigate(`/employee/category/${sectionId}/item/${menu.id}`);
+          }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            height: 200,
+            overflow: "hidden",
+            cursor: menu.isAvailable ? "pointer" : "default",
+            opacity: menu.isAvailable ? 1 : 0.5,
+          }}
         >
+          {/* LEFT SIDE TEXT */}
           <CardContent sx={{ flex: 1, display: "flex", alignItems: "center" }}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1 }}>
+            <Box>
               <Typography variant="h5">{menu.name}</Typography>
               <Typography variant="body2" color="text.secondary">
                 Rp{menu.price.toLocaleString("id-ID")}
               </Typography>
-              {menu.isNew && (
-                <Typography
-                  variant="caption"
-                  sx={{
-                    background: "linear-gradient(135deg,#FFC72C,#FFD700)",
-                    color: "#333",
-                    px: 1,
-                    py: 0.25,
-                    borderRadius: 1,
-                    fontWeight: 700,
-                  }}
-                >
-                  Baru!
-                </Typography>
-              )}
             </Box>
           </CardContent>
+
+          {/* RIGHT SIDE IMAGE (THIS WAS MISSING) */}
           <Box
             component="img"
             src={imageSrc}
             alt={menu.name}
-            sx={{ width: "60%", height: "100%", objectFit: "cover", objectPosition: "left", flexShrink: 0 }}
+            sx={{
+              width: "60%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "left",
+              flexShrink: 0,
+            }}
           />
         </CardActionArea>
       </Card>
@@ -107,11 +138,11 @@ function RecommendationCard({ menu }: { menu: Menu }) {
   );
 }
 
-// ── Skeleton loader ────────────────────────────────────────────────────────────
+// ── Skeleton ─────────────────────────────────────────
 function RecommendationSkeleton() {
   return (
     <>
-      {Array.from({ length: 4 }).map((_, i) => (
+      {Array.from({ length: 3 }).map((_, i) => (
         <Box key={i} sx={{ flex: 1 }}>
           <Skeleton variant="rounded" height={200} />
         </Box>
@@ -120,34 +151,31 @@ function RecommendationSkeleton() {
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────────
+// ── MAIN ──────────────────────────────────────────────
 const MainMenuEmployee = () => {
+  const [sections, setSections] = useState<MenuSection[]>([]);
   const [recommendations, setRecommendations] = useState<Menu[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const paketHebatSection = sections.find(
+    (s) => s.name.toLowerCase() === "paket hebat"
+  );
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
+    const fetchAll = async () => {
       try {
         setLoading(true);
-        setError(null);
 
-        // Fetch available menus, newest first (limit 4 to match the layout)
-        const params = new URLSearchParams({
-          isAvailable: "true",
-          limit: "4",
-          page: "1",
-        });
+        const [secRes, menuRes] = await Promise.all([
+          fetch("/api/menusection"), // ⚠️ make sure backend matches this
+          fetch("/api/menu?isAvailable=true&limit=3&page=1"),
+        ]);
 
-        const res = await fetch(`/api/menu?${params.toString()}`);
+        const secJson = await secRes.json();
+        const menuJson = await menuRes.json();
 
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
-        const json = await res.json();
-
-        if (!json.success) throw new Error(json.message ?? "Failed to fetch menus");
-
-        setRecommendations(json.data);
+        setSections(secJson.data || []);
+        setRecommendations(menuJson.data || []);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -155,50 +183,60 @@ const MainMenuEmployee = () => {
       }
     };
 
-    fetchRecommendations();
+    fetchAll();
   }, []);
 
   return (
     <>
       <h1>Pesan Sekarang</h1>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 
-        {/* ── Static category cards ── */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* ── TOP 3 SECTIONS ── */}
         <Box sx={{ display: "flex", gap: 2 }}>
-          {STATIC_MENUS.map((menu) => (
-            <StaticMenuCard key={menu.title} {...menu} />
-          ))}
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} variant="rounded" height={200} sx={{ flex: 1 }} />
+            ))
+            : sections.slice(0, 3).map((section) => (
+              <SectionCard key={section.id} section={section} />
+            ))}
         </Box>
 
-        {/* ── Ad banner ── */}
-        <Box
-          component="img"
-          src={ad}
-          alt="ad"
-          sx={{ width: "100%", height: "100%", objectFit: "fill", borderRadius: 4 }}
-        />
+        {/* ── AD ── */}
+        {paketHebatSection && (
+          <Box
+            component={Link}
+            to={`/employee/category/${paketHebatSection.id}`}
+          >
+            <Box
+              component="img"
+              src={ad}
+              alt="ad"
+              sx={{
+                width: "100%",
+                borderRadius: 4,
+                cursor: "pointer",
+              }}
+            />
+          </Box>
+        )}
 
-        {/* ── Rekomendasi ── */}
+        {/* ── REKOMENDASI ── */}
         <h1>Rekomendasi</h1>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 1 }}>
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error">{error}</Alert>}
 
         <Box sx={{ display: "flex", gap: 2 }}>
           {loading ? (
             <RecommendationSkeleton />
-          ) : recommendations.length > 0 ? (
-            recommendations.map((menu) => (
+          ) : recommendations.length ? (
+            recommendations.slice(0, 3).map((menu) => (
               <RecommendationCard key={menu.id} menu={menu} />
             ))
           ) : (
-            <Typography color="text.secondary">Tidak ada rekomendasi tersedia.</Typography>
+            <Typography>Tidak ada rekomendasi tersedia.</Typography>
           )}
         </Box>
-
       </Box>
     </>
   );

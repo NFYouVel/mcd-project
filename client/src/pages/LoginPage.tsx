@@ -24,7 +24,7 @@ const LoginPage = () => {
             } else if (role === "cashier") {
                 navigate("/cashier/orders");
             } else {
-                navigate("/")
+                navigate("/employee")
             }
         } catch (err: any) {
             setError(err.message || "Login failed");
