@@ -21,7 +21,7 @@ const router: ExpressRouter= Router();
 router.use('/auth', AuthRoutes);
 router.use('/orders', orderRoutes);
 router.use("/user", userRoutes);
-router.use("/types", typeRoutes);
+router.use("/type", typeRoutes);
 router.use("/payment", paymentRoutes);
 router.use("/orderitem", orderItemRoutes);
 router.use("/filtermenu", filterMenuRoutes);
