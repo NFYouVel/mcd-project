@@ -25,6 +25,8 @@ const OrderManagementPage = () => {
     const [selected, setSelected] = useState<Order | null>(null);
     const [filter, setFilter] = useState<string>("all");
     const [error, setError] = useState("");
+    const [role, setRole] = useState<string | null>(null);
+
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -41,7 +43,27 @@ const OrderManagementPage = () => {
 
     useEffect(() => {
         fetchOrders();
+        setRole(getUserRole());
     }, []);
+
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.href = "/login"; // redirect ke login page
+    };
+
+    const getUserRole = (): string | null => {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return payload.role;
+        } catch {
+            return null;
+        }
+    };
+
 
     const handleViewDetail = async (id: string) => {
         try {
@@ -92,6 +114,11 @@ const OrderManagementPage = () => {
                     <button onClick={fetchOrders} style={styles.refreshBtn}>
                         🔄 Refresh
                     </button>
+                    {role === "cashier" && (
+                        <button onClick={handleLogout} style={styles.logoutBtn}>
+                            🚪 Logout
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -422,6 +449,15 @@ const styles: Record<string, React.CSSProperties> = {
         borderRadius: 6,
         cursor: "pointer",
         width: "100%",
+    },
+    logoutBtn: {
+        padding: "8px 14px",
+        background: "#e74c3c",
+        color: "#fff",
+        border: "none",
+        borderRadius: 6,
+        cursor: "pointer",
+        fontSize: 14,
     },
 };
 
