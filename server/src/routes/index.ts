@@ -34,4 +34,5 @@ router.use("/variantgroup", variantGroupsRoutes);
 router.use("/variantitem", variantItemsRoutes);
 router.use("/menuvariantgroup", menuVariantGroupsRoutes);
 
+
 export default router;
