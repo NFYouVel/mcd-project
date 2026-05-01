@@ -15,6 +15,7 @@ import { MenuVariantGroups } from '../models/MenuVariantGroups.js';
 import { PackageItems } from '../models/PackageItems.js';
 
 import dotenv from 'dotenv';
+import { SectionMenuItems } from '../models/SectionMenuItems.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ export const sequelize = new Sequelize({
         VariantGroups,
         VariantItems,
         MenuVariantGroups,
-        PackageItems
+        PackageItems,
+        SectionMenuItems
     ]
 });

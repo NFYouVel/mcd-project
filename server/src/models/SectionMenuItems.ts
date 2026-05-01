@@ -10,8 +10,8 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 
-import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
+import { FilterMenu } from "./FilterMenu.js";
 
 @Table({
   tableName: "Section_Menu_Items",
@@ -27,17 +27,6 @@ export class SectionMenuItems extends Model {
   })
   declare id: string;
 
-  // 🔥 FK → Menu
-  @ForeignKey(() => Menu)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  declare menuId: string;
-
-  @BelongsTo(() => Menu)
-  declare menu: Menu;
-
   // 🔥 FK → Section_Menu
   @ForeignKey(() => MenuSection)
   @Column({
@@ -48,6 +37,17 @@ export class SectionMenuItems extends Model {
 
   @BelongsTo(() => MenuSection)
   declare menuSection: MenuSection;
+
+  // 🔥 NEW FK → FilterMenu
+  @ForeignKey(() => FilterMenu)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  declare filterMenuId: string;
+
+  @BelongsTo(() => FilterMenu)
+  declare filterMenu: FilterMenu;
 
   @CreatedAt
   declare createdAt: Date;
