@@ -10,7 +10,6 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 
-import { Menu } from "./Menu.js";
 import { MenuSection } from "./MenuSection.js";
 import { FilterMenu } from "./FilterMenu.js";
 
@@ -27,17 +26,6 @@ export class SectionMenuItems extends Model {
     allowNull: false,
   })
   declare id: string;
-
-  // 🔥 FK → Menu
-  @ForeignKey(() => Menu)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  declare menuId: string;
-
-  @BelongsTo(() => Menu)
-  declare menu: Menu;
 
   // 🔥 FK → Section_Menu
   @ForeignKey(() => MenuSection)

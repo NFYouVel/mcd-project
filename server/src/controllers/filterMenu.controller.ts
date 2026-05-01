@@ -93,7 +93,7 @@ export const createFilterMenu = asyncHandler(async (req: Request, res: Response)
 
   // 🔥 set M:N relation
   if (sectionIds.length > 0) {
-    await filter.$set("sections", sectionIds);
+    await filter.$set("menuSections", sectionIds);
   }
 
   res.status(201).json({
@@ -133,7 +133,7 @@ export const updateFilterMenu = asyncHandler(async (req: Request, res: Response)
     }
 
     // replace relations
-    await filter.$set("sections", sectionIds);
+    await filter.$set("menuSections", sectionIds);
   }
 
   await filter.update({
@@ -163,7 +163,7 @@ export const deleteFilterMenu = asyncHandler(async (req: Request, res: Response)
   }
 
   // optional: detach sections first (cleaner)
-  await filter.$set("sections", []);
+  await filter.$set("menuSections", []);
 
   await filter.destroy();
 

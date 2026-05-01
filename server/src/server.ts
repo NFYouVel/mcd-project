@@ -48,7 +48,6 @@ app.use('/api/packageitem', packageItemsRoutes);
 app.use('/api/variantgroup', variantGroupsRoutes);
 app.use('/api/variantitem', variantItemsRoutes);
 app.use('/api/menuvariantgroup', menuVariantGroupsRoutes);
-app.use('/api/filtermenuitem', filterMenuItems);
 
 app.use(errorHandler);
 
