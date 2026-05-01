@@ -56,6 +56,13 @@ module.exports = {
         variantGroupId: getGroupId("Chicken Part"),
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: uuidv4(),
+        menuId: getMenuId("PaNas 1"), // ✅ FIXED
+        variantGroupId: getGroupId("Chicken Part"),
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
   },

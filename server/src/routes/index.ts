@@ -14,6 +14,7 @@ import packageItemsRoutes from "./packageItems.routes.js";
 import variantGroupsRoutes from "./variantGroups.routes.js";
 import variantItemsRoutes from "./variantItems.routes.js";
 import menuVariantGroupsRoutes from "./menuVariantGroups.routes.js";
+import ingredientRoutes from "./ingredients.routes.js";
 import filterMenu from "./filterMenu.routes.js"
 
 const router: ExpressRouter= Router();
@@ -28,7 +29,7 @@ router.use("/orderitem", orderItemRoutes);
 router.use("/filtermenu", filterMenuRoutes);
 router.use("/menu", menuRoutes);
 router.use("/menusection", menuSectionRoutes);
-router.use("/ingredient", ingredientItemsRoutes);
+router.use("/ingredient", ingredientRoutes);
 router.use("/ingredientitem", ingredientItemsRoutes);
 router.use("/packageitem", packageItemsRoutes);
 router.use("/variantgroup", variantGroupsRoutes);
