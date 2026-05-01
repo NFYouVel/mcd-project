@@ -26,6 +26,8 @@ import MakePackage from "../pages/MakePackage";
 
 // Protected route wrapper
 import ProtectedRoutes from "./ProtectedRoute";
+import MenuCategory from "../pages/MenuCategory";
+import ItemPackageChoice from "../pages/ItemPackageChoice";
 
 const Router = () => {
   return (
@@ -53,6 +55,17 @@ const Router = () => {
       {/* ===== Manager + Cashier (orders) ===== */}
       <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
         <Route path="/cashier/orders" element={<OrderManagementPage />} />
+      </Route>
+
+      {/* ===== Cashier area ===== */}
+      <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
+        <Route path="/employee" element={<EmployeeNavBar />}>
+          <Route index element={<EmployeeMenu />} />
+          <Route path=":id/make-package" element={<MakePackage />} />
+          <Route path="category/:sectionId" element={<MenuCategory />} />
+          <Route path="category/:sectionId/item/:itemId" element={<ItemPackageChoice />} />
+          <Route path=":id" element={<div>Menu Detail</div>} />
+        </Route>
       </Route>
 
       {/* ===== Fallback ===== */}
