@@ -13,7 +13,6 @@ import EmployeeNavBar from "../pages/EmployeeNavBar";
 
 // Admin pages
 import MainMenu from "../pages/MainMenu";
-import Dashboard from "../pages/Dashboard";
 import MenuManagement from "../pages/MenuManagementPage";
 import TypeManagement from "../pages/TypeManagementPage";
 import SectionManagement from "../pages/SectionManagementPage";

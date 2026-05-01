@@ -3,7 +3,6 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 
 const links = [
   { to: "/admin", label: "🏠 Home", end: true },
-  { to: "/admin/dashboard", label: "📊 Dashboard" },
   { to: "/admin/menu", label: "🍔 Menu" },
   { to: "/admin/types", label: "🏷️ Types" },        // ← aktif
   { to: "/admin/sections", label: "📑 Sections" },  // ← aktif
