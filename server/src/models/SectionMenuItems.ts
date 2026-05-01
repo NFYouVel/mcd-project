@@ -48,17 +48,6 @@ export class SectionMenuItems extends Model {
   @BelongsTo(() => FilterMenu)
   declare filterMenu: FilterMenu;
 
-  // 🔥 NEW FK → FilterMenu
-  @ForeignKey(() => FilterMenu)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  declare filterMenuId: string;
-
-  @BelongsTo(() => FilterMenu)
-  declare filterMenu: FilterMenu;
-
   @CreatedAt
   declare createdAt: Date;
 
