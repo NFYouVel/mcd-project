@@ -1,26 +1,12 @@
 import { Router } from "express";
-import type { Router as ExpressRouter } from "express";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
+import { getAllOrders, updateOrder, createOrder, getOrderById } from "../controllers/order.controller.js";
 
-import {
-  createOrder,
-  getAllOrders,
-  // getOrderById,
-  updateOrder,
-  deleteOrder,
-} from "../controllers/order.controller.js";
+const router: Router = Router();
 
-const router: ExpressRouter = Router();
-
-//Create Order
-router.post("/", createOrder);
-
-//Get All Orders
-router.get("/", getAllOrders);
-
-//Update Order
-router.put("/:id", updateOrder);
-
-//Delete Order
-router.delete("/:id", deleteOrder);
+router.get('/', authMiddleware, roleMiddleware('manager', 'cashier'), getAllOrders);
+router.get('/:id', authMiddleware, roleMiddleware('manager', 'cashier'), getOrderById);
+router.put('/:id', authMiddleware, roleMiddleware('manager', 'cashier'), updateOrder);
+router.post('/', createOrder);
 
 export default router;

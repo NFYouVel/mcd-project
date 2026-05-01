@@ -62,9 +62,7 @@ function StaticMenuCard({ title, path, image }: { title: string; path: string; i
 
 // ── Dynamic recommendation card ────────────────────────────────────────────────
 function RecommendationCard({ menu }: { menu: Menu }) {
-  const imageSrc = menu.imageUrl
-    ? `${import.meta.env.VITE_API_URL}${menu.imageUrl}`
-    : Spaghetti; // fallback image
+    const imageSrc = menu.imageUrl ? menu.imageUrl : Spaghetti;
 
   return (
     <Box sx={{ flex: 1 }}>

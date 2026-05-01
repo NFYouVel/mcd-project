@@ -1,10 +1,12 @@
 import { Router } from "express";
-import * as ctrl from "../controllers/type.controller.js";
+import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js";
+import { getAllTypes, createType, updateType, deleteType } from "../controllers/type.controller.js";
 
 const router: Router = Router();
-router.get("/", ctrl.getAllTypes);
-router.get("/:id", ctrl.getTypeById);
-router.post("/", ctrl.createType);
-router.put("/:id", ctrl.updateType);
-router.delete("/:id", ctrl.deleteType);
+
+router.get('/', getAllTypes); 
+router.post('/', authMiddleware, roleMiddleware('manager'), createType);
+router.put('/:id', authMiddleware, roleMiddleware('manager'), updateType);
+router.delete('/:id', authMiddleware, roleMiddleware('manager'), deleteType);
+
 export default router;

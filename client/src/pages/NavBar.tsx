@@ -2,12 +2,12 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 
 const links = [
   { to: "/menu", label: "🏠 Home", end: true },
-  { to: "/menu/dashboard", label: "📊 Dashboard" },
-  { to: "/menu/products", label: "🍔 Menu" },
-  { to: "/menu/types", label: "🏷️ Types" },
-  { to: "/menu/sections", label: "📑 Sections" },
-  { to: "/menu/filters", label: "🔍 Filters" },
-  { to: "/menu/orders", label: "📦 Orders" },
+  // { to: "/menu/dashboard", label: "📊 Dashboard" },
+  { to: "/admin/menu", label: "🍔 Menu" },
+  // { to: "/menu/types", label: "🏷️ Types" },
+  // { to: "/menu/sections", label: "📑 Sections" },
+  { to: "/admin/filters", label: "🔍 Filters" },
+  { to: "/admin/orders", label: "📦 Orders" },
 ];
 
 export default function NavBar() {

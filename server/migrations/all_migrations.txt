@@ -1,0 +1,746 @@
+module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Users', {
+            id: {
+                type : Sequelize.UUID,
+                defaultValue : Sequelize.UUIDV4,
+                primaryKey : true,
+                alowNull : false
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            email: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                unique: true
+            },
+            password: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            address: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            birth_of_date: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            salary: {
+                type: Sequelize.DECIMAL(10, 2),
+                allowNull: true
+            },
+            role: {
+                type: Sequelize.ENUM('customer', 'manager', 'cashier'),
+                allowNull: false,
+                defaultValue: 'customer'
+            },
+            resetPasswordToken: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            resetPasswordExpires: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Users');
+    }
+};module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Type', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            foodTypeId: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            description: {
+                type: Sequelize.ENUM('heavy', 'light', 'promotion', 'drinks', 'dessert', 'rice'),
+                allowNull: false
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+    },
+
+    down: async (queryInterface) => {
+        await queryInterface.dropTable('Type');
+    }
+};
+module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Section_Menu', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            description: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+
+        await queryInterface.addColumn('Section_Menu', 'Type', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Type',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+
+    down: async (queryInterface) => {
+        await queryInterface.dropTable('Section_Menu');
+    }
+};
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("Filter_Menu", {
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+    });
+  },
+
+  down: async (queryInterface) => {
+    await queryInterface.dropTable("Filter_Menu");
+  },
+};module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Menu', {
+            id : {
+                type : Sequelize.UUID,
+                defaultValue : Sequelize.UUIDV4,
+                primaryKey : true,
+                alowNull : false
+            },
+            name : {
+                type : Sequelize.STRING,
+                allowNull : false,
+            },
+            description : {
+                type : Sequelize.STRING,
+                allowNull : true,
+            },
+            price : {
+                type : Sequelize.INTEGER,
+                allowNull : false,
+            },
+            isNew : {
+                type : Sequelize.BOOLEAN,
+                defaultValue : true,
+                allowNull : false,
+            },
+            isAvailable : {
+                type : Sequelize.BOOLEAN,
+                defaultValue : true,
+                allowNull : false,
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            imageUrl: {
+                type: Sequelize.STRING,
+                allowNull: true
+            }
+        });
+
+        await queryInterface.addColumn('Menu', 'filterMenuId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references:{
+                model : 'Filter_Menu',
+                key : 'id'
+            },
+            onUpdate : 'CASCADE',
+            onDelete : 'CASCADE'
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Menu');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Orders', {
+            id : {
+                type : Sequelize.UUID,
+                defaultValue : Sequelize.UUIDV4,
+                primaryKey : true,
+                allowNull : false
+            },
+            status : {
+                type : Sequelize.ENUM('pending', 'checkedout', 'served', 'cancelled'),
+                allowNull : false,
+                defaultValue : 'pending'
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Orders');
+    }
+}module.exports = {
+    up : async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Ingredients', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            price: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+    },
+    down : async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Ingredients');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Order_Items', {
+            id : {
+                type : Sequelize.UUID,
+                defaultValue : Sequelize.UUIDV4,
+                primaryKey : true,
+                allowNull : false
+            },
+            status : {
+                type : Sequelize.ENUM('pending', 'preparing', 'served', 'cancelled'),
+                allowNull : false,
+                defaultValue : 'pending'
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+
+        await queryInterface.addColumn('Order_Items', 'menuId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Menu',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+        await queryInterface.addColumn('Order_Items', 'orderId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Orders',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Order_Items');
+    }
+
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Ingredient_Items', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            quantity: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            price: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+        await queryInterface.addColumn('Ingredient_Items', 'ingredientsId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Ingredients',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+        await queryInterface.addColumn('Ingredient_Items', 'orderItemsId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Order_Items',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Ingredient_Items');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Payment', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            status: {
+                type: Sequelize.ENUM('paid', 'unpaid'),
+                allowNull: false,
+                defaultValue: 'unpaid'
+            },
+            payment_method: {
+                type: Sequelize.ENUM('e-wallet', 'cash', 'card'),
+                allowNull: false,
+                defaultValue: 'cash'
+            },
+            total_price: {
+                type: Sequelize.DECIMAL(10, 2),
+                allowNull: false
+            },
+            createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            },
+            deletedAt: {
+                type: Sequelize.DATE,
+                allowNull: true
+            },
+            updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW
+            }
+        });
+        await queryInterface.addColumn('Payment', 'orderId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Orders',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Payment');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.addColumn('Menu', 'isPackage', {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        });
+    },
+
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Menu');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Variant_Groups', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Variant_Groups');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Variant_Items', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            priceModifier: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+        await queryInterface.addColumn('Variant_Items', 'variantGroupId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references:{
+                model : 'Variant_Groups',
+                key : 'id'
+            },
+            onUpdate : 'CASCADE',
+            onDelete : 'CASCADE'
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Variant_Items');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Menu_Variant_Groups', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+
+        await queryInterface.addColumn('Menu_Variant_Groups', 'menuId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Menu',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+
+        await queryInterface.addColumn('Menu_Variant_Groups', 'variantGroupId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Variant_Groups',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Menu_Variant_Groups');
+    }
+}module.exports = {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('Package_Items', {
+            id: {
+                type: Sequelize.UUID,
+                defaultValue: Sequelize.UUIDV4,
+                primaryKey: true,
+                allowNull: false
+            },
+            quantity: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            deletedAt: {
+                allowNull: true,
+                type: Sequelize.DATE
+            }
+        });
+
+        await queryInterface.addColumn('Package_Items', 'packageId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Menu',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+
+        await queryInterface.addColumn('Package_Items', 'packageItemId', {
+            type: Sequelize.UUID,
+            allowNull: false,
+            references: {
+                model: 'Menu',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+    },
+    down: async (queryInterface, Sequelize) => {
+        await queryInterface.dropTable('Package_Items');
+    }
+};module.exports = {
+  up: async (queryInterface, Sequelize) => {
+
+    // create base table first
+    await queryInterface.createTable("Section_Menu_Items", {
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
+
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+    });
+
+    // =========================================
+    // FK → Filter_Menu
+    // =========================================
+    await queryInterface.addColumn("Section_Menu_Items", "filterMenuId", {
+      type: Sequelize.UUID,
+      allowNull: false,
+      references: {
+        model: "Filter_Menu",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    });
+
+    // =========================================
+    // FK → Section_Menu
+    // =========================================
+    await queryInterface.addColumn("Section_Menu_Items", "sectionMenuId", {
+      type: Sequelize.UUID,
+      allowNull: false,
+      references: {
+        model: "Section_Menu",
+        key: "id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+    });
+
+    // =========================================
+    // UNIQUE constraint (VERY IMPORTANT)
+    // =========================================
+    await queryInterface.addConstraint("Section_Menu_Items", {
+      fields: ["filterMenuId", "sectionMenuId"],
+      type: "unique",
+      name: "unique_filter_section_pair",
+    });
+  },
+
+  down: async (queryInterface) => {
+    await queryInterface.dropTable("Section_Menu_Items");
+  },
+};
+

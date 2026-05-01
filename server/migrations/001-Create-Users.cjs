@@ -33,9 +33,17 @@ module.exports = {
                 allowNull: true
             },
             role: {
-                type: Sequelize.ENUM('staff', 'manager'),
+                type: Sequelize.ENUM('customer', 'manager', 'cashier'),
                 allowNull: false,
-                defaultValue: 'staff'
+                defaultValue: 'customer'
+            },
+            resetPasswordToken: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            resetPasswordExpires: {
+                type: Sequelize.DATE,
+                allowNull: true
             },
             createdAt: {
                 type: Sequelize.DATE,

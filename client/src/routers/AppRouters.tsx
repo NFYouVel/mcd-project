@@ -1,63 +1,80 @@
 import { Routes, Route, Navigate } from "react-router";
+
+// Public pages
 import Login from "../pages/LoginPage";
 import Register from "../pages/RegisterPage";
-import NavBar from "../pages/NavBar";
-import MainMenu from "../pages/MainMenu";
+import ForgetPasswordPage from "../pages/ForgotPasswordPage";
+import ResetPasswordPage from "../pages/ResetPasswordPage";
+import UnauthorizedPage from "../pages/UnathorizedPage";
 
-// Management pages
+// Layout
+import NavBar from "../pages/NavBar";
+import EmployeeNavBar from "../pages/EmployeeNavBar";
+
+// Admin pages
+import MainMenu from "../pages/MainMenu";
 import Dashboard from "../pages/Dashboard";
 import MenuManagement from "../pages/MenuManagementPage";
 import TypeManagement from "../pages/TypeManagementPage";
 import SectionManagement from "../pages/SectionManagementPage";
 import FilterManagement from "../pages/FilterManagementPage";
 
-// Employee pages
+// Employee (kasir) pages
 import EmployeeMenu from "../pages/MainMenuEmployee";
-import EmployeeNavBar from "../pages/EmployeeNavBar";
 import MakePackage from "../pages/MakePackage";
+
+// Protected route wrapper
+import ProtectedRoutes from "./ProtectedRoute";
+import AdminManagementPage from "../pages/AdminManagementPage";
+import OrderManagementPage from "../pages/OrderManagementPage";
+
+// TODO: aktifkan setelah halaman dibuat
+// import OrderManagementPage from "../pages/OrderManagementPage";
+// import AdminManagementPage from "../pages/AdminManagementPage";
 
 const Orders = () => <h1>Orders (Coming Soon)</h1>;
 
 const Router = () => {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* ===== Public routes (semua user bisa akses) ===== */}
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forget-password" element={<ForgetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Protected layout (NavBar wrapper) */}
-      <Route path="/menu" element={<NavBar />}>
-        <Route index element={<MainMenu />} />
-        <Route path="dashboard" element={<Dashboard />} />
-
-        {/* Menu Management = Products */}
-        <Route path="products" element={<MenuManagement />} />
-
-        {/* Order */}
-        <Route path="orders" element={<Orders />} />
-
-        {/* Promosi → group of Type/Section/Filter management */}
-        <Route path="types" element={<TypeManagement />} />
-        <Route path="sections" element={<SectionManagement />} />
-        <Route path="filters" element={<FilterManagement />} />
+      {/* ===== Manager only ===== */}
+      <Route element={<ProtectedRoutes allowedRoles={["manager"]} />}>
+        <Route path="/admin" element={<NavBar />}>
+          <Route index element={<MainMenu />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="menu" element={<MenuManagement />} />
+          <Route path="types" element={<TypeManagement />} />
+          <Route path="sections" element={<SectionManagement />} />
+          <Route path="filters" element={<FilterManagement />} />
+          <Route path="admin-users" element={<AdminManagementPage />} /> {/* BARU */}
+          <Route path="orders" element={<OrderManagementPage />} />
+        </Route>
       </Route>
 
-      {/* Fallback */}
+      {/* ===== Admin & Kasir ===== */}
+      <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
+        <Route path="/menu/orders" element={<OrderManagementPage />} /> {/* GANTI dari placeholder */}
+      </Route>
+
+      {/* ===== Kasir only (employee area) ===== */}
+      <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
+        <Route path="/employee" element={<EmployeeNavBar />}>
+          <Route index element={<EmployeeMenu />} />
+          <Route path=":id/make-package" element={<MakePackage />} />
+          <Route path=":id" element={<div>Menu Detail</div>} />
+        </Route>
+      </Route>
+
+      {/* ===== Fallback ===== */}
       <Route path="*" element={<Navigate to="/" replace />} />
-
-      <Route path="/employee" element={<EmployeeNavBar />}>
-        <Route index element={<EmployeeMenu />} />
-
-        {/* make package flow */}
-        <Route path=":id/make-package" element={<MakePackage />} />
-
-
-        {/* normal menu detail page (YOU NEED THIS) */}
-        <Route path=":id" element={<div>Menu Detail</div>} />
-        
-      </Route>
     </Routes>
-
   );
 };
 
