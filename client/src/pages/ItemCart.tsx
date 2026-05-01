@@ -75,7 +75,7 @@ const ItemCart = () => {
         setLoading(true);
         setError(null);
         try {
-            const BASE = import.meta.env.VITE_API_URL;
+            const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
             // 1. Create the order
             const orderRes = await fetch(`${BASE}/orders`, {
@@ -94,16 +94,14 @@ const ItemCart = () => {
                     body: JSON.stringify({
                         orderId: order.id,
                         menuId: item.menuId,
-                        // ingredients: [{ ingredientsId, quantity }] — only modified ones
                         ingredients: Array.isArray(item.ingredients)
                             ? item.ingredients.map((ing) => ({
                                 ingredientsId: ing.id,
                                 quantity: ing.quantity ?? 1,
                             }))
                             : [],
-                        // // variants: flat array of variant item IDs
-                        // variantItemIds: item.variants.map((v) => v.id),
-                    }),
+                        variantItemIds: item.variants.map((v) => v.id),
+                    })
                 });
                 if (!itemRes.ok) throw new Error(`Failed to add item: ${item.name}`);
             }

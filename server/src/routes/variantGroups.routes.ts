@@ -6,7 +6,7 @@ import {
   updateVariantGroup,
   deleteVariantGroup,
   getAllVariantGroupsByMenu,
-} from "../controllers/variantGroups.controller";
+} from "../controllers/variantGroups.controller.js";
 
 const router: ExpressRouter = ExpressRouter();
 
