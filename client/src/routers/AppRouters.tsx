@@ -29,6 +29,7 @@ import AdminManagementPage from "../pages/AdminManagementPage";
 import OrderManagementPage from "../pages/OrderManagementPage";
 import MenuCategory from "../pages/MenuCategory";
 import ItemPackageChoice from "../pages/ItemPackageChoice";
+import ItemCustomization from "../pages/ItemCustomization"; 
 
 // // TODO: aktifkan setelah halaman dibuat
 // import OrderManagementPage from "../pages/OrderManagementPage";
@@ -72,7 +73,7 @@ const Router = () => {
           <Route path=":id/make-package" element={<MakePackage />} />
           <Route path="category/:sectionId" element={<MenuCategory />} />
           <Route path="category/:sectionId/item/:itemId" element={<ItemPackageChoice />} />
-          <Route path=":id" element={<div>Menu Detail</div>} />
+          <Route path="category/:sectionId/customize/:menuId" element={<ItemCustomization />} />
         </Route>
       </Route>
 

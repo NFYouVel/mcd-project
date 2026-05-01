@@ -16,7 +16,6 @@ export const createOrderItem = async (req: Request, res: Response) => {
     const {
       orderId,
       menuId,
-      quantity,
       variantItemIds = [],
       ingredients = []
     } = req.body;
@@ -51,7 +50,6 @@ export const createOrderItem = async (req: Request, res: Response) => {
     const item = await OrderItems.create({
       orderId,
       menuId,
-      quantity
     });
 
     let extraCost = 0;
@@ -208,33 +206,17 @@ export const getOrderItemById = async (req: Request, res: Response) => {
 export const updateOrderItem = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    const { quantity } = req.body;
+    // ← quantity dihapus dari sini
 
     const item = await OrderItems.findByPk(id);
-
-    if (!item) {
-      return res.status(404).json({
-        message: "Item not found"
-      });
-    }
+    if (!item) return res.status(404).json({ message: "Item not found" });
 
     const order = await Orders.findByPk(item.orderId);
+    if (!order) return res.status(400).json({ message: "Order not found" });
+    if (order.status !== "pending") return res.status(400).json({ message: "Order already processed" });
 
-    if (!order) {
-      return res.status(400).json({
-        message: "Order not found"
-      });
-    }
-
-    if (order.status !== "pending") {
-      return res.status(400).json({
-        message: "Order already processed"
-      });
-    }
-
-    await item.update({
-      quantity
-    });
+    // Sekarang update hanya bisa untuk status atau ingredient
+    // await item.update({}) ← nothing to update di base item
 
     const total = await syncPayment(item.orderId);
 
@@ -243,12 +225,8 @@ export const updateOrderItem = async (req: Request, res: Response) => {
       data: item,
       payment_total: total
     });
-
   } catch (error) {
-    return res.status(500).json({
-      message: "Error updating item",
-      error
-    });
+    return res.status(500).json({ message: "Error updating item", error });
   }
 };
 

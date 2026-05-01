@@ -5,23 +5,22 @@ import {
   getVariantGroupById,
   updateVariantGroup,
   deleteVariantGroup,
-} from "../controllers/variantGroups.controller.js";
+  getAllVariantGroupsByMenu,
+} from "../controllers/variantGroups.controller";
 
 const router: ExpressRouter = ExpressRouter();
 
-// CREATE
+// ⚠️ IMPORTANT: specific routes MUST come before /:id
+// otherwise Express matches "menu" as the :id param
+
+// GET all variant groups for a specific menu
+router.get("/menu/:menuId", getAllVariantGroupsByMenu);
+
+// CRUD
 router.post("/", createVariantGroup);
-
-// READ ALL
 router.get("/", getAllVariantGroups);
-
-// READ ONE
 router.get("/:id", getVariantGroupById);
-
-// UPDATE
 router.put("/:id", updateVariantGroup);
-
-// DELETE
 router.delete("/:id", deleteVariantGroup);
 
 export default router;
