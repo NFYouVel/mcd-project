@@ -1,12 +1,29 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // ====================== TYPES ======================
+export interface IngredientDetail {
+    id: string;
+    name: string;
+    quantity: number;
+}
+
+export interface VariantDetail {
+    id: string;
+    name: string;
+    groupName: string;
+}
+
 export interface CartItem {
+    cartItemId: string;           // unique per-entry (menuId + timestamp)
     menuId: string;
     name: string;
     price: number;
     imageUrl: string | null;
     quantity: number;
+    // modification details
+    ingredients: IngredientDetail[];   // burger: ingredient quantities (only non-zero)
+    variants: VariantDetail[];         // chicken: selected variant items
+    specialRequests: string[];
 }
 
 interface CartState {
@@ -22,25 +39,24 @@ const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
-        // Add one — if already exists, increment quantity
-        addToCart: (state, action: PayloadAction<Omit<CartItem, "quantity">>) => {
-            const existing = state.items.find((i) => i.menuId === action.payload.menuId);
-            if (existing) {
-                existing.quantity += 1;
-            } else {
-                state.items.push({ ...action.payload, quantity: 1 });
-            }
+        // Add one — always creates a new line item (different mods = different entry)
+        addToCart: (
+            state,
+            action: PayloadAction<Omit<CartItem, "quantity" | "cartItemId">>
+        ) => {
+            const cartItemId = `${action.payload.menuId}_${Date.now()}`;
+            state.items.push({ ...action.payload, quantity: 1, cartItemId });
         },
 
         // Increment quantity by 1
         incrementItem: (state, action: PayloadAction<string>) => {
-            const item = state.items.find((i) => i.menuId === action.payload);
+            const item = state.items.find((i) => i.cartItemId === action.payload);
             if (item) item.quantity += 1;
         },
 
         // Decrement by 1 — remove if reaches 0
         decrementItem: (state, action: PayloadAction<string>) => {
-            const index = state.items.findIndex((i) => i.menuId === action.payload);
+            const index = state.items.findIndex((i) => i.cartItemId === action.payload);
             if (index === -1) return;
             if (state.items[index].quantity <= 1) {
                 state.items.splice(index, 1);
@@ -49,9 +65,9 @@ const cartSlice = createSlice({
             }
         },
 
-        // Remove all of a specific menu item
+        // Remove all of a specific cart line
         removeFromCart: (state, action: PayloadAction<string>) => {
-            state.items = state.items.filter((i) => i.menuId !== action.payload);
+            state.items = state.items.filter((i) => i.cartItemId !== action.payload);
         },
 
         // Clear entire cart after checkout

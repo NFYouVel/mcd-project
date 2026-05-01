@@ -1,17 +1,61 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Box, Typography, IconButton, Button, Divider } from "@mui/material";
+import { Box, Typography, IconButton, Button, Divider, CircularProgress } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../store/index";
 import {
     incrementItem,
     decrementItem,
     removeFromCart,
+    clearCart,
 } from "../store/cartSlice";
+import type { CartItem } from "../store/cartSlice";
 import { getImageUrl } from "../services/api";
 
 // ====================== HELPERS ======================
 const formatPrice = (price: number) =>
     `Rp${price?.toLocaleString("id-ID") ?? 0}`;
+
+const ModificationSummary = ({ item }: { item: CartItem }) => {
+    const lines: string[] = [];
+
+    if (item.ingredients.length > 0) {
+        item.ingredients.forEach(ing => {
+            if (ing.quantity === 0) {
+                lines.push(`Tanpa ${ing.name}`);
+            } else if (ing.quantity > 1) {
+                lines.push(`${ing.name} ×${ing.quantity}`);
+            }
+        });
+    }
+
+    if (item.variants.length > 0) {
+        const grouped: Record<string, string[]> = {};
+        item.variants.forEach(v => {
+            if (!grouped[v.groupName]) grouped[v.groupName] = [];
+            grouped[v.groupName].push(v.name);
+        });
+        Object.entries(grouped).forEach(([groupName, names]) => {
+            lines.push(`${groupName}: ${names.join(", ")}`);
+        });
+    }
+
+    if (item.specialRequests.length > 0) {
+        lines.push(item.specialRequests.join(", "));
+    }
+
+    if (lines.length === 0) return null;
+
+    return (
+        <Box sx={{ mt: 0.5 }}>
+            {lines.map((line, i) => (
+                <Typography key={i} sx={{ fontSize: 11, color: "#999", lineHeight: 1.5 }}>
+                    {line}
+                </Typography>
+            ))}
+        </Box>
+    );
+};
 
 // ====================== COMPONENT ======================
 const ItemCart = () => {
@@ -19,11 +63,60 @@ const ItemCart = () => {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const subtotal = cartItems.reduce(
         (sum, item) => sum + item.price * item.quantity,
         0
     );
 
+    const handleCheckout = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const BASE = import.meta.env.VITE_API_URL;
+
+            // 1. Create the order
+            const orderRes = await fetch(`${BASE}/orders`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({}),
+            });
+            if (!orderRes.ok) throw new Error("Failed to create order");
+            const { data: order } = await orderRes.json();
+
+            // 2. Post each cart item sequentially
+            for (const item of cartItems) {
+                const itemRes = await fetch(`${BASE}/orderitem`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        orderId: order.id,
+                        menuId: item.menuId,
+                        // ingredients: [{ ingredientsId, quantity }] — only modified ones
+                        ingredients: Array.isArray(item.ingredients)
+                            ? item.ingredients.map((ing) => ({
+                                ingredientsId: ing.id,
+                                quantity: ing.quantity ?? 1,
+                            }))
+                            : [],
+                        // // variants: flat array of variant item IDs
+                        // variantItemIds: item.variants.map((v) => v.id),
+                    }),
+                });
+                if (!itemRes.ok) throw new Error(`Failed to add item: ${item.name}`);
+            }
+
+            // 3. Clear cart and go back
+            dispatch(clearCart());
+            navigate("/employee");
+        } catch (err: any) {
+            setError(err.message ?? "Gagal membuat pesanan. Silakan coba lagi.");
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <Box
             sx={{
@@ -63,11 +156,10 @@ const ItemCart = () => {
                     </Box>
                 ) : (
                     cartItems.map((item) => (
-                        <Box key={item.menuId}>
-                            <Box sx={{ display: "flex", alignItems: "center", py: 1.5, gap: 2 }}>
-                                {/* Hapus */}
+                        <Box key={item.cartItemId}>
+                            <Box sx={{ display: "flex", alignItems: "flex-start", py: 1.5, gap: 2 }}>
                                 <Button
-                                    onClick={() => dispatch(removeFromCart(item.menuId))}
+                                    onClick={() => dispatch(removeFromCart(item.cartItemId))}
                                     sx={{
                                         minWidth: 0,
                                         px: 1.5,
@@ -79,12 +171,12 @@ const ItemCart = () => {
                                         textTransform: "none",
                                         lineHeight: 1.3,
                                         flexShrink: 0,
+                                        mt: 0.5,
                                     }}
                                 >
                                     Hapus
                                 </Button>
 
-                                {/* Image */}
                                 <Box
                                     component="img"
                                     src={getImageUrl(item.imageUrl) || "/placeholder.png"}
@@ -93,51 +185,45 @@ const ItemCart = () => {
                                     onError={(e: any) => { e.target.src = "/placeholder.png"; }}
                                 />
 
-                                {/* Name */}
-                                <Typography
-                                    sx={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#111", lineHeight: 1.3 }}
-                                >
-                                    {item.name}
-                                </Typography>
-
-                                {/* Quantity controls */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        border: "1px solid #ddd",
-                                        borderRadius: 1.5,
-                                        overflow: "hidden",
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => dispatch(decrementItem(item.menuId))}
-                                        sx={{ borderRadius: 0, px: 1, py: 0.5 }}
-                                    >
-                                        <Remove sx={{ fontSize: 14 }} />
-                                    </IconButton>
-                                    <Typography
-                                        sx={{ px: 1.5, fontSize: 14, fontWeight: 700, minWidth: 24, textAlign: "center" }}
-                                    >
-                                        {item.quantity}
+                                <Box sx={{ flex: 1, minWidth: 0 }}>
+                                    <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#111", lineHeight: 1.3 }}>
+                                        {item.name}
                                     </Typography>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => dispatch(incrementItem(item.menuId))}
-                                        sx={{ borderRadius: 0, px: 1, py: 0.5 }}
-                                    >
-                                        <Add sx={{ fontSize: 14 }} />
-                                    </IconButton>
+                                    <ModificationSummary item={item} />
                                 </Box>
 
-                                {/* Price */}
-                                <Typography
-                                    sx={{ fontSize: 13, fontWeight: 600, color: "#111", minWidth: 80, textAlign: "right", flexShrink: 0 }}
-                                >
-                                    {formatPrice(item.price * item.quantity)}
-                                </Typography>
+                                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 0.5, flexShrink: 0 }}>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            border: "1px solid #ddd",
+                                            borderRadius: 1.5,
+                                            overflow: "hidden",
+                                        }}
+                                    >
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => dispatch(decrementItem(item.cartItemId))}
+                                            sx={{ borderRadius: 0, px: 1, py: 0.5 }}
+                                        >
+                                            <Remove sx={{ fontSize: 14 }} />
+                                        </IconButton>
+                                        <Typography sx={{ px: 1.5, fontSize: 14, fontWeight: 700, minWidth: 24, textAlign: "center" }}>
+                                            {item.quantity}
+                                        </Typography>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => dispatch(incrementItem(item.cartItemId))}
+                                            sx={{ borderRadius: 0, px: 1, py: 0.5 }}
+                                        >
+                                            <Add sx={{ fontSize: 14 }} />
+                                        </IconButton>
+                                    </Box>
+                                    <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#111", textAlign: "right" }}>
+                                        {formatPrice(item.price * item.quantity)}
+                                    </Typography>
+                                </Box>
                             </Box>
                             <Divider />
                         </Box>
@@ -156,6 +242,13 @@ const ItemCart = () => {
                     <Typography sx={{ fontSize: 20, fontWeight: 800, color: "#111" }}>{formatPrice(subtotal)}</Typography>
                 </Box>
             </Box>
+
+            {/* ── ERROR ── */}
+            {error && (
+                <Typography sx={{ fontSize: 12, color: "red", textAlign: "center", px: 3, pb: 1 }}>
+                    {error}
+                </Typography>
+            )}
 
             {/* ── ACTION BUTTONS ── */}
             <Box sx={{ px: 3, pb: 3, display: "grid", gridTemplateColumns: "1fr 2fr", gap: 1.5 }}>
@@ -178,9 +271,9 @@ const ItemCart = () => {
                 </Button>
 
                 <Button
-                    onClick={() => navigate("/employee/checkout")}
+                    onClick={handleCheckout}
                     variant="contained"
-                    disabled={cartItems.length === 0}
+                    disabled={cartItems.length === 0 || loading}
                     sx={{
                         borderRadius: 2,
                         textTransform: "none",
@@ -194,7 +287,10 @@ const ItemCart = () => {
                         "&:disabled": { bgcolor: "#eee", color: "#aaa" },
                     }}
                 >
-                    Selesaikan Pesanan
+                    {loading
+                        ? <CircularProgress size={22} sx={{ color: "#111" }} />
+                        : "Selesaikan Pesanan"
+                    }
                 </Button>
             </Box>
         </Box>

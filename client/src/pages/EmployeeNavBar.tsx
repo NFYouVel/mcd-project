@@ -215,7 +215,7 @@ const EmployeeNavbar = () => {
           >
             Lihat Pesanan
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => navigate("/employee/checkout")}
             disabled={totalCount === 0}
@@ -229,7 +229,7 @@ const EmployeeNavbar = () => {
             }}
           >
             Bayar
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </Box>

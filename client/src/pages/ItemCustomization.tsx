@@ -5,8 +5,12 @@ import { Box, Typography, Button, Checkbox, FormControlLabel } from "@mui/materi
 import { getImageUrl } from "../services/api";
 import { useAppDispatch } from "../store/index";
 import { addToCart } from "../store/cartSlice";
+import type { IngredientDetail, VariantDetail } from "../store/cartSlice";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+// ── Must be outside component so useEffect can reference it without stale closure ──
+const BURGER_FILTERS = ["Sapi", "Ikan", "Ayam"];
 
 // ====================== TYPES ======================
 interface VariantItem {
@@ -27,12 +31,20 @@ interface Ingredient {
     price: number;
 }
 
+interface PackageItem {
+    id: string;
+    packageItemId: string;
+    quantity: number;
+}
+
 interface MenuDetail {
     id: string;
     name: string;
     price: number;
     imageUrl: string;
     isPackage: boolean;
+    filterMenu?: { id: string; name: string };
+    packages: PackageItem[];
 }
 
 // ====================== COMPONENT ======================
@@ -48,7 +60,7 @@ const ItemCustomization = () => {
     const [loading, setLoading] = useState(true);
 
     // ── User selections ──
-    const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
+    const [selectedVariants, setSelectedVariants] = useState<Record<string, string[]>>({});
     const [ingredientQty, setIngredientQty] = useState<Record<string, number>>({});
     const [specialRequests, setSpecialRequests] = useState<string[]>([]);
 
@@ -57,8 +69,17 @@ const ItemCustomization = () => {
         "Content-Type": "application/json",
     };
 
-    // ── Fetch menu detail + per-menu variant groups ──
-    // Only fetch ingredients if menu has no variant groups (burger logic)
+    const fetchIngredients = () =>
+        fetch(`${BASE_URL}/ingredient`, { headers })
+            .then(r => r.json())
+            .then(d => {
+                const allIngredients: Ingredient[] = d.data ?? [];
+                setIngredients(allIngredients);
+                const defaults: Record<string, number> = {};
+                allIngredients.forEach(ing => { defaults[ing.id] = 1; });
+                setIngredientQty(defaults);
+            });
+
     useEffect(() => {
         if (!menuId) return;
 
@@ -68,41 +89,63 @@ const ItemCustomization = () => {
                 .then(d => d.data as MenuDetail),
             fetch(`${BASE_URL}/variantgroup/menu/${menuId}`, { headers })
                 .then(r => r.json())
-                .then(d => d.data as VariantGroup[] ?? []),
+                .then(d => (d.data as VariantGroup[]) ?? []),
         ])
             .then(([menuData, menuVariants]) => {
                 setMenu(menuData);
                 setVariantGroups(menuVariants);
 
-                // Only fetch ingredients when this menu has NO variant groups → it's a burger
-                if (menuVariants.length === 0) {
-                    return fetch(`${BASE_URL}/ingredient`, { headers })
-                        .then(r => r.json())
-                        .then(d => {
-                            const allIngredients: Ingredient[] = d.data ?? [];
-                            setIngredients(allIngredients);
-                            // Default every ingredient to qty 1
-                            const defaults: Record<string, number> = {};
-                            allIngredients.forEach(ing => { defaults[ing.id] = 1; });
-                            setIngredientQty(defaults);
-                        });
+                // Chicken — has variant groups, no ingredient fetch needed
+                if (menuVariants.length > 0) return;
+
+                // Package — fetch each child to check if any is a burger
+                if (menuData.isPackage && menuData.packages.length > 0) {
+                    return Promise.all(
+                        menuData.packages.map((pkg: PackageItem) =>
+                            fetch(`${BASE_URL}/menu/${pkg.packageItemId}`, { headers })
+                                .then(r => r.json())
+                                .then(d => d.data as MenuDetail)
+                        )
+                    ).then(packageMenus => {
+                        const hasBurgerChild = packageMenus.some(m =>
+                            BURGER_FILTERS.includes(m.filterMenu?.name ?? "")
+                        );
+                        if (hasBurgerChild) return fetchIngredients();
+                    });
                 }
+
+                // Standalone burger
+                if (BURGER_FILTERS.includes(menuData.filterMenu?.name ?? "")) {
+                    return fetchIngredients();
+                }
+
+                // Everything else (McFlurry, drinks, etc.) — no fetch
             })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [menuId]);
 
-    // ── Derived: chicken has variant groups, burger does not ──
+    // ── Derived state ──
     const isChicken = variantGroups.length > 0;
-    const isBurger = !isChicken;
+    const isBurger = !isChicken && BURGER_FILTERS.includes(menu?.filterMenu?.name ?? "");
+    const isPackage = menu?.isPackage === true;
+    const hasIngredients = ingredients.length > 0;
+
+    // Show Modifikasi button only when there's actually something to modify
+    const hasModifications = isChicken || hasIngredients;
 
     const formatPrice = (p: number) => `Rp${p?.toLocaleString("id-ID")}`;
 
     // ── Toggle helpers ──
-    const toggleVariant = (id: string) => {
-        setSelectedVariants(prev =>
-            prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]
-        );
+    const toggleVariant = (groupId: string, itemId: string) => {
+        setSelectedVariants(prev => {
+            const current = prev[groupId] ?? [];
+            const already = current.includes(itemId);
+            return {
+                ...prev,
+                [groupId]: already ? current.filter(id => id !== itemId) : [...current, itemId],
+            };
+        });
     };
 
     const toggleSpecial = (name: string) => {
@@ -119,11 +162,33 @@ const ItemCustomization = () => {
     };
 
     const resetSelections = () => {
-        setSelectedVariants([]);
+        setSelectedVariants({});
         setSpecialRequests([]);
         const defaults: Record<string, number> = {};
         ingredients.forEach(ing => { defaults[ing.id] = 1; });
         setIngredientQty(defaults);
+    };
+
+    // ── Build modification summaries for cart ──
+    const buildIngredientDetails = (): IngredientDetail[] =>
+        ingredients
+            .filter(ing => (ingredientQty[ing.id] ?? 1) > 0)
+            .map(ing => ({
+                id: ing.id,
+                name: ing.name,
+                quantity: ingredientQty[ing.id] ?? 1,
+            }));
+
+    const buildVariantDetails = (): VariantDetail[] => {
+        const result: VariantDetail[] = [];
+        variantGroups.forEach(group => {
+            const selected = selectedVariants[group.id] ?? [];
+            selected.forEach(itemId => {
+                const vi = group.variantItems.find(v => v.id === itemId);
+                if (vi) result.push({ id: vi.id, name: vi.name, groupName: group.name });
+            });
+        });
+        return result;
     };
 
     // ── Add to Redux cart ──
@@ -134,6 +199,9 @@ const ItemCustomization = () => {
             name: menu.name,
             price: menu.price,
             imageUrl: menu.imageUrl ?? null,
+            ingredients: hasIngredients ? buildIngredientDetails() : [],
+            variants: isChicken ? buildVariantDetails() : [],
+            specialRequests,
         }));
         navigate(`/employee/category/${sectionId}`);
     };
@@ -151,7 +219,6 @@ const ItemCustomization = () => {
                 alignItems: "center",
             }}
         >
-            {/* Hero image */}
             <Box
                 component="img"
                 src={getImageUrl(menu?.imageUrl) || "/placeholder.png"}
@@ -165,34 +232,34 @@ const ItemCustomization = () => {
                 onError={(e: any) => { e.target.src = "/placeholder.png"; }}
             />
 
-            {/* Info */}
             <Box sx={{ width: "100%", px: 4, py: 3, flex: 1 }}>
                 <Typography sx={{ fontSize: 20, fontWeight: 700, mb: 0.5 }}>
-                    1pc {menu?.name}
+                    {isPackage ? "" : "1pc "}{menu?.name}
                 </Typography>
                 <Typography sx={{ fontSize: 14, color: "#888", mb: 3 }}>
                     {formatPrice(menu?.price ?? 0)}
                 </Typography>
 
-                <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={() => setShowModifikasi(true)}
-                    sx={{
-                        borderRadius: 2,
-                        textTransform: "none",
-                        fontSize: 14,
-                        color: "#333",
-                        borderColor: "#ddd",
-                        py: 1.5,
-                        mb: 2,
-                    }}
-                >
-                    Modifikasi
-                </Button>
+                {hasModifications && (
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={() => setShowModifikasi(true)}
+                        sx={{
+                            borderRadius: 2,
+                            textTransform: "none",
+                            fontSize: 14,
+                            color: "#333",
+                            borderColor: "#ddd",
+                            py: 1.5,
+                            mb: 2,
+                        }}
+                    >
+                        Modifikasi
+                    </Button>
+                )}
             </Box>
 
-            {/* Bottom buttons */}
             <Box sx={{ width: "100%", px: 4, pb: 4, display: "flex", gap: 2 }}>
                 <Button
                     fullWidth
@@ -243,7 +310,6 @@ const ItemCustomization = () => {
                 overflowY: "auto",
             }}
         >
-            {/* Title */}
             <Typography
                 sx={{
                     fontSize: 26,
@@ -279,14 +345,13 @@ const ItemCustomization = () => {
                     />
                     <Box>
                         <Typography sx={{ fontSize: 14, fontWeight: 600 }}>
-                            1pc {menu?.name}
+                            {isPackage ? "" : "1pc "}{menu?.name}
                         </Typography>
                         <Typography sx={{ fontSize: 13, color: "#888" }}>
                             {formatPrice(menu?.price ?? 0)}
                         </Typography>
                     </Box>
 
-                    {/* Reset button */}
                     <Button
                         variant="outlined"
                         onClick={resetSelections}
@@ -306,8 +371,8 @@ const ItemCustomization = () => {
                     </Button>
                 </Box>
 
-                {/* ── BURGER: ingredient steppers ── */}
-                {isBurger && ingredients.length > 0 && (
+                {/* ── BURGER / PACKAGE with burger child: ingredient steppers ── */}
+                {hasIngredients && (
                     <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
                         <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 2, color: "#555" }}>
                             Tersedia dengan
@@ -378,8 +443,8 @@ const ItemCustomization = () => {
                                     key={vi.id}
                                     control={
                                         <Checkbox
-                                            checked={selectedVariants.includes(vi.id)}
-                                            onChange={() => toggleVariant(vi.id)}
+                                            checked={(selectedVariants[group.id] ?? []).includes(vi.id)}
+                                            onChange={() => toggleVariant(group.id, vi.id)}
                                             size="small"
                                             sx={{ color: "#ddd", "&.Mui-checked": { color: "#222" } }}
                                         />
@@ -391,28 +456,30 @@ const ItemCustomization = () => {
                     </Box>
                 ))}
 
-                {/* ── Permintaan Khusus ── */}
-                <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
-                    <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 1.5, color: "#555" }}>
-                        Permintaan Khusus
-                    </Typography>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {["Plain"].map((req) => (
-                            <FormControlLabel
-                                key={req}
-                                control={
-                                    <Checkbox
-                                        checked={specialRequests.includes(req)}
-                                        onChange={() => toggleSpecial(req)}
-                                        size="small"
-                                        sx={{ color: "#ddd", "&.Mui-checked": { color: "#222" } }}
-                                    />
-                                }
-                                label={<Typography sx={{ fontSize: 13 }}>{req}</Typography>}
-                            />
-                        ))}
+                {/* ── Permintaan Khusus — only for standalone burger or chicken, not packages ── */}
+                {(isBurger || isChicken) && (
+                    <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
+                        <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 1.5, color: "#555" }}>
+                            Permintaan Khusus
+                        </Typography>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                            {["Plain"].map((req) => (
+                                <FormControlLabel
+                                    key={req}
+                                    control={
+                                        <Checkbox
+                                            checked={specialRequests.includes(req)}
+                                            onChange={() => toggleSpecial(req)}
+                                            size="small"
+                                            sx={{ color: "#ddd", "&.Mui-checked": { color: "#222" } }}
+                                        />
+                                    }
+                                    label={<Typography sx={{ fontSize: 13 }}>{req}</Typography>}
+                                />
+                            ))}
+                        </Box>
                     </Box>
-                </Box>
+                )}
             </Box>
 
             {/* Bottom buttons */}

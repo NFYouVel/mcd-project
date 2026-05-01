@@ -34,7 +34,7 @@ import ItemCart from "../pages/ItemCart";
 // import OrderManagementPage from "../pages/OrderManagementPage";
 // import AdminManagementPage from "../pages/AdminManagementPage";
 
-const Orders = () => <h1>Orders (Coming Soon)</h1>;
+// const Orders = () => <h1>Orders (Coming Soon)</h1>;
 import ItemCustomization from "../pages/ItemCustomization"; 
 
 const Router = () => {

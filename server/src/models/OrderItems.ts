@@ -15,7 +15,6 @@ import {
 import { Menu } from "./Menu.js";
 import { Orders } from "./Orders.js";
 import { IngredientItems } from "./IngredientItems.js";
-
 @Table({
     tableName: "Order_Items",
     timestamps: true,
@@ -70,4 +69,5 @@ export class OrderItems extends Model {
     foreignKey: "orderItemsId"
     })
     declare ingredientItems: IngredientItems[];
+
 }
