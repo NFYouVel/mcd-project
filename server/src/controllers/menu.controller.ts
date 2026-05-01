@@ -34,18 +34,24 @@ export const getAllMenus = asyncHandler(async (req: Request, res: Response) => {
   const menus = await Menu.findAll({
     where,
     include: [
+  {
+    model: FilterMenu,
+    attributes: ["id", "name"],
+    include: [
       {
-        model: FilterMenu,
-        attributes: ["id", "name"],
-      },
-      {
-        model: PackageItems,
-        as: "packages",
-      },
-      {
-        model: MenuVariantGroups,
+        model: MenuSection,
+        attributes: ["id", "name"], // 👈 ADD THIS
       },
     ],
+  },
+  {
+    model: PackageItems,
+    as: "packages",
+  },
+  {
+    model: MenuVariantGroups,
+  },
+],
     order: [["createdAt", "DESC"]],
   });
 

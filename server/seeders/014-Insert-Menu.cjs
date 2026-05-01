@@ -140,7 +140,7 @@ module.exports = {
         isNew: true,
         isAvailable: true,
         imageUrl: "/uploads/menu/Paket_HeBat _Chicken_Burger_Deluxe.png",
-        filterMenuId: getFilterId("Camilan"),
+        filterMenuId: getFilterId("Ayam"),
         createdAt: new Date(),
         updatedAt: new Date()
       },
