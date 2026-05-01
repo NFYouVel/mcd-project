@@ -194,10 +194,27 @@ const ItemCustomization = () => {
     // ── Add to Redux cart ──
     const handleAddToCart = () => {
         if (!menu) return;
+
+        // Hitung extra cost dari selected variants
+        const variantExtraCost = variantGroups.reduce((sum, group) => {
+            const selected = selectedVariants[group.id] ?? [];
+            return sum + group.variantItems
+                .filter(vi => selected.includes(vi.id))
+                .reduce((s, vi) => s + vi.priceModifier, 0);
+        }, 0);
+
+        // Hitung extra cost dari ingredients (selisih dari default qty=1)
+        const ingredientExtraCost = ingredients.reduce((sum, ing) => {
+            const qty = ingredientQty[ing.id] ?? 1;
+            return sum + ing.price * (qty - 1); // selisih dari default
+        }, 0);
+
+        const finalPrice = menu.price + variantExtraCost + ingredientExtraCost;
+
         dispatch(addToCart({
             menuId: menu.id,
             name: menu.name,
-            price: menu.price,
+            price: finalPrice,  // ← harga udah include variant + ingredient modifier
             imageUrl: menu.imageUrl ?? null,
             ingredients: hasIngredients ? buildIngredientDetails() : [],
             variants: isChicken ? buildVariantDetails() : [],
@@ -522,8 +539,149 @@ const ItemCustomization = () => {
 
     return createPortal(
         <>
-            {!loading && <DetailPage />}
-            {showModifikasi && <ModifikasiPage />}
+            {/* ── DETAIL PAGE ── */}
+            {!loading && (
+                <Box sx={{ position: "fixed", inset: 0, zIndex: 9999, bgcolor: "white", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <Box
+                        component="img"
+                        src={getImageUrl(menu?.imageUrl) || "/placeholder.png"}
+                        alt={menu?.name}
+                        sx={{ width: "100%", height: "35%", objectFit: "cover", bgcolor: "#f5f5f5" }}
+                        onError={(e: any) => { e.target.src = "/placeholder.png"; }}
+                    />
+                    <Box sx={{ width: "100%", px: 4, py: 3, flex: 1 }}>
+                        <Typography sx={{ fontSize: 20, fontWeight: 700, mb: 0.5 }}>
+                            {isPackage ? "" : "1pc "}{menu?.name}
+                        </Typography>
+                        <Typography sx={{ fontSize: 14, color: "#888", mb: 3 }}>
+                            {formatPrice(menu?.price ?? 0)}
+                        </Typography>
+                        {hasModifications && (
+                            <Button fullWidth variant="outlined" onClick={() => setShowModifikasi(true)}
+                                sx={{ borderRadius: 2, textTransform: "none", fontSize: 14, color: "#333", borderColor: "#ddd", py: 1.5, mb: 2 }}>
+                                Modifikasi
+                            </Button>
+                        )}
+                    </Box>
+                    <Box sx={{ width: "100%", px: 4, pb: 4, display: "flex", gap: 2 }}>
+                        <Button fullWidth variant="outlined" onClick={() => navigate(-1)}
+                            sx={{ borderRadius: 2, textTransform: "none", fontSize: 14, color: "#555", borderColor: "#ddd", py: 1.5 }}>
+                            Batal
+                        </Button>
+                        <Button fullWidth variant="contained" onClick={handleAddToCart}
+                            sx={{ borderRadius: 2, textTransform: "none", fontSize: 14, fontWeight: 700, bgcolor: "#FFC72C", color: "#000", py: 1.5, "&:hover": { bgcolor: "#ffb300" } }}>
+                            Tambah pada Pesanan
+                        </Button>
+                    </Box>
+                </Box>
+            )}
+
+            {/* ── MODIFIKASI PAGE ── */}
+            {showModifikasi && (
+                <Box sx={{ position: "fixed", inset: 0, zIndex: 10000, bgcolor: "white", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+                    <Typography sx={{ fontSize: 26, fontWeight: 700, textAlign: "center", pt: 4, pb: 2, px: 4 }}>
+                        Modifikasi
+                    </Typography>
+                    <Box sx={{ px: 3, flex: 1 }}>
+                        {/* Item info card */}
+                        <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
+                            <Box component="img" src={getImageUrl(menu?.imageUrl) || "/placeholder.png"} alt={menu?.name}
+                                sx={{ width: 48, height: 48, objectFit: "cover", borderRadius: 1 }}
+                                onError={(e: any) => { e.target.src = "/placeholder.png"; }} />
+                            <Box>
+                                <Typography sx={{ fontSize: 14, fontWeight: 600 }}>{isPackage ? "" : "1pc "}{menu?.name}</Typography>
+                                <Typography sx={{ fontSize: 13, color: "#888" }}>{formatPrice(menu?.price ?? 0)}</Typography>
+                            </Box>
+                            <Button variant="outlined" onClick={resetSelections}
+                                sx={{ ml: "auto", textTransform: "none", fontSize: 12, color: "#555", borderColor: "#ddd", borderRadius: 2, py: 0.5, px: 1.5, flexShrink: 0 }}>
+                                Hapus Perubahan
+                            </Button>
+                        </Box>
+
+                        {/* Ingredients */}
+                        {hasIngredients && (
+                            <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
+                                <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 2, color: "#555" }}>Tersedia dengan</Typography>
+                                {ingredients.map((ing) => {
+                                    const qty = ingredientQty[ing.id] ?? 1;
+                                    return (
+                                        <Box key={ing.id} display="flex" alignItems="center" justifyContent="space-between" py={1.2} sx={{ borderBottom: "1px solid #f5f5f5" }}>
+                                            <Typography sx={{ fontSize: 14 }}>{ing.name}</Typography>
+                                            <Box display="flex" alignItems="center" gap={1}>
+                                                <Box onClick={() => adjustIngredient(ing.id, -1)}
+                                                    sx={{ width: 28, height: 28, border: "1.5px solid #ddd", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 16, color: "#555", userSelect: "none", "&:hover": { bgcolor: "#f5f5f5" } }}>
+                                                    −
+                                                </Box>
+                                                <Typography sx={{ fontSize: 14, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{qty}</Typography>
+                                                <Box onClick={() => adjustIngredient(ing.id, 1)}
+                                                    sx={{ width: 28, height: 28, border: "1.5px solid #ddd", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 16, color: "#555", userSelect: "none", "&:hover": { bgcolor: "#f5f5f5" } }}>
+                                                    +
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    );
+                                })}
+                            </Box>
+                        )}
+
+                        {/* Variants */}
+                        {isChicken && variantGroups.map((group) => (
+                            <Box key={group.id} sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
+                                <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 2, color: "#555" }}>{group.name}</Typography>
+                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                    {(group.variantItems ?? []).map((vi) => (
+                                        <FormControlLabel key={vi.id}
+                                            control={
+                                                <Checkbox
+                                                    checked={(selectedVariants[group.id] ?? []).includes(vi.id)}
+                                                    onChange={() => toggleVariant(group.id, vi.id)}
+                                                    size="small"
+                                                    sx={{ color: "#ddd", "&.Mui-checked": { color: "#222" } }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ fontSize: 13 }}>{vi.name}</Typography>}
+                                        />
+                                    ))}
+                                </Box>
+                            </Box>
+                        ))}
+
+                        {/* Permintaan Khusus */}
+                        {(isBurger || isChicken) && (
+                            <Box sx={{ border: "1px solid #eee", borderRadius: 2, p: 2, mb: 3 }}>
+                                <Typography sx={{ fontSize: 14, fontWeight: 700, mb: 1.5, color: "#555" }}>Permintaan Khusus</Typography>
+                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                    {["Plain"].map((req) => (
+                                        <FormControlLabel key={req}
+                                            control={
+                                                <Checkbox
+                                                    checked={specialRequests.includes(req)}
+                                                    onChange={() => toggleSpecial(req)}
+                                                    size="small"
+                                                    sx={{ color: "#ddd", "&.Mui-checked": { color: "#222" } }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ fontSize: 13 }}>{req}</Typography>}
+                                        />
+                                    ))}
+                                </Box>
+                            </Box>
+                        )}
+                    </Box>
+
+                    {/* Bottom buttons */}
+                    <Box sx={{ px: 3, pb: 4, pt: 2, display: "flex", gap: 2 }}>
+                        <Button fullWidth variant="outlined" onClick={() => setShowModifikasi(false)}
+                            sx={{ borderRadius: 2, textTransform: "none", fontSize: 14, color: "#555", borderColor: "#ddd", py: 1.5 }}>
+                            Batalkan Perubahan
+                        </Button>
+                        <Button fullWidth variant="contained" onClick={() => setShowModifikasi(false)}
+                            sx={{ borderRadius: 2, textTransform: "none", fontSize: 14, fontWeight: 700, bgcolor: "#FFC72C", color: "#000", py: 1.5, "&:hover": { bgcolor: "#ffb300" } }}>
+                            Simpan Perubahan
+                        </Button>
+                    </Box>
+                </Box>
+            )}
         </>,
         document.body
     );

@@ -7,38 +7,38 @@ import { Orders } from "../models/Orders.js";
 import { calculateTotal } from "../utils/calculateTotal.js";
 
 export const syncPayment = async (orderId: string) => {
-  const order = await Orders.findByPk(orderId, {
-    include: {
-      model: OrderItems,
-      include: [
-        {
-          model: Menu,
-          attributes: ["price"],
+    const order = await Orders.findByPk(orderId, {
+        include: {
+            model: OrderItems,
+            include: [
+                {
+                    model: Menu,
+                    attributes: ["price"],
+                },
+                {
+                    model: IngredientItems
+                }
+            ]
         },
-        {
-          model: IngredientItems
-        }
-      ]
-    },
-  });
-  if (!order) {
-    return 0;
-  }
-
-  let total = 0;
-  for (const item of order.orderItems || order.orderItems || []) {
-    total += item.menu.price * item.quantity;
-
-    for (const ingredient of item.ingredientItems || []) {
-      total += ingredient.price * ingredient.quantity;
+    });
+    if (!order) {
+        return 0;
     }
-  }
 
-  const payment = await Payment.findOne({ where: { orderId } });
+    let total = 0;
+    for (const item of order.orderItems || []) {
+        total += item.menu.price;  // ← hapus * item.quantity
 
-  if (payment) {
-    await payment.update({ total_price: total });
-  }
+        for (const ingredient of item.ingredientItems || []) {
+            total += ingredient.price * ingredient.quantity;
+        }
+    }
 
-  return total;
+    const payment = await Payment.findOne({ where: { orderId } });
+
+    if (payment) {
+        await payment.update({ total_price: total });
+    }
+
+    return total;
 }
