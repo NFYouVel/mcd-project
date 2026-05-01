@@ -63,8 +63,8 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/ayam.webp",
-        filterMenuId: getFilterId("Ayam"),
+        imageUrl: "/uploads/menu/ayam_krispy.webp",
+        filterMenuId: getFilterId("Ayam Krispy"),
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -78,7 +78,7 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/coca.webp",
+        imageUrl: "/uploads/menu/coca_cola.webp",
         filterMenuId: getFilterId("Minuman Soda"),
         createdAt: new Date(),
         updatedAt: new Date()
@@ -108,7 +108,7 @@ module.exports = {
         isPackage: false,
         isNew: false,
         isAvailable: true,
-        imageUrl: "/uploads/menu/mcflurry.webp",
+        imageUrl: "/uploads/menu/mflurry",
         filterMenuId: getFilterId("McFlurry"),
         createdAt: new Date(),
         updatedAt: new Date()

@@ -27,8 +27,10 @@ import MakePackage from "../pages/MakePackage";
 import ProtectedRoutes from "./ProtectedRoute";
 import AdminManagementPage from "../pages/AdminManagementPage";
 import OrderManagementPage from "../pages/OrderManagementPage";
+import MenuCategory from "../pages/MenuCategory";
+import ItemPackageChoice from "../pages/ItemPackageChoice";
 
-// TODO: aktifkan setelah halaman dibuat
+// // TODO: aktifkan setelah halaman dibuat
 // import OrderManagementPage from "../pages/OrderManagementPage";
 // import AdminManagementPage from "../pages/AdminManagementPage";
 
@@ -68,6 +70,8 @@ const Router = () => {
         <Route path="/employee" element={<EmployeeNavBar />}>
           <Route index element={<EmployeeMenu />} />
           <Route path=":id/make-package" element={<MakePackage />} />
+          <Route path="category/:sectionId" element={<MenuCategory />} />
+          <Route path="category/:sectionId/item/:itemId" element={<ItemPackageChoice />} />
           <Route path=":id" element={<div>Menu Detail</div>} />
         </Route>
       </Route>

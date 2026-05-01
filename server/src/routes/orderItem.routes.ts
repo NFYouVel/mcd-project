@@ -14,7 +14,7 @@ import { addIngredientItem } from "../controllers/ingredientItems.controller.js"
 const router: ExpressRouter = Router();
 
 //Add Ingredient Item
-router.post("/:orderItemId/ingredients", addIngredientItem);
+router.post("/:orderItemId/ingredients  ", addIngredientItem);
 
 //Create OrderItem
 router.post("/", createOrderItem);

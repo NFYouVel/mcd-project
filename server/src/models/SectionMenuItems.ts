@@ -28,17 +28,6 @@ export class SectionMenuItems extends Model {
   })
   declare id: string;
 
-  // 🔥 FK → Menu
-  @ForeignKey(() => Menu)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  declare menuId: string;
-
-  @BelongsTo(() => Menu)
-  declare menu: Menu;
-
   // 🔥 FK → Section_Menu
   @ForeignKey(() => MenuSection)
   @Column({
