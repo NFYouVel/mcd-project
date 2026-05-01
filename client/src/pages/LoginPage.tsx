@@ -20,7 +20,7 @@ const LoginPage = () => {
             const role = data.user.role;
 
             if (role === "manager") {
-                navigate("/admin/dashboard");
+                navigate("/admin");
             } else if (role === "cashier") {
                 navigate("/cashier/orders");
             } else {
