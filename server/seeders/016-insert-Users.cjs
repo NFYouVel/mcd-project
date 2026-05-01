@@ -9,7 +9,7 @@ module.exports = {
             {
                 id: uuidv4(),
                 name: "Marvel Manager",
-                email: "manager1@mail.com",
+                email: "manager1@gmail.com",
                 password: await bcrypt.hash("123456", saltRounds),
                 address: "Bandung",
                 birth_of_date: new Date("1998-05-10"),
@@ -22,7 +22,7 @@ module.exports = {
             {
                 id: uuidv4(),
                 name: "Tony Manager",
-                email: "manager2@mail.com",
+                email: "manager2@gmail.com",
                 password: await bcrypt.hash("123456", saltRounds),
                 address: "Jakarta",
                 birth_of_date: new Date("1995-08-15"),
@@ -35,7 +35,7 @@ module.exports = {
             {
                 id: uuidv4(),
                 name: "Peter Customer",
-                email: "staff1@mail.com",
+                email: "staff1@gmail.com",
                 password: await bcrypt.hash("123456", saltRounds),
                 address: "Surabaya",
                 birth_of_date: new Date("2000-01-20"),
@@ -48,7 +48,7 @@ module.exports = {
             {
                 id: uuidv4(),
                 name: "Steve Customer",
-                email: "staff2@mail.com",
+                email: "staff2@gmail.com",
                 password: await bcrypt.hash("123456", saltRounds),
                 address: "Bekasi",
                 birth_of_date: new Date("2001-11-25"),
@@ -61,7 +61,7 @@ module.exports = {
             {
                 id: uuidv4(),
                 name: "Budi Cashier",
-                email: "cashier@mail.com",
+                email: "cashier@gmail.com",
                 password: await bcrypt.hash("123456", saltRounds),
                 address: "Bandung",
                 birth_of_date: new Date("2001-11-25"),

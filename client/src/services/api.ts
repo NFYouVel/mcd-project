@@ -1,5 +1,11 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+interface RequestOptions {
+    method?: "GET" | "POST" | "PUT" | "DELETE";
+    body?: any;
+    headers?: Record<string, string>;
+    isFormData?: boolean; // ← BARU
+}
 // ====================== HELPERS ======================
 async function handleResponse<T>(response: Response): Promise<T> {
     const data = await response.json();
@@ -8,6 +14,52 @@ async function handleResponse<T>(response: Response): Promise<T> {
     }
     return data.data as T;
 }
+
+export const apiRequest = async (endpoint: string, options: RequestOptions = {}) => {
+    const { method = "GET", body, headers = {}, isFormData = false } = options;
+
+    const token = localStorage.getItem("token");
+
+    const config: RequestInit = {
+        method,
+        headers: {
+            // Kalau FormData, jangan set Content-Type (biar browser auto-set dengan boundary)
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...headers,
+        },
+    };
+
+    if (body) {
+        config.body = isFormData ? body : JSON.stringify(body);
+    }
+
+    const response = await fetch(`${BASE_URL}${endpoint}`, config);
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        if (response.status === 401) {
+            const currentPath = window.location.pathname;
+            const publicPaths = ["/", "/register", "/forget-password", "/reset-password"];
+            const isPublic = publicPaths.includes(currentPath);
+            if (!isPublic) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                window.location.href = "/";
+            }
+        }
+        throw new Error(data.message || `Request failed with status ${response.status}`);
+    }
+
+    return data;
+};
+// Helper untuk dapetin full URL gambar
+export const getImageUrl = (imagePath?: string | null): string => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http")) return imagePath; 
+  const baseWithoutApi = BASE_URL.replace("/api", "");
+  return `${baseWithoutApi}${imagePath}`;
+};
 
 // ====================== TYPE REQUESTS ======================
 export async function getTypesRequest() {

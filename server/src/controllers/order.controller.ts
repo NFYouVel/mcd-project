@@ -1,122 +1,170 @@
-import { Request, Response } from "express";
-import { Orders } from "../models/Orders.js";
-import { Users } from "../models/Users.js";
-import { OrderItems } from "../models/OrderItems.js";
-import { Menu } from "../models/Menu.js";
-import model from "sequelize/lib/model";
-import { Ingredients } from "../models/Ingredients.js";
-import { IngredientItems } from "../models/IngredientItems.js";
+  import { Request, Response } from "express";
+  import { Orders } from "../models/Orders.js";
+  import { Users } from "../models/Users.js";
+  import { OrderItems } from "../models/OrderItems.js";
+  import { Menu } from "../models/Menu.js";
+  import model from "sequelize/lib/model";
+  import { Ingredients } from "../models/Ingredients.js";
+  import { IngredientItems } from "../models/IngredientItems.js";
 
-//Create Order
-export const createOrder = async (req: Request, res: Response) => {
-  try {
-    const newOrder = await Orders.create({
-      total_price: 0, // starts with 0
-    });
+  //Create Order
+  export const createOrder = async (req: Request, res: Response) => {
+    try {
+      const newOrder = await Orders.create({
+        total_price: 0, // starts with 0
+      });
 
-    return res.status(201).json({
-      message: "Order created",
-      data: newOrder,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error creating order",
-      error,
-    });
-  }
-};
+      return res.status(201).json({
+        message: "Order created",
+        data: newOrder,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error creating order",
+        error,
+      });
+    }
+  };
 
-//Get All Orders (FK OrdersItems -> Menu)
-export const getAllOrders = async (req: Request, res: Response) => {
-  try {
+  //Get All Orders (FK OrdersItems -> Menu)
+  export const getAllOrders = async (req: Request, res: Response) => {
+    try {
       const orders = await Orders.findAll({
-      include: [
-        {
-          model: OrderItems,
-          as: "orderItems",
-          include: [
-            {
-              model: Menu,
-              attributes: ["id", "name", "price"],
-            },
-            {
-              model: IngredientItems,
-              include: [
-                {
-                  model: Ingredients,
-                  attributes: ["id", "name", "price"],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
+        include: [
+          {
+            model: OrderItems,
+            as: "orderItems",
+            include: [
+              {
+                model: Menu,
+                attributes: ["id", "name", "price"],
+              },
+              {
+                model: IngredientItems,
+                include: [
+                  {
+                    model: Ingredients,
+                    attributes: ["id", "name", "price"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
 
-    return res.status(200).json({
-      message: "Success",
-      data: orders,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching orders",
-      error,
-    });
-  }
-};
-
-//Update Order
-export const updateOrder = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const { status } = req.body;
-
-    const order = await Orders.findByPk(id);
-
-    if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
+      return res.status(200).json({
+        message: "Success",
+        data: orders,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error fetching orders",
+        error,
       });
     }
+  };
 
-    await order.update({
-      status,
-    });
+  // Get Order By ID
+  export const getOrderById = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id as string;
 
-    return res.status(200).json({
-      message: "Order updated",
-      data: order,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error updating order",
-      error,
-    });
-  }
-};
+      const order = await Orders.findByPk(id, {
+        include: [
+          {
+            model: OrderItems,
+            as: "orderItems",
+            include: [
+              {
+                model: Menu,
+                attributes: ["id", "name", "price"],
+              },
+              {
+                model: IngredientItems,
+                include: [
+                  {
+                    model: Ingredients,
+                    attributes: ["id", "name", "price"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
 
-//Delete Order
-export const deleteOrder = async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found",
+        });
+      }
 
-    const order = await Orders.findByPk(id);
-
-    if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
+      return res.status(200).json({
+        message: "Success",
+        data: order,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error fetching order",
+        error,
       });
     }
+  };
 
-    await order.destroy();
 
-    return res.status(200).json({
-      message: "Order deleted",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error deleting order",
-      error,
-    });
-  }
-};
+  //Update Order
+  export const updateOrder = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id as string;
+      const { status } = req.body;
+
+      const order = await Orders.findByPk(id);
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found",
+        });
+      }
+
+      await order.update({
+        status,
+      });
+
+      return res.status(200).json({
+        message: "Order updated",
+        data: order,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error updating order",
+        error,
+      });
+    }
+  };
+
+  //Delete Order
+  export const deleteOrder = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id as string;
+
+      const order = await Orders.findByPk(id);
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found",
+        });
+      }
+
+      await order.destroy();
+
+      return res.status(200).json({
+        message: "Order deleted",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error deleting order",
+        error,
+      });
+    }
+  };

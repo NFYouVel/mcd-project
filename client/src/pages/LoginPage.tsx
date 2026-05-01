@@ -1,183 +1,153 @@
-import { useState } from "react"
-import { useNavigate } from "react-router";
-// import { loginRequest } from "../services/api";
-// import IconButton from "@mui/material/IconButton";
-// import InputAdornment from "@mui/material/InputAdornment";
-// import Visibility from "@mui/icons-material/Visibility";
-// import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import BackgroundLogin from "../components/BackgroundLogin";
+// src/pages/LoginPage.tsx
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import { authService } from "../services/authServices";
 
-import "../styles/login.css"
-import TextField from "@mui/material/TextField";
-import { Link } from "react-router";
-import { Button } from "@mui/material";
-// import { useSelector } from "react-redux";
-// import type { RootState } from "../hooks/store";
-// import { useAppDispatch } from "../hooks/useAppDispatch";
-// import { authAction } from "../hooks/authSlice";
-
-function Login() {
-
-    const [email, setEmail] = useState("")
-    // const [showPassword, setShowPassword] = useState(false);
-    const [password, setPassword] = useState("")
-
-    // Navigate
+const LoginPage = () => {
     const navigate = useNavigate();
-    // Selector
-    // const userDetails = useSelector((state: RootState) => state.auth.user);
-    // Dispatch
-    // const dispatch = useAppDispatch();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    // const handleLogin = async () => {
-    //     try {
-    //         const res = await loginRequest(email, password);
-    //         // dispatch(authAction.setUser(res));
-    //         console.log(res);
-    //         // navigate("/home")
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
 
-    const handleRegisterNavigation = () => {
-        navigate("/register")
-    }
+        try {
+            const data = await authService.login(email, password);
+            const role = data.user.role;
+
+            if (role === "manager" || role === "cashier") {
+                console.log(localStorage.getItem("token"));
+                console.log(localStorage.getItem("user"));
+                navigate("/admin/dashboard");
+            } else {
+                navigate("/");
+            }
+        } catch (err: any) {
+            setError(err.message || "Login failed");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
-        <div className="login-page">
-            <BackgroundLogin/>
-            <div className="wrapper-login">
-                {/* Left Container */}
-                <div className="container-coffee"></div>
+        <div style={styles.container}>
+            <div style={styles.card}>
+                <h1 style={styles.title}>MCD Admin</h1>
+                <p style={styles.subtitle}>Sign in to your account</p>
 
-                {/* Right Container */}
-                <div className="wrapper-form">
-                    {/* Logo */}
-                    <div className="wrapper-login-logo">
-                        <div className="login-logo"></div>
-                    </div>
-                    {/* Title */}
-                    <div className="title-login">
-                        <p>Welcome!</p>
-                        <span>Log in to explore our restaurant features and enjoy your experience</span>
-                    </div>
+                <form onSubmit={handleSubmit} style={styles.form}>
+                    <label style={styles.label}>Email</label>
+                    <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={styles.input}
+                        placeholder="admin@mcd.com"
+                    />
 
-                    {/* Form */}
-                    <div className="wrapper-login-form">
-                        <div className="form-login">
-                            <TextField
-                                label="E-Mail"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                sx={{
-                                    marginBottom: "20px",
-                                    input: { color: "#000000" },
-                                    label: { color: "#000000" },
-                                    "& label.Mui-focused": {
-                                        color: "#000000",
-                                    },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "12px",
-                                        backgroundColor: "rgba(255,255,255,0.05)",
-                                        "& fieldset": {
-                                            borderColor: "#000000",
-                                        },
-                                        "&:hover fieldset": {
-                                            borderColor: "#000000",
-                                        },
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#000000",
-                                            borderWidth: "2px",
-                                        },
-                                    },
-                                }}
-                            />
+                    <label style={styles.label}>Password</label>
+                    <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        style={styles.input}
+                        placeholder="Password"
+                    />
 
-                            <TextField
-                                label="Password"
-                                variant="outlined"
-                                // type={showPassword ? "text" : "password"}
-                                fullWidth
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                sx={{
-                                    input: { color: "#000000" },
-                                    label: { color: "#000000" },
-                                    "& label.Mui-focused": {
-                                        color: "#000000",
-                                    },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "12px",
-                                        backgroundColor: "rgba(255,255,255,0.05)",
-                                        "& fieldset": {
-                                            borderColor: "#000000",
-                                        },
-                                        "&:hover fieldset": {
-                                            borderColor: "#000000",
-                                        },
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#000000",
-                                            borderWidth: "2px",
-                                        },
-                                    },
-                                }}
+                    {error && <div style={styles.error}>{error}</div>}
 
-                                // InputProps={{
-                                //     endAdornment: (
-                                //         <InputAdornment position="end">
-                                //             <IconButton
-                                //                 onClick={() => setShowPassword(!showPassword)}
-                                //                 edge="end"
-                                //                 sx={{ color: "#f5e6d3" }}
-                                //             >
-                                //                 {showPassword ? <VisibilityOff /> : <Visibility />}
-                                //             </IconButton>
-                                //         </InputAdornment>
-                                //     ),
-                                // }}
-                            />
+                    <button type="submit" disabled={loading} style={styles.button}>
+                        {loading ? "Signing in..." : "Sign In"}
+                    </button>
 
-                        </div>
-                    </div>
-                    <div className="user-services">
-                        <div className="wrapper-remember-me">
-                            <input type="checkbox" name="remember-me" className="remember-me" />
-                            <p>Remember me</p>
-                        </div>
-                        <p className="forgot-password"><Link to={"/forgot-password"}>Forgot Password?</Link></p>
-                    </div>
-
-                    <div className="login-actions">
-                        <div className="wrapper-login-button">
-                            <Button
-                                variant="contained"
-                                // onClick={handleLogin}
-                                className="button-login"
-                                sx={{
-                                    transition: "all 0.2s ease",
-                                    backgroundColor: "white",
-                                    color: "black",
-                                    borderRadius: "10px",
-                                    "&:hover": {
-                                        transform: "scale(1.03)",
-                                        backgroundColor: "var(--pumpkin-essence)"
-                                    }
-                                }}
-                            >
-                                Sign In
-                            </Button>
-                        </div>
-                        <p className="title-register">Don't have an account?&nbsp;<a className="register-navigation" onClick={handleRegisterNavigation}> REGISTER NOW</a></p>
-                    </div>
-                </div>
+                    <Link to="/forget-password" style={styles.link}>
+                        Forgot password?
+                    </Link>
+                </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Login;
+const styles: Record<string, React.CSSProperties> = {
+    container: {
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #FFC72C 0%, #DA291C 100%)",
+        fontFamily: "system-ui, sans-serif",
+    },
+    card: {
+        background: "#fff",
+        padding: "40px",
+        borderRadius: 12,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+        width: "100%",
+        maxWidth: 400,
+    },
+    title: {
+        margin: 0,
+        fontSize: 28,
+        color: "#DA291C",
+        textAlign: "center",
+    },
+    subtitle: {
+        textAlign: "center",
+        color: "#666",
+        marginBottom: 24,
+        fontSize: 14,
+    },
+    form: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    label: {
+        fontSize: 13,
+        fontWeight: 600,
+        marginBottom: 6,
+        color: "#333",
+    },
+    input: {
+        padding: "10px 12px",
+        fontSize: 14,
+        border: "1px solid #ddd",
+        borderRadius: 6,
+        marginBottom: 14,
+        outline: "none",
+    },
+    button: {
+        padding: "12px",
+        background: "#DA291C",
+        color: "#fff",
+        border: "none",
+        borderRadius: 6,
+        fontSize: 15,
+        fontWeight: 600,
+        cursor: "pointer",
+        marginTop: 8,
+    },
+    link: {
+        textAlign: "center",
+        marginTop: 14,
+        color: "#DA291C",
+        textDecoration: "none",
+        fontSize: 13,
+    },
+    error: {
+        background: "#fee",
+        color: "#c33",
+        padding: 10,
+        borderRadius: 6,
+        fontSize: 13,
+        marginBottom: 10,
+    },
+};
+
+export default LoginPage;

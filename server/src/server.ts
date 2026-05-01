@@ -6,21 +6,21 @@ import { sequelize } from './config/database.js';
 
 // route imports
 import userRoutes from './routes/user.routes.js';
-import typeRoutes from './routes/type.routes.js';
-import paymentRoutes from './routes/payment.routes.js';
-import orderItemRoutes from './routes/orderItem.routes.js';
-import orderRoutes from './routes/order.routes.js';
-import menuSectionRoutes from './routes/menuSection.routes.js';
-import menuRoutes from './routes/menu.routes.js';
-import filterMenuRoutes from './routes/filterMenu.routes.js';
-import ingredientRoutes from './routes/ingredients.routes.js';
+// ... dst
+
+import GlobalAPI from "./routes/index.js";
+import { errorHandler } from './middlewares/errorHandler.js';
 import ingredientItemsRoutes from './routes/ingredientItems.routes.js';
+import menuRoutes from './routes/menu.routes.js';
+import menuSectionRoutes from './routes/menuSection.routes.js';
+import menuVariantGroupsRoutes from './routes/menuVariantGroups.routes.js';
+import orderItemRoutes from './routes/orderItem.routes.js';
 import packageItemsRoutes from './routes/packageItems.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+import typeRoutes from './routes/type.routes.js';
 import variantGroupsRoutes from './routes/variantGroups.routes.js';
 import variantItemsRoutes from './routes/variantItems.routes.js';
-import menuVariantGroupsRoutes from './routes/menuVariantGroups.routes.js';
-// 👇 IMPORT ERROR HANDLER
-import { errorHandler } from './middlewares/errorHandler.js';
+import filterMenuItems from './routes/filterMenuItems.routes.js'
 
 dotenv.config();
 
@@ -31,35 +31,39 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+app.use('/api', GlobalAPI);
+app.use('/api/user', userRoutes);
 // routes
 app.use('/api/user', userRoutes);
 app.use('/api/type', typeRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/orderitem', orderItemRoutes);
-app.use('/api/order', orderRoutes);
+
 app.use('/api/menu', menuRoutes);
 app.use('/api/menusection', menuSectionRoutes);
-app.use('/api/filtermenu', filterMenuRoutes);
 app.use('/api/orderitem', orderItemRoutes);
-app.use('/api/ingredient', ingredientRoutes);
+app.use('/api/ingredient', ingredientItemsRoutes);
 app.use('/api/ingredientitem', ingredientItemsRoutes);
 app.use('/api/packageitem', packageItemsRoutes);
 app.use('/api/variantgroup', variantGroupsRoutes);
 app.use('/api/variantitem', variantItemsRoutes);
 app.use('/api/menuvariantgroup', menuVariantGroupsRoutes);
 
-// 👇 ERROR HANDLER (HARUS PALING BAWAH, SEBELUM app.listen)
 app.use(errorHandler);
 
-//Image Handler
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// ========== INI YANG PENTING ==========
+const startServer = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Database connected!');
 
-sequelize.authenticate().then(() => {
-  console.log('✅ Database connected!');
-}).catch((error) => {
-  console.error('❌ Error:', error);
-});
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running di http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running di http://localhost:${PORT}`);
-});
+startServer();
