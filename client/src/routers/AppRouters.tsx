@@ -55,15 +55,6 @@ const Router = () => {
         <Route path="/cashier/orders" element={<OrderManagementPage />} />
       </Route>
 
-      {/* ===== Cashier area ===== */}
-      <Route element={<ProtectedRoutes allowedRoles={["manager", "cashier"]} />}>
-        <Route path="/employee" element={<EmployeeNavBar />}>
-          <Route index element={<EmployeeMenu />} />
-          <Route path=":id/make-package" element={<MakePackage />} />
-          <Route path=":id" element={<div>Menu Detail</div>} />
-        </Route>
-      </Route>
-
       {/* ===== Fallback ===== */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
