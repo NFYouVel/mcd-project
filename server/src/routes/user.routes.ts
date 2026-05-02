@@ -4,9 +4,9 @@ import { authMiddleware, roleMiddleware } from "../middlewares/authMiddleware.js
 
 const router: Router = Router();
 router.get('/', getAllUsers);
-router.get('/:id', authMiddleware, roleMiddleware('manager'), getUserById);
-router.post('/', authMiddleware, roleMiddleware('manager'), createUser);
-router.put('/:id', authMiddleware, roleMiddleware('manager'), updateUser);
-router.delete('/:id', authMiddleware, roleMiddleware('manager'), deleteUser);
+router.get('/:id', getUserById);
+router.post('/', createUser);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
 
 export default router;
