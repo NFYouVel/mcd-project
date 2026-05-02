@@ -15,6 +15,7 @@ import {
 import { Menu } from "./Menu.js";
 import { Orders } from "./Orders.js";
 import { IngredientItems } from "./IngredientItems.js";
+import { VariantItems } from "./VariantItems.js";
 @Table({
     tableName: "Order_Items",
     timestamps: true,
@@ -64,6 +65,15 @@ export class OrderItems extends Model {
     declare orderId: string;
     @BelongsTo(() => Orders, "orderId")
     declare order: Orders;
+    
+    @ForeignKey(() => VariantItems)
+    @Column({
+        type: DataType.UUID,
+        allowNull: true
+    })
+    declare variantItemsId: string;
+    @BelongsTo(() => VariantItems, "variantItemsId")
+    declare variantItems: VariantItems;
 
     @HasMany(() => IngredientItems, {
     foreignKey: "orderItemsId"

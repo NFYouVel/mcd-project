@@ -29,7 +29,22 @@ export interface Order {
 // Helper: hitung total order dari items
 export const calculateOrderTotal = (order: Order): number => {
   if (!order.orderItems) return 0;
-  return order.orderItems.reduce((sum, item) => sum + (item.menu?.price || 0), 0);
+
+  return order.orderItems.reduce((sum, item) => {
+    // 1. Harga menu utama
+    const menuPrice = item.menu?.price || 0;
+
+    // 2. Hitung extras dari ingredientItems (cuma yang qty > 1)
+    const extrasPrice = (item.ingredientItems || []).reduce((extraSum, ing) => {
+      if (ing.quantity > 1) {
+        const extraQty = ing.quantity - 1; // qty 1 udah include
+        return extraSum + (extraQty * (ing.price || 0));
+      }
+      return extraSum;
+    }, 0);
+
+    return sum + menuPrice + extrasPrice;
+  }, 0);
 };
 
 export const orderService = {

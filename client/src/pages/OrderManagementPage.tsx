@@ -82,11 +82,12 @@ const OrderManagementPage = () => {
 
     const handleUpdateStatus = async (id: string, status: string) => {
         try {
-            await orderService.updateStatus(id, status);
+            const res = await orderService.updateStatus(id, status);
             await fetchOrders();
-            // Update selected dengan data terbaru
-            const updated = await orderService.getById(id).catch(() => null);
-            if (updated) setSelected(updated);
+            // Pake data dari response, ga perlu getById lagi
+            if (res?.data) {
+                setSelected(res.data);
+            }
         } catch (err: any) {
             alert(err.message || "Failed to update status");
         }
@@ -228,29 +229,75 @@ const OrderManagementPage = () => {
 
                         <h3 style={styles.sectionTitle}>Items ({selected.orderItems?.length || 0})</h3>
                         <div style={styles.itemList}>
-                            {selected.orderItems?.map((item) => (
-                                <div key={item.id} style={styles.itemCard}>
-                                    <div style={styles.itemHeader}>
-                                        <strong>{item.menu?.name || "Unknown Menu"}</strong>
-                                        <span
-                                            style={{
-                                                ...styles.badgeSmall,
-                                                background: statusColor(item.status),
-                                            }}
-                                        >
-                                            {item.status}
-                                        </span>
-                                    </div>
-                                    <div style={styles.itemMeta}>
-                                        <span>{formatRupiah(item.menu?.price || 0)}</span>
-                                        {item.ingredientItems && item.ingredientItems.length > 0 && (
-                                            <span style={styles.itemExtras}>
-                                                +{item.ingredientItems.length} extras
+                            {selected.orderItems?.map((item) => {
+                                // Hitung subtotal item ini (menu + extras)
+                                const menuPrice = item.menu?.price || 0;
+                                const extrasTotal = (item.ingredientItems || []).reduce((sum, ing) => {
+                                    if (ing.quantity > 1) {
+                                        return sum + ((ing.quantity - 1) * (ing.price || 0));
+                                    }
+                                    return sum;
+                                }, 0);
+                                const itemSubtotal = menuPrice + extrasTotal;
+
+                                return (
+                                    <div key={item.id} style={styles.itemCard}>
+                                        <div style={styles.itemHeader}>
+                                            <strong>{item.menu?.name || "Unknown Menu"}</strong>
+                                            <span
+                                                style={{
+                                                    ...styles.badgeSmall,
+                                                    background: statusColor(item.status),
+                                                }}
+                                            >
+                                                {item.status}
                                             </span>
+                                        </div>
+
+                                        <div style={styles.itemMeta}>
+                                            <span style={{ color: "#666" }}>Base: {formatRupiah(menuPrice)}</span>
+                                        </div>
+
+                                        {/* Show ingredient breakdown */}
+                                        {item.ingredientItems && item.ingredientItems.length > 0 && (
+                                            <div style={styles.ingredientList}>
+                                                {item.ingredientItems.map((ing) => {
+                                                    const isExtra = ing.quantity > 1;
+                                                    const extraQty = ing.quantity - 1;
+                                                    const extraPrice = extraQty * (ing.price || 0);
+
+                                                    return (
+                                                        <div key={ing.id} style={styles.ingredientRow}>
+                                                            <span style={styles.ingredientName}>
+                                                                {ing.ingredients?.name || "Unknown"}
+                                                                <span style={styles.qtyTag}>×{ing.quantity}</span>
+                                                            </span>
+                                                            <span style={styles.ingredientPrice}>
+                                                                {isExtra ? (
+                                                                    <>
+                                                                        <span style={{ color: "#FFC72C", fontWeight: 600 }}>
+                                                                            +{formatRupiah(extraPrice)}
+                                                                        </span>
+                                                                        <span style={styles.extraNote}> (extra ×{extraQty})</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <span style={{ color: "#999", fontSize: 11 }}>included</span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
                                         )}
+
+                                        {/* Item subtotal */}
+                                        <div style={styles.itemSubtotal}>
+                                            <span>Subtotal:</span>
+                                            <strong style={{ color: "#DA291C" }}>{formatRupiah(itemSubtotal)}</strong>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                             {(!selected.orderItems || selected.orderItems.length === 0) && (
                                 <p style={{ color: "#999", textAlign: "center" }}>No items</p>
                             )}
@@ -459,6 +506,62 @@ const styles: Record<string, React.CSSProperties> = {
         cursor: "pointer",
         fontSize: 14,
     },
+    ingredientList: {
+        marginTop: 10,
+        paddingTop: 10,
+        borderTop: "1px dashed #eee",
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+    },
+    ingredientRow: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        fontSize: 12,
+        padding: "2px 0",
+    },
+    ingredientName: {
+        color: "#333",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+    },
+    qtyTag: {
+        background: "#f0f0f0",
+        padding: "1px 6px",
+        borderRadius: 8,
+        fontSize: 10,
+        fontWeight: 600,
+        color: "#666",
+    },
+    ingredientPrice: {
+        fontSize: 12,
+    },
+    extraNote: {
+        color: "#999",
+        fontSize: 10,
+        marginLeft: 4,
+    },
+    itemSubtotal: {
+        marginTop: 10,
+        paddingTop: 10,
+        borderTop: "1px solid #eee",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        fontSize: 13,
+    },
+    variantTag: {
+        marginLeft: 8,
+        background: "#FFC72C",
+        color: "#000",
+        padding: "2px 8px",
+        borderRadius: 8,
+        fontSize: 11,
+        fontWeight: 600,
+    },
+
 };
 
 export default OrderManagementPage;

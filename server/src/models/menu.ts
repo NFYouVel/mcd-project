@@ -64,9 +64,6 @@ export class Menu extends Model {
   @BelongsTo(() => FilterMenu)
   declare filterMenu: FilterMenu;
 
-  // ============================
-  // RELATIONS
-  // ============================
 
   @HasMany(() => OrderItems, { foreignKey: "menuId" })
   declare orderItems: OrderItems[];
