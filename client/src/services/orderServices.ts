@@ -1,4 +1,3 @@
-// src/services/order.service.ts
 import { apiRequest } from "./api";
 
 export interface MenuMini {
@@ -7,14 +6,22 @@ export interface MenuMini {
   price: number;
 }
 
+export interface VariantItemMini {
+  id: string;
+  name: string;
+  priceModifier: number;
+}
+
 export interface OrderItem {
   id: string;
   status: string;
   menuId: string;
   orderId: string;
+  variantItemsId?: string | null;
   createdAt: string;
   updatedAt: string;
   menu: MenuMini;
+  variantItems?: VariantItemMini | null;  // ← pastikan ada
   ingredientItems: any[];
 }
 
@@ -34,16 +41,19 @@ export const calculateOrderTotal = (order: Order): number => {
     // 1. Harga menu utama
     const menuPrice = item.menu?.price || 0;
 
-    // 2. Hitung extras dari ingredientItems (cuma yang qty > 1)
+    // 2. Variant price modifier (bisa +, -, atau 0)
+    const variantPrice = item.variantItems?.priceModifier || 0;  // ← TAMBAH INI
+
+    // 3. Hitung extras dari ingredientItems (cuma yang qty > 1)
     const extrasPrice = (item.ingredientItems || []).reduce((extraSum, ing) => {
       if (ing.quantity > 1) {
-        const extraQty = ing.quantity - 1; // qty 1 udah include
+        const extraQty = ing.quantity - 1;
         return extraSum + (extraQty * (ing.price || 0));
       }
       return extraSum;
     }, 0);
 
-    return sum + menuPrice + extrasPrice;
+    return sum + menuPrice + variantPrice + extrasPrice;  // ← include variantPrice
   }, 0);
 };
 
@@ -65,7 +75,6 @@ export const orderService = {
     });
   },
 
-  // Update status untuk single order item
   updateItemStatus: async (orderItemId: string, status: string) => {
     return apiRequest(`/order-items/${orderItemId}`, {
       method: "PUT",
