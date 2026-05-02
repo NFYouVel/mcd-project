@@ -48,6 +48,17 @@ module.exports = {
             onUpdate: 'CASCADE',
             onDelete: 'CASCADE'
         });
+        await queryInterface.addColumn('Order_Items', 'variantItemsId', {
+            type: Sequelize.UUID,
+            allowNull: true,
+            references: {
+                model: 'Variant_Items',
+                key: 'id'
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE'
+        });
+        
     },
 
     down: async (queryInterface, Sequelize) => {
