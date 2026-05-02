@@ -65,6 +65,22 @@ const cartSlice = createSlice({
             }
         },
 
+        updateCartItem: (state, action: PayloadAction<{
+            cartItemId: string;
+            price: number;
+            ingredients: IngredientDetail[];
+            variants: VariantDetail[];
+            specialRequests: string[];
+        }>) => {
+            const item = state.items.find(i => i.cartItemId === action.payload.cartItemId);
+            if (item) {
+                item.price = action.payload.price;
+                item.ingredients = action.payload.ingredients;
+                item.variants = action.payload.variants;
+                item.specialRequests = action.payload.specialRequests;
+            }
+        },
+
         // Remove all of a specific cart line
         removeFromCart: (state, action: PayloadAction<string>) => {
             state.items = state.items.filter((i) => i.cartItemId !== action.payload);
@@ -81,6 +97,7 @@ export const {
     addToCart,
     incrementItem,
     decrementItem,
+    updateCartItem,
     removeFromCart,
     clearCart,
 } = cartSlice.actions;
