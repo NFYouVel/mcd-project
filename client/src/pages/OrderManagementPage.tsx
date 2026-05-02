@@ -230,20 +230,27 @@ const OrderManagementPage = () => {
                         <h3 style={styles.sectionTitle}>Items ({selected.orderItems?.length || 0})</h3>
                         <div style={styles.itemList}>
                             {selected.orderItems?.map((item) => {
-                                // Hitung subtotal item ini (menu + extras)
                                 const menuPrice = item.menu?.price || 0;
+                                const variantPrice = item.variantItems?.priceModifier || 0;  // ← baru
                                 const extrasTotal = (item.ingredientItems || []).reduce((sum, ing) => {
                                     if (ing.quantity > 1) {
                                         return sum + ((ing.quantity - 1) * (ing.price || 0));
                                     }
                                     return sum;
                                 }, 0);
-                                const itemSubtotal = menuPrice + extrasTotal;
+                                const itemSubtotal = menuPrice + variantPrice + extrasTotal;  // ← include variant
 
                                 return (
                                     <div key={item.id} style={styles.itemCard}>
                                         <div style={styles.itemHeader}>
-                                            <strong>{item.menu?.name || "Unknown Menu"}</strong>
+                                            <strong>
+                                                {item.menu?.name || "Unknown Menu"}
+                                                {item.variantItems && (
+                                                    <span style={styles.variantTag}>
+                                                        {item.variantItems.name}
+                                                    </span>
+                                                )}
+                                            </strong>
                                             <span
                                                 style={{
                                                     ...styles.badgeSmall,
@@ -258,39 +265,25 @@ const OrderManagementPage = () => {
                                             <span style={{ color: "#666" }}>Base: {formatRupiah(menuPrice)}</span>
                                         </div>
 
-                                        {/* Show ingredient breakdown */}
-                                        {item.ingredientItems && item.ingredientItems.length > 0 && (
-                                            <div style={styles.ingredientList}>
-                                                {item.ingredientItems.map((ing) => {
-                                                    const isExtra = ing.quantity > 1;
-                                                    const extraQty = ing.quantity - 1;
-                                                    const extraPrice = extraQty * (ing.price || 0);
-
-                                                    return (
-                                                        <div key={ing.id} style={styles.ingredientRow}>
-                                                            <span style={styles.ingredientName}>
-                                                                {ing.ingredients?.name || "Unknown"}
-                                                                <span style={styles.qtyTag}>×{ing.quantity}</span>
-                                                            </span>
-                                                            <span style={styles.ingredientPrice}>
-                                                                {isExtra ? (
-                                                                    <>
-                                                                        <span style={{ color: "#FFC72C", fontWeight: 600 }}>
-                                                                            +{formatRupiah(extraPrice)}
-                                                                        </span>
-                                                                        <span style={styles.extraNote}> (extra ×{extraQty})</span>
-                                                                    </>
-                                                                ) : (
-                                                                    <span style={{ color: "#999", fontSize: 11 }}>included</span>
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    );
-                                                })}
+                                        {/* Variant price row */}
+                                        {item.variantItems && variantPrice !== 0 && (
+                                            <div style={{ ...styles.itemMeta, marginTop: 4 }}>
+                                                <span style={{ color: "#666" }}>
+                                                    Variant ({item.variantItems.name}):
+                                                </span>
+                                                <span style={{ color: variantPrice > 0 ? "#FFC72C" : "#2ecc71", fontWeight: 600 }}>
+                                                    {variantPrice > 0 ? "+" : ""}{formatRupiah(variantPrice)}
+                                                </span>
                                             </div>
                                         )}
 
-                                        {/* Item subtotal */}
+                                        {/* Ingredient breakdown — sama kayak sebelumnya */}
+                                        {item.ingredientItems && item.ingredientItems.length > 0 && (
+                                            <div style={styles.ingredientList}>
+                                                {/* ... existing code ... */}
+                                            </div>
+                                        )}
+
                                         <div style={styles.itemSubtotal}>
                                             <span>Subtotal:</span>
                                             <strong style={{ color: "#DA291C" }}>{formatRupiah(itemSubtotal)}</strong>
