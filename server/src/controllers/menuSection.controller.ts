@@ -4,34 +4,32 @@ import { FilterMenu } from "../models/FilterMenu.js";
 import { SectionMenuItems } from "../models/SectionMenuItems.js";
 import { sequelize } from "../config/database.js";
 import { getIdParam } from "../utils/validateId.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { Request, Response } from "express";
 
-export const getAllSections = async (req: any, res: any) => {
-    try {
-        const { typeId } = req.query;
-        const where: any = {};
-        if (typeId && typeof typeId === "string") {
-            where.typeId = typeId;
-        }
-
-        const sections = await MenuSection.findAll({
-            where,
-            include: [
-                { model: Type },
-                { model: FilterMenu, through: { attributes: [] } }, // hide junction fields
-            ],
-            order: [
-                [sequelize.literal(`CASE WHEN "MenuSection"."name" = 'Promosi' THEN 0 ELSE 1 END`), "ASC"],
-                ["name", "ASC"],
-            ],
-        });
-
-        return res.json({ success: true, data: sections });
-    } catch (error) {
-        return res.status(500).json({ message: "Error fetching sections", error });
+export const getAllSections = asyncHandler(async (req: Request, res: Response) => {
+    const { typeId } = req.query;
+    const where: any = {};
+    if (typeId && typeof typeId === "string") {
+        where.typeId = typeId;
     }
-};
 
-export const getSectionById = async (req: any, res: any) => {
+    const sections = await MenuSection.findAll({
+        where,
+        include: [
+            { model: Type },
+            { model: FilterMenu, through: { attributes: [] } },
+        ],
+        order: [
+            [sequelize.literal(`CASE WHEN "MenuSection"."name" = 'Promosi' THEN 0 ELSE 1 END`), "ASC"],
+            ["name", "ASC"],
+        ],
+    });
+
+    return res.json({ success: true, data: sections });
+});
+
+export const getSectionById = asyncHandler(async (req: Request, res: Response) => {
     try {
         const id = getIdParam(req);
         const section = await MenuSection.findByPk(id, {
@@ -47,9 +45,9 @@ export const getSectionById = async (req: any, res: any) => {
     } catch (error) {
         return res.status(500).json({ message: "Error fetching section", error });
     }
-};
+});
 
-export const createSection = async (req: any, res: any) => {
+export const createSection = asyncHandler(async (req: Request, res: Response) => {
     const t = await sequelize.transaction();
     try {
         const { name, description, typeId, filterIds } = req.body;
@@ -94,9 +92,9 @@ export const createSection = async (req: any, res: any) => {
         await t.rollback();
         return res.status(500).json({ message: "Error creating section", error });
     }
-};
+});
 
-export const updateSection = async (req: any, res: any) => {
+export const updateSection = asyncHandler(async (req: Request, res: Response) => {
     const t = await sequelize.transaction();
     try {
         const id = getIdParam(req);
@@ -150,18 +148,41 @@ export const updateSection = async (req: any, res: any) => {
         await t.rollback();
         return res.status(500).json({ message: "Error updating section", error });
     }
-};
+});
 
-export const deleteSection = async (req: any, res: any) => {
+export const deleteSection = asyncHandler(async (req: Request, res: Response) => {
+    const t = await sequelize.transaction();
     try {
         const id = getIdParam(req);
-        const section = await MenuSection.findByPk(id);
+        const section = await MenuSection.findByPk(id, { transaction: t });
+        
         if (!section) {
-            return res.status(404).json({ success: false, message: "Section not found" });
+            await t.rollback();
+            return res.status(404).json({ 
+                success: false, 
+                message: "Section not found" 
+            });
         }
-        await section.destroy();
-        return res.json({ success: true, message: "Section deleted" });
+
+        await SectionMenuItems.destroy({
+            where: { sectionMenuId: id },
+            transaction: t,
+        });
+
+        // Baru delete section
+        await section.destroy({ transaction: t });
+
+        await t.commit();
+        return res.json({ 
+            success: true, 
+            message: "Section deleted successfully" 
+        });
     } catch (error) {
-        return res.status(500).json({ message: "Error deleting section", error });
+        await t.rollback();
+        console.error("DELETE SECTION ERROR:", error);
+        return res.status(500).json({ 
+            message: "Error deleting section",
+            error: error instanceof Error ? error.message : "Unknown error"
+        });
     }
-};
+});

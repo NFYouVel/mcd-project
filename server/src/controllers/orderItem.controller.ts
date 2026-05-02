@@ -138,24 +138,10 @@ export const getAllOrderItems = async (req: Request, res: Response) => {
         {
           model: Menu,
           attributes: ["id", "name", "price", "isPackage"],
-          include: [
-            {
-              model: MenuVariantGroups,
-              include: [
-                {
-                  model: VariantGroups,
-                  as: "variantGroup",
-                  include: [
-                    {
-                      model: VariantItems,
-                      as: "variantItems",
-                      required: false,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
+        },
+        {
+          model: VariantItems,
+          attributes: ["id", "name", "priceModifier"],
         },
         {
           model: IngredientItems,
@@ -172,7 +158,6 @@ export const getAllOrderItems = async (req: Request, res: Response) => {
   }
 };
 
-// ─── GET BY ID ─────────────────────────────────────────────────────────────
 export const getOrderItemById = async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -183,24 +168,10 @@ export const getOrderItemById = async (req: Request, res: Response) => {
         {
           model: Menu,
           attributes: ["id", "name", "price", "isPackage"],
-          include: [
-            {
-              model: MenuVariantGroups,
-              include: [
-                {
-                  model: VariantGroups,
-                  as: "variantGroup",
-                  include: [
-                    {
-                      model: VariantItems,
-                      as: "variantItems",
-                      required: false,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
+        },
+        {
+          model: VariantItems,
+          attributes: ["id", "name", "priceModifier"],
         },
         {
           model: IngredientItems,
