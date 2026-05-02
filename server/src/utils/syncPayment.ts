@@ -27,7 +27,7 @@ export const syncPayment = async (orderId: string) => {
 
     let total = 0;
     for (const item of order.orderItems || []) {
-        total += item.menu.price;  // ← hapus * item.quantity
+        total += item.menu.price;  
 
         for (const ingredient of item.ingredientItems || []) {
             total += ingredient.price * ingredient.quantity;

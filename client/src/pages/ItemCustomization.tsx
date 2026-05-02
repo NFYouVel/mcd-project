@@ -173,7 +173,7 @@ const ItemCustomization = () => {
             const already = current.includes(itemId);
             return {
                 ...prev,
-                [groupId]: already ? current.filter(id => id !== itemId) : [...current, itemId],
+                [groupId]: already ? [] : [itemId],
             };
         });
     };
