@@ -40,39 +40,6 @@ export const login = async (req: Request, res: Response) => {
     }
 };
 
-// REGISTER (hanya admin yang bisa create admin/kasir baru)
-export const registerAdmin = async (req: Request, res: Response) => {
-    try {
-        const { email, password, name, role } = req.body;
-
-        if (!['admin', 'kasir'].includes(role)) {
-            return res.status(400).json({ message: "Invalid role" });
-        }
-
-        const exist = await Users.findOne({ where: { email } });
-        if (exist) {
-            return res.status(409).json({ message: "Email already registered" });
-        }
-
-        const hashed = await bcrypt.hash(password, 10);
-        const newUser = await Users.create({
-            email, password: hashed, 
-            name, 
-            role
-        });
-
-        return res.status(201).json({
-            message: "User created",
-            user: { 
-                id: newUser.id, 
-                email: newUser.email, 
-                role: newUser.role }
-        });
-    } catch (error) {
-        return res.status(500).json({ message: "Server error", error });
-    }
-};
-
 // FORGET PASSWORD
 export const forgetPassword = async (req: Request, res: Response) => {
     try {

@@ -39,61 +39,103 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 }
 
-//Create User
-export const createUser = async (req: Request, res: Response) => {
-    try {
-        const { name, email, password, address, birth_of_date } = req.body;
-
-        const newUser = await Users.create({
-            name,
-            email,
-            password,
-            address,
-            birth_of_date
-        });
-
-        return res.status(201).json({
-            message: "User created",
-            data: newUser
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            message: error.message
-        });
-    }
-}
-
-//Update User
-export const updateUser = async (req: Request, res: Response) => {
+// Update User
+export const registerAdmin = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
-        const { name, email, password, address, birth_of_date } = req.body;
-        const updatedUser = await Users.findByPk(id);
+        const { 
+            name, email, password, role,
+            address, birth_of_date, salary 
+        } = req.body;
 
-        if(!updatedUser) {
-            return res.status(404).json({
-                message: "User not found"
-            });
+        const user = await Users.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
-        await updatedUser.update({
-            name,
-            email,
-            password,
-            address,
-            birth_of_date  
-        })
+        const update: any = {};
+        if (name !== undefined) update.name = name;
+        if (email !== undefined) update.email = email;
+        if (address !== undefined) update.address = address;
+        if (birth_of_date !== undefined) update.birth_of_date = birth_of_date;
+        if (salary !== undefined) update.salary = salary;
+        
+        if (role !== undefined) {
+            const validRoles = ['manager', 'cashier', 'customer'];
+            if (!validRoles.includes(role)) {
+                return res.status(400).json({ message: "Invalid role" });
+            }
+            update.role = role;
+        }
+
+        if (password) {
+            update.password = await bcrypt.hash(password, 10);
+        }
+
+        await user.update(update);
+
+        const { password: _, ...userWithoutPassword } = user.toJSON() as any;
 
         return res.status(200).json({
             message: "User updated",
-            data: updatedUser
+            data: userWithoutPassword,
         });
     } catch (error: any) {
-        return res.status(500).json({
-            message: error.message
+        return res.status(500).json({ 
+            message: "Server error",
+            error: error.message 
         });
     }
-}
+};
+
+// Update User
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id as string;
+        const { 
+            name, email, password, role,
+            address, birth_of_date, salary 
+        } = req.body;
+
+        const user = await Users.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const update: any = {};
+        if (name !== undefined) update.name = name;
+        if (email !== undefined) update.email = email;
+        if (address !== undefined) update.address = address;
+        if (birth_of_date !== undefined) update.birth_of_date = birth_of_date;
+        if (salary !== undefined) update.salary = salary;
+        
+        if (role !== undefined) {
+            const validRoles = ['manager', 'cashier', 'customer'];
+            if (!validRoles.includes(role)) {
+                return res.status(400).json({ message: "Invalid role" });
+            }
+            update.role = role;
+        }
+
+        if (password) {
+            update.password = await bcrypt.hash(password, 10);
+        }
+
+        await user.update(update);
+
+        const { password: _, ...userWithoutPassword } = user.toJSON() as any;
+
+        return res.status(200).json({
+            message: "User updated",
+            data: userWithoutPassword,
+        });
+    } catch (error: any) {
+        return res.status(500).json({ 
+            message: "Server error",
+            error: error.message 
+        });
+    }
+};
 
 //Delete User
 export const deleteUser = async (req: Request, res: Response) => {
