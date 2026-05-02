@@ -4,10 +4,6 @@ import cors from 'cors';
 import path from 'path';
 import { sequelize } from './config/database.js';
 
-// route imports
-import userRoutes from './routes/user.routes.js';
-// ... dst
-
 import GlobalAPI from "./routes/index.js";
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -24,17 +20,16 @@ app.use('/api', GlobalAPI);
 
 app.use(errorHandler);
 
-// ========== INI YANG PENTING ==========
 const startServer = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Database connected!');
+    console.log('Database connected!');
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running di http://localhost:${PORT}`);
+      console.log(`Server running di http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 };
