@@ -1,29 +1,29 @@
 import { Request, Response } from 'express';
-import {Users} from '../models/Users.js';
+import { Users } from '../models/Users.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 
 //GET ALL Users
 export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await Users.findAll();
-    res.json(users);
-  } catch (error: any) {
-    console.error("GET USERS ERROR:", error); // 🔥 ADD THIS
-    res.status(500).json({ 
-      message: 'Error fetching users',
-      error: error.message
-    });
-  }
+    try {
+        const users = await Users.findAll();
+        res.json(users);
+    } catch (error: any) {
+        console.error("GET USERS ERROR:", error); // 🔥 ADD THIS
+        res.status(500).json({
+            message: 'Error fetching users',
+            error: error.message
+        });
+    }
 };
 //Get User by ID 
 export const getUserById = async (req: Request, res: Response) => {
-    try{
+    try {
         const id = req.params.id as string;
 
         const user = await Users.findByPk(id);
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 message: 'User not found'
             });
@@ -39,13 +39,70 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 }
 
-// Update User
+export const createUser = async (req: Request, res: Response) => {
+    try {
+        const {
+            name, email, password, role,
+            address, birth_of_date, salary
+        } = req.body;
+
+        // Validation
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "Name, email, and password are required"
+            });
+        }
+
+        // Validate role
+        const validRoles = ['manager', 'cashier', 'customer'];
+        const userRole = role || 'cashier';
+        if (!validRoles.includes(userRole)) {
+            return res.status(400).json({ message: "Invalid role" });
+        }
+
+        // Check duplicate email
+        const exist = await Users.findOne({ where: { email } });
+        if (exist) {
+            return res.status(409).json({ message: "Email already registered" });
+        }
+
+        // Hash password
+        const hashed = await bcrypt.hash(password, 10);
+
+        // 🔥 BENERAN BIKIN USER BARU (Users.create, BUKAN findByPk + update!)
+        const newUser = await Users.create({
+            name,
+            email,
+            password: hashed,
+            role: userRole,
+            address: address || null,
+            birth_of_date: birth_of_date || null,
+            salary: salary || null,
+        });
+
+        // Hide password from response
+        const { password: _, ...userWithoutPassword } = newUser.toJSON() as any;
+
+        return res.status(201).json({
+            message: "User created",
+            data: userWithoutPassword,
+        });
+    } catch (error: any) {
+        console.error("CREATE USER ERROR:", error);
+        return res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+};
+
+
 export const registerAdmin = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
-        const { 
+        const {
             name, email, password, role,
-            address, birth_of_date, salary 
+            address, birth_of_date, salary
         } = req.body;
 
         const user = await Users.findByPk(id);
@@ -59,7 +116,7 @@ export const registerAdmin = async (req: Request, res: Response) => {
         if (address !== undefined) update.address = address;
         if (birth_of_date !== undefined) update.birth_of_date = birth_of_date;
         if (salary !== undefined) update.salary = salary;
-        
+
         if (role !== undefined) {
             const validRoles = ['manager', 'cashier', 'customer'];
             if (!validRoles.includes(role)) {
@@ -81,9 +138,9 @@ export const registerAdmin = async (req: Request, res: Response) => {
             data: userWithoutPassword,
         });
     } catch (error: any) {
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: "Server error",
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -92,9 +149,9 @@ export const registerAdmin = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
-        const { 
+        const {
             name, email, password, role,
-            address, birth_of_date, salary 
+            address, birth_of_date, salary
         } = req.body;
 
         const user = await Users.findByPk(id);
@@ -108,7 +165,7 @@ export const updateUser = async (req: Request, res: Response) => {
         if (address !== undefined) update.address = address;
         if (birth_of_date !== undefined) update.birth_of_date = birth_of_date;
         if (salary !== undefined) update.salary = salary;
-        
+
         if (role !== undefined) {
             const validRoles = ['manager', 'cashier', 'customer'];
             if (!validRoles.includes(role)) {
@@ -130,9 +187,9 @@ export const updateUser = async (req: Request, res: Response) => {
             data: userWithoutPassword,
         });
     } catch (error: any) {
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: "Server error",
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -143,7 +200,7 @@ export const deleteUser = async (req: Request, res: Response) => {
         const id = req.params.id as string;
         const deletedUser = await Users.findByPk(id);
 
-        if(!deletedUser) {
+        if (!deletedUser) {
             return res.status(404).json({
                 message: "User not found"
             });
@@ -165,19 +222,19 @@ export const deleteUser = async (req: Request, res: Response) => {
 //LOGIN & REGISTER
 export const userLogin = async (req: Request, res: Response) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
 
         //1. Search User
-        const user = await Users.findOne({where: { email }});
+        const user = await Users.findOne({ where: { email } });
         if (!user) {
-            return res.status(404).json({message: "User with that email not found!"});
+            return res.status(404).json({ message: "User with that email not found!" });
         }
 
         //2. Check Password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({message: "Invalid password!"});
+            return res.status(400).json({ message: "Invalid password!" });
         }
 
         //3. JWT Token
@@ -200,8 +257,8 @@ export const userLogin = async (req: Request, res: Response) => {
             token
         });
     }
-    catch(error){
+    catch (error) {
         console.error("LOGIN ERROR:", error);
-        res.status(500).json({message: "Server error during login", error: error instanceof Error ? error.message : String(error)});
+        res.status(500).json({ message: "Server error during login", error: error instanceof Error ? error.message : String(error) });
     }
 }
