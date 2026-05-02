@@ -66,7 +66,6 @@ const Router = () => {
       </Route>
 
       {/* ===== Cashier area ===== */}
-      <Route element={<ProtectedRoutes allowedRoles={["manager", "customer"]} />}>
         <Route path="/employee" element={<EmployeeNavBar />}>
           <Route index element={<EmployeeMenu />} />
           <Route path=":id/make-package" element={<MakePackage />} />
@@ -75,7 +74,6 @@ const Router = () => {
           <Route path="cart" element={<ItemCart />} />
           <Route path="category/:sectionId/customize/:menuId" element={<ItemCustomization />} />
         </Route>
-      </Route>
 
       {/* ===== Fallback ===== */}
       <Route path="*" element={<Navigate to="/" replace />} />

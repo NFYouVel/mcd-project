@@ -1,64 +1,64 @@
-import {
-    Table,
-    Column,
-    Model,
-    DataType,
-    PrimaryKey,
-    ForeignKey,
-    BelongsTo,
-    CreatedAt,
-    UpdatedAt,
-    DeletedAt
-} from "sequelize-typescript";
+    import {
+        Table,
+        Column,
+        Model,
+        DataType,
+        PrimaryKey,
+        ForeignKey,
+        BelongsTo,
+        CreatedAt,
+        UpdatedAt,
+        DeletedAt
+    } from "sequelize-typescript";
 
-import { VariantGroups } from "./VariantGroups.js";
+    import { VariantGroups } from "./VariantGroups.js";
 
-@Table({
-    tableName: "Variant_Items",
-    timestamps: true,
-    paranoid: true,
-})
-export class VariantItems extends Model {
-
-    @PrimaryKey
-    @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4,
-        allowNull: false,
+    @Table({
+        tableName: "Variant_Items",
+        timestamps: true,
+        paranoid: true,
     })
-    declare id: string;
+    export class VariantItems extends Model {
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
-    declare name: string;
+        @PrimaryKey
+        @Column({
+            type: DataType.UUID,
+            defaultValue: DataType.UUIDV4,
+            allowNull: false,
+        })
+        declare id: string;
 
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: false,
-    })
-    declare priceModifier: number;
+        @Column({
+            type: DataType.STRING,
+            allowNull: false,
+        })
+        declare name: string;
 
-    @ForeignKey(() => VariantGroups)
-    @Column({
-        field: "variantGroupId",
-        type: DataType.UUID,
-        allowNull: false,
-    })
-    declare variantGroupId: string;
+        @Column({
+            type: DataType.INTEGER,
+            allowNull: false,
+        })
+        declare priceModifier: number;
 
-    @BelongsTo(() => VariantGroups, {
-        foreignKey: "variantGroupId",
-    })
-    declare variantGroup: VariantGroups;
+        @ForeignKey(() => VariantGroups)
+        @Column({
+            field: "variantGroupId",
+            type: DataType.UUID,
+            allowNull: false,
+        })
+        declare variantGroupId: string;
 
-    @CreatedAt
-    declare createdAt: Date;
+        @BelongsTo(() => VariantGroups, {
+            foreignKey: "variantGroupId",
+        })
+        declare variantGroup: VariantGroups;
 
-    @UpdatedAt
-    declare updatedAt: Date;
+        @CreatedAt
+        declare createdAt: Date;
 
-    @DeletedAt
-    declare deletedAt: Date;
-}
+        @UpdatedAt
+        declare updatedAt: Date;
+
+        @DeletedAt
+        declare deletedAt: Date;
+    }

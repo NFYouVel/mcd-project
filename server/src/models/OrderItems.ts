@@ -72,6 +72,7 @@ export class OrderItems extends Model {
         allowNull: true
     })
     declare variantItemsId: string;
+
     @BelongsTo(() => VariantItems, "variantItemsId")
     declare variantItems: VariantItems;
 

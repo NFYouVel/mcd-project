@@ -76,7 +76,9 @@ export const createOrder = async (req: any, res: any) => {
 //Get All Orders (FK OrdersItems -> Menu)
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const orders = await Orders.findAll({
+    const id = req.params.id as string;
+
+    const order = await Orders.findAll({
       include: [
         {
           model: OrderItems,
@@ -96,13 +98,16 @@ export const getAllOrders = async (req: Request, res: Response) => {
                       include: [
                         {
                           model: VariantItems,
-                          attributes: ["id", "name", "priceModifier"],
                         },
                       ],
                     },
                   ],
                 },
               ],
+            },
+            {
+              model: VariantItems,
+              attributes: ["id", "name", "priceModifier"],
             },
             {
               model: IngredientItems,
@@ -118,15 +123,13 @@ export const getAllOrders = async (req: Request, res: Response) => {
       ],
     });
 
-    return res.status(200).json({
-      message: "Success",
-      data: orders,
-    });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    return res.status(200).json({ message: "Success", data: order });
   } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching orders",
-      error,
-    });
+    return res.status(500).json({ message: "Error fetching order", error });
   }
 };
 
@@ -163,6 +166,10 @@ export const getOrderById = async (req: Request, res: Response) => {
               ],
             },
             {
+              model: VariantItems,
+              attributes: ["id", "name", "priceModifier"],
+            },
+            {
               model: IngredientItems,
               include: [
                 {
@@ -177,20 +184,12 @@ export const getOrderById = async (req: Request, res: Response) => {
     });
 
     if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
-      });
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    return res.status(200).json({
-      message: "Success",
-      data: order,
-    });
+    return res.status(200).json({ message: "Success", data: order });
   } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching order",
-      error,
-    });
+    return res.status(500).json({ message: "Error fetching order", error });
   }
 };
 

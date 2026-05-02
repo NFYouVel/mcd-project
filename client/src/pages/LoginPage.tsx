@@ -43,7 +43,6 @@ const LoginPage = () => {
                     <label style={styles.label}>Email</label>
                     <input
                         type="email"
-                        required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         style={styles.input}
@@ -53,7 +52,6 @@ const LoginPage = () => {
                     <label style={styles.label}>Password</label>
                     <input
                         type="password"
-                        required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         style={styles.input}
@@ -69,6 +67,14 @@ const LoginPage = () => {
                     <Link to="/forget-password" style={styles.link}>
                         Forgot password?
                     </Link>
+
+                    <button
+                        type="button"
+                        onClick={() => navigate("/employee")}
+                        style={styles.link}
+                    >
+                        Continue as Guest
+                    </button>
                 </form>
             </div>
         </div>
