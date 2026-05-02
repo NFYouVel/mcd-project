@@ -5,7 +5,7 @@ import { getAllOrders, updateOrder, createOrder, getOrderById } from "../control
 const router: Router = Router();
 
 router.get('/', authMiddleware, roleMiddleware('manager', 'cashier'), getAllOrders);
-router.get('/:id', authMiddleware, roleMiddleware('manager', 'cashier'), getOrderById);
+router.get('/:id', getOrderById);
 router.put('/:id', authMiddleware, roleMiddleware('manager', 'cashier'), updateOrder);
 router.post('/', createOrder);
 
