@@ -77,7 +77,6 @@ const ItemCart = () => {
         try {
             const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-            // 1. Create the order
             const orderRes = await fetch(`${BASE}/orders`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -86,7 +85,6 @@ const ItemCart = () => {
             if (!orderRes.ok) throw new Error("Failed to create order");
             const { data: order } = await orderRes.json();
 
-            // 2. Post each cart item sequentially
             for (const item of cartItems) {
                 const itemRes = await fetch(`${BASE}/orderitem`, {
                     method: "POST",
@@ -106,7 +104,6 @@ const ItemCart = () => {
                 if (!itemRes.ok) throw new Error(`Failed to add item: ${item.name}`);
             }
 
-            // 3. Clear cart and go back
             dispatch(clearCart());
             navigate("/employee");
         } catch (err: any) {
@@ -115,6 +112,7 @@ const ItemCart = () => {
             setLoading(false);
         }
     };
+
     return (
         <Box
             sx={{
@@ -156,6 +154,7 @@ const ItemCart = () => {
                     cartItems.map((item) => (
                         <Box key={item.cartItemId}>
                             <Box sx={{ display: "flex", alignItems: "flex-start", py: 1.5, gap: 2 }}>
+                                {/* Hapus button */}
                                 <Button
                                     onClick={() => dispatch(removeFromCart(item.cartItemId))}
                                     sx={{
@@ -175,6 +174,7 @@ const ItemCart = () => {
                                     Hapus
                                 </Button>
 
+                                {/* Image */}
                                 <Box
                                     component="img"
                                     src={getImageUrl(item.imageUrl) || "/placeholder.png"}
@@ -183,13 +183,34 @@ const ItemCart = () => {
                                     onError={(e: any) => { e.target.src = "/placeholder.png"; }}
                                 />
 
+                                {/* Name + modifications + edit button */}
                                 <Box sx={{ flex: 1, minWidth: 0 }}>
                                     <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#111", lineHeight: 1.3 }}>
                                         {item.name}
                                     </Typography>
                                     <ModificationSummary item={item} />
+                                    <Button
+                                        onClick={() => navigate(`/employee/category/cart/customize/${item.menuId}`, {
+                                            state: { cartItemId: item.cartItemId }
+                                        })}
+                                        sx={{
+                                            mt: 0.5,
+                                            minWidth: 0,
+                                            px: 1.2,
+                                            py: 0.2,
+                                            fontSize: 10,
+                                            color: "#FFC72C",
+                                            border: "1px solid #FFC72C",
+                                            borderRadius: 1.5,
+                                            textTransform: "none",
+                                            lineHeight: 1.4,
+                                        }}
+                                    >
+                                        Edit Pesanan
+                                    </Button>
                                 </Box>
 
+                                {/* Qty stepper + price */}
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 0.5, flexShrink: 0 }}>
                                     <Box
                                         sx={{
