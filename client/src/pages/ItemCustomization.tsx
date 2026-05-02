@@ -9,7 +9,14 @@ import type { IngredientDetail, VariantDetail } from "../store/cartSlice";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const BURGER_FILTERS = ["Sapi", "Ikan", "Ayam"];
+const BURGER_FILTERS = ["sapi", "ikan", "ayam"];
+const CHICKEN_KEYWORDS = ["ayam krispy", "ayam spicy"];
+
+const isChickenFilter = (name: string) =>
+    CHICKEN_KEYWORDS.some(k => name.toLowerCase().includes(k));
+
+const isBurgerFilter = (name: string) =>
+    !isChickenFilter(name) && BURGER_FILTERS.some(f => name.toLowerCase().includes(f));
 
 interface VariantItem {
     id: string;
@@ -52,7 +59,6 @@ const ItemCustomization = () => {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector((state) => state.cart.items);
 
-    // Edit mode — cartItemId passed via navigate state
     const cartItemId = (location.state as { cartItemId?: string } | null)?.cartItemId ?? null;
     const isEditMode = !!cartItemId;
     const existingCartItem = cartItemId ? cartItems.find(i => i.cartItemId === cartItemId) : null;
@@ -80,8 +86,7 @@ const ItemCustomization = () => {
                 setIngredients(allIngredients);
                 const defaults: Record<string, number> = {};
                 allIngredients.forEach(ing => { defaults[ing.id] = 1; });
-                setIngredientQty(prev => {
-                    // If editing, pre-fill from existing cart item
+                setIngredientQty(() => {
                     if (existingCartItem) {
                         const filled: Record<string, number> = {};
                         allIngredients.forEach(ing => {
@@ -109,7 +114,6 @@ const ItemCustomization = () => {
                 setMenu(menuData);
                 setVariantGroups(menuVariants);
 
-                // Pre-fill variants if editing
                 if (isEditMode && existingCartItem && menuVariants.length > 0) {
                     const preFilledVariants: Record<string, string[]> = {};
                     menuVariants.forEach(group => {
@@ -121,7 +125,6 @@ const ItemCustomization = () => {
                     setSelectedVariants(preFilledVariants);
                 }
 
-                // Pre-fill special requests if editing
                 if (isEditMode && existingCartItem) {
                     setSpecialRequests(existingCartItem.specialRequests ?? []);
                 }
@@ -137,13 +140,17 @@ const ItemCustomization = () => {
                         )
                     ).then(packageMenus => {
                         const hasBurgerChild = packageMenus.some(m =>
-                            BURGER_FILTERS.includes(m.filterMenu?.name ?? "")
+                            isBurgerFilter(m.filterMenu?.name ?? "") &&
+                            !isChickenFilter(m.filterMenu?.name ?? "")
                         );
                         if (hasBurgerChild) return fetchIngredients();
                     });
                 }
 
-                if (BURGER_FILTERS.includes(menuData.filterMenu?.name ?? "")) {
+                if (
+                    isBurgerFilter(menuData.filterMenu?.name ?? "") &&
+                    !isChickenFilter(menuData.filterMenu?.name ?? "")
+                ) {
                     return fetchIngredients();
                 }
             })
@@ -151,8 +158,9 @@ const ItemCustomization = () => {
             .finally(() => setLoading(false));
     }, [menuId]);
 
-    const isChicken = variantGroups.length > 0;
-    const isBurger = !isChicken && BURGER_FILTERS.includes(menu?.filterMenu?.name ?? "");
+
+    const isChicken = variantGroups.length > 0 || isChickenFilter(menu?.filterMenu?.name ?? "");
+    const isBurger = !isChicken && isBurgerFilter(menu?.filterMenu?.name ?? "") && !isChickenFilter(menu?.filterMenu?.name ?? "");
     const isPackage = menu?.isPackage === true;
     const hasIngredients = ingredients.length > 0;
     const hasModifications = isChicken || hasIngredients;
