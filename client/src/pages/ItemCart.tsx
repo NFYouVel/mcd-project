@@ -77,36 +77,26 @@ const ItemCart = () => {
         try {
             const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-            // 1. Create the order
+            const orderItems = cartItems.map((item) => ({
+                menuId: item.menuId,
+                variantItemsId: item.variants.length > 0 ? item.variants[0].id : null,
+                ingredientItems: Array.isArray(item.ingredients)
+                    ? item.ingredients.map((ing) => ({
+                        ingredientsId: ing.id,
+                        quantity: ing.quantity ?? 1,
+                        price: 0,
+                    }))
+                    : [],
+            }));
+
             const orderRes = await fetch(`${BASE}/orders`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ orderItems }),
             });
+
             if (!orderRes.ok) throw new Error("Failed to create order");
-            const { data: order } = await orderRes.json();
 
-            // 2. Post each cart item sequentially
-            for (const item of cartItems) {
-                const itemRes = await fetch(`${BASE}/orderitem`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        orderId: order.id,
-                        menuId: item.menuId,
-                        ingredients: Array.isArray(item.ingredients)
-                            ? item.ingredients.map((ing) => ({
-                                ingredientsId: ing.id,
-                                quantity: ing.quantity ?? 1,
-                            }))
-                            : [],
-                        variantItemIds: item.variants.map((v) => v.id),
-                    })
-                });
-                if (!itemRes.ok) throw new Error(`Failed to add item: ${item.name}`);
-            }
-
-            // 3. Clear cart and go back
             dispatch(clearCart());
             navigate("/employee");
         } catch (err: any) {
